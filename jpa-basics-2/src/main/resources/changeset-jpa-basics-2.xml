@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd">
+    <changeSet author="Rekin (generated)" id="1371393459417-1">
+        <createTable catalogName="ttt" schemaName="public" tableName="test">
+            <column name="id" type="INT4">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="Rekin (generated)" id="1371393459417-2">
+        <createTable catalogName="ttt" schemaName="public" tableName="player">
+            <column autoIncrement="true" name="id" type="INT">
+                <constraints primaryKey="true" primaryKeyName="player_pkey"/>
+            </column>
+            <column name="name" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="Rekin (generated)" id="1371393459417-3">
+        <addPrimaryKey catalogName="ttt" columnNames="id" constraintName="test_pkey" schemaName="public" tableName="test"/>
+    </changeSet>
+</databaseChangeLog>
