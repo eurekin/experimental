@@ -88,7 +88,7 @@ public class LineDefinitionEditorView {
         });
 
         when(singleTableItemSelectedState).activate(deleteButton);
-        when(singleTableItemSelectedState).and(not(firstTableItemSelected)).activate(upButton);
+        when(not(firstTableItemSelected)).and(singleTableItemSelectedState).activate(upButton);
         when(singleTableItemSelectedState).and(not(lastTableItemSelected)).activate(downButton);
 
 
