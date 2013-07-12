@@ -16,6 +16,19 @@ public class Field {
     Integer begin = 0;
     Integer end;
 
+
+    public void actionnnnnn() {
+        System.out.println("Action fired!!!");
+    }
+    public void action(int Input) {
+        System.out.println("Action fired!!!");
+    }
+    public int action(int input1, int input2) {
+        System.out.println("Action fired!!!");
+        return 4;
+    }
+
+
     public void isAfter(Field f) {
         begin = f.end;
         end = begin + length;

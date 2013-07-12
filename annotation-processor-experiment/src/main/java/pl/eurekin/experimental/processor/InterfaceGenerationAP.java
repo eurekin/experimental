@@ -1,4 +1,6 @@
-package pl.eurekin.experimental;
+package pl.eurekin.experimental.processor;
+
+import pl.eurekin.experimental.GenerateJavaBeanInterface;
 
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.RoundEnvironment;
@@ -6,12 +8,15 @@ import javax.annotation.processing.SupportedAnnotationTypes;
 import javax.annotation.processing.SupportedSourceVersion;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.*;
+import javax.lang.model.type.ExecutableType;
 import javax.lang.model.type.TypeKind;
 import javax.tools.Diagnostic;
 import javax.tools.JavaFileObject;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.util.Set;
+
+import static java.util.regex.Pattern.quote;
 
 @SupportedAnnotationTypes("pl.eurekin.experimental.GenerateJavaBeanInterface")
 @SupportedSourceVersion(SourceVersion.RELEASE_7)
@@ -90,8 +95,9 @@ public class InterfaceGenerationAP extends AbstractProcessor {
                             bw.append("// it's modifiers: " + element.getModifiers() + "\n");
                             bw.append("// it's simple Name: " + element.getSimpleName() + "\n");
                             bw.append("// it's typeMirror's toString: " + element.asType().toString() + "\n");
+                            bw.append("// it's typeMirror's class: " + element.asType().getClass() + "\n");
                             bw.append("// it's typeMirror's kind: " + element.asType().getKind() + "\n");
-                            bw.append("// it's typeMirror's class: " + element.asType().getKind().getClass() + "\n");
+                            bw.append("// it's typeMirror's kind class: " + element.asType().getKind().getClass() + "\n");
                         }
                         Set<Modifier> modifiers = element.getModifiers();
                         boolean isField = ElementKind.FIELD.equals(element.getKind());
@@ -109,7 +115,7 @@ public class InterfaceGenerationAP extends AbstractProcessor {
                             String propType = element.asType().toString();
                             String baseType = classElement.getQualifiedName().toString();
 
-                            String staticFName = fieldName.toUpperCase()+"_PROPERTY";
+                            String staticFName = fieldName.toUpperCase() + "_PROPERTY";
                             String staticPropertyString = generateStaticPropertyDescriptor(fieldName, propType, baseType, staticFName);
 
                             bw.append(generatePropertyDeclarationString(propType, fieldName));
@@ -120,6 +126,23 @@ public class InterfaceGenerationAP extends AbstractProcessor {
                             bw.newLine();
                         }
 
+                        boolean isMethod = ElementKind.METHOD.equals(element.getKind());
+                        boolean voidReturnType = false;
+                        boolean voidParameterType = false;
+
+                        if (element.asType() instanceof ExecutableType) {
+                            final ExecutableType executableType = (ExecutableType) element.asType();
+
+                            voidParameterType = executableType.getParameterTypes().size() == 0;
+                            voidReturnType = TypeKind.VOID.equals(executableType.getReturnType().getKind());
+                        }
+                        boolean qualifiesForActionGeneration = isMethod && voidParameterType && voidReturnType;
+                        if (qualifiesForActionGeneration) {
+                            final ExecutableType executableType = (ExecutableType) element.asType();
+                            bw.append("    public Runnable actionAction = new Runnable() {\n" +
+                                    "        @Override public void run() { base.$$action(); }};"
+                                            .replaceAll(quote("$$action"), element.getSimpleName().toString()));
+                        }
                     }
 
 
@@ -139,9 +162,9 @@ public class InterfaceGenerationAP extends AbstractProcessor {
     }
 
     private String generateStaticPropertyDescriptor(String fieldName, String propType, String baseType, String staticFName) {
-        return "    public static PropertyAccessor<"+propType+", "+baseType+"> " + staticFName + " = new PropertyAccessor<"+propType+", "+baseType+">(\n" +
-        "            new TemplateGetter<"+propType+", "+baseType+">() {@Override public "+propType+" get("+baseType+" base) { return base."+fieldName+";}},\n" +
-        "            new TemplateSetter<"+propType+", "+baseType+">() {@Override public void set("+baseType+" base, "+propType+" newValue) { base."+fieldName+" = newValue; }});";
+        return "    public static PropertyAccessor<" + propType + ", " + baseType + "> " + staticFName + " = new PropertyAccessor<" + propType + ", " + baseType + ">(\n" +
+                "            new TemplateGetter<" + propType + ", " + baseType + ">() {@Override public " + propType + " get(" + baseType + " base) { return base." + fieldName + ";}},\n" +
+                "            new TemplateSetter<" + propType + ", " + baseType + ">() {@Override public void set(" + baseType + " base, " + propType + " newValue) { base." + fieldName + " = newValue; }});";
     }
 
     private String generatePropertyDeclarationString(String propType, String propName) {
