@@ -27,7 +27,9 @@ public class SelectionModelAdapter implements Observable<Integer[]> {
     }
 
     private void update() {
+        changeSupport.onBeginNotifying();
         changeSupport.firePropertyChangeEvent(selection());
+        changeSupport.onFinishNotifying();
     }
 
     private Integer[] selection() {

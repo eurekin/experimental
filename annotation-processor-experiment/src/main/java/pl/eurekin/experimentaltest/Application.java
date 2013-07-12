@@ -21,8 +21,18 @@ public class Application {
 
         aStringProperty.registerChangeListener(new ChangedPropertyListener<String>() {
             @Override
+            public void beginNotifying() {
+                // TODO
+            }
+
+            @Override
             public void propertyChanged(String oldValue, String newValue) {
                 System.out.println("Listener called oldValue = " + oldValue + " new Value = " + newValue);
+            }
+
+            @Override
+            public void finishNotifying() {
+                // TODO
             }
         });
 

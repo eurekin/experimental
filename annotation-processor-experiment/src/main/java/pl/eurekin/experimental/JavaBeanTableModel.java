@@ -14,13 +14,24 @@ public class JavaBeanTableModel<T> extends AbstractTableModel {
         backingList = test;
         test.registerChangeListener(new ChangedPropertyListener<List<T>>() {
             @Override
+            public void beginNotifying() {
+                // todo
+            }
+
+            @Override
             public void propertyChanged(List<T> oldValue, List<T> newValue) {
                 changed();
+            }
+
+            @Override
+            public void finishNotifying() {
+                // todo
             }
         });
     }
 
     private void changed() {
+
         super.fireTableDataChanged();
     }
 

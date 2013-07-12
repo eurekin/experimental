@@ -29,4 +29,14 @@ public class StatefulPropertyChangeSupport<T> {
         for (ChangedPropertyListener<T> listener : listeners)
             listener.propertyChanged(oldValue, newValue);
     }
+
+    public void onBeginNotifying() {
+        for (ChangedPropertyListener<T> listener : listeners)
+            listener.beginNotifying();
+    }
+
+    public void onFinishNotifying() {
+        for (ChangedPropertyListener<T> listener : listeners)
+            listener.finishNotifying();
+    }
 }

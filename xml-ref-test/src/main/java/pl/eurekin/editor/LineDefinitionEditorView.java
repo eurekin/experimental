@@ -1,7 +1,9 @@
 package pl.eurekin.editor;
 
 import pl.eurekin.experimental.*;
-import pl.eurekin.experimental.state.SimpleState;
+import pl.eurekin.experimental.Observable;
+import pl.eurekin.experimental.state.*;
+import pl.eurekin.experimental.swing.SelectionModelAdapter;
 import pl.eurekin.experimental.swing.SingleTableItemSelectedState;
 
 import javax.swing.*;
@@ -10,6 +12,8 @@ import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.*;
+import java.util.List;
 
 import static pl.eurekin.experimental.ExpressionBuilder.not;
 import static pl.eurekin.experimental.ExpressionBuilder.when;
@@ -73,20 +77,20 @@ public class LineDefinitionEditorView {
         table1.setModel(tableModel);
 
         final SingleTableItemSelectedState singleTableItemSelectedState = new SingleTableItemSelectedState(table1);
-        final DefaultListSelectionModel selectionModel = (DefaultListSelectionModel) table1.getSelectionModel();
-        final SimpleState firstTableItemSelected = new SimpleState(false);
-        final SimpleState lastTableItemSelected = new SimpleState(false);
-        selectionModel.addListSelectionListener(new ListSelectionListener() {
+        final SelectionModelAdapter observableSelectionModel = new SelectionModelAdapter(table1);
+
+        ObservableState firstTableItemSelected = new ObservableStateInterpreterAdapter<>(observableSelectionModel, new Interpreter<Integer[], Boolean>() {
             @Override
-            public void valueChanged(ListSelectionEvent e) {
-                int[] selectedRows = table1.getSelectedRows();
-                boolean firstItemSelected = selectedRows != null && selectedRows.length == 1 && selectedRows[0] == 0;
-                boolean lastItemSelected = selectedRows != null && selectedRows.length == 1 && selectedRows[0] == table1.getRowCount() - 1;
-                firstTableItemSelected.set(firstItemSelected);
-                lastTableItemSelected.set(lastItemSelected);
+            public Boolean interpret(Integer[] selectedRows) {
+                return selectedRows != null && selectedRows.length == 1 && selectedRows[0] == 0;
             }
         });
-
+        ObservableState lastTableItemSelected = new ObservableStateInterpreterAdapter<>(observableSelectionModel, new Interpreter<Integer[], Boolean>() {
+            @Override
+            public Boolean interpret(Integer[] selectedRows) {
+                return selectedRows != null && selectedRows.length == 1 && selectedRows[0] == table1.getRowCount() - 1;
+            }
+        });
         when(singleTableItemSelectedState).activate(deleteButton);
         when(singleTableItemSelectedState).and(not(firstTableItemSelected)).activate(upButton);
         when(singleTableItemSelectedState).and(not(lastTableItemSelected)).activate(downButton);

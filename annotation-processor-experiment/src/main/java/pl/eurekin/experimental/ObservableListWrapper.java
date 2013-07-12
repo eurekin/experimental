@@ -21,7 +21,9 @@ public class ObservableListWrapper<T> implements ObservableList<T> {
     }
 
     public void changed() {
+        changeSupport.beginNotifying();
         changeSupport.firePropertyChangeEvent(null, this);
+        changeSupport.finishNotifying();
     }
 
     public void add(int index, T element) {

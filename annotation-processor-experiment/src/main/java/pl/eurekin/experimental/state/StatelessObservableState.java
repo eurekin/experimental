@@ -17,4 +17,12 @@ public abstract class StatelessObservableState implements ObservableState {
     void notifyOfStateChange(boolean oldValue, boolean newValue) {
         changeSupport.firePropertyChangeEvent(oldValue, newValue);
     }
+
+    void onBeginNotifying() {
+        changeSupport.beginNotifying();
+    }
+
+    void onFinishNotifying() {
+        changeSupport.finishNotifying();
+    }
 }

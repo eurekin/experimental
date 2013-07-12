@@ -19,16 +19,38 @@ public class ObservableInterpreterAdapter<I, O> implements Observable<O> {
     private void registerOnInput() {
         observableInput.registerChangeListener(new ChangedPropertyListener<I>() {
             @Override
+            public void beginNotifying() {
+                onBeginNotifying();
+            }
+
+            @Override
             public void propertyChanged(I oldValue, I newValue) {
                 update(oldValue, newValue);
             }
+
+            @Override
+            public void finishNotifying() {
+                onFinishNotifying();
+            }
         });
+    }
+
+    private void onFinishNotifying() {
+        changeSupport.finishNotifying();
+    }
+
+    private void onBeginNotifying() {
+        changeSupport.beginNotifying();
     }
 
     private void update(I oldValue, I newValue) {
         O oldInterpretedValue = interpreter.interpret(oldValue);
         O newInterpretedValue = interpreter.interpret(newValue);
-        changeSupport.firePropertyChangeEvent(oldInterpretedValue, newInterpretedValue);
+        updateInterpreted(oldInterpretedValue, newInterpretedValue);
+    }
+
+    protected void updateInterpreted(O oldValue, O newValue) {
+        changeSupport.firePropertyChangeEvent(oldValue, newValue);
     }
 
     @Override

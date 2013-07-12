@@ -5,12 +5,23 @@ import pl.eurekin.experimental.ChangedPropertyListener;
 public abstract class DerivedState extends StatelessObservableState {
     private final ChangedPropertyListener<Boolean> listener = new ChangedPropertyListener<Boolean>() {
         @Override
+        public void beginNotifying() {
+            onBeginNotifying();
+        }
+
+        @Override
         public void propertyChanged(Boolean oldValue, Boolean newValue) {
             update();
+        }
+
+        @Override
+        public void finishNotifying() {
+            onFinishNotifying();
         }
     };
     private final ObservableState[] baseStates;
     private boolean lastValue;
+
 
     public DerivedState(ObservableState... baseStates) {
         this.baseStates = baseStates;
