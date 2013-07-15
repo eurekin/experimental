@@ -92,6 +92,18 @@ public class LineDefinitionEditorView {
         when(singleTableItemSelectedState).activate(deleteButton);
         when(singleTableItemSelectedState).and(not(firstTableItemSelected)).activate(upButton);
         when(singleTableItemSelectedState).and(not(lastTableItemSelected)).activate(downButton);
+
+        upButton.addActionListener(new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                getFieldViewModel().run();
+                backingList.changed();
+            }
+        });
+    }
+
+    private Runnable getFieldViewModel() {
+        return new FieldViewModel(backingList.get(table1.getSelectedRow())).actionAction;
     }
 
 }

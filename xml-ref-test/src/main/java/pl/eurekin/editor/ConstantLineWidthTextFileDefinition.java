@@ -12,9 +12,9 @@ import static java.util.Arrays.asList;
 public class ConstantLineWidthTextFileDefinition {
 
     @XmlElement(name = "field")
-    List<Field> fields = new ArrayList<>(asList(new Field(), new Field()));
+    List<Field> fields = new ArrayList<>();
 
-    private void recalculateIndices() {
+    void recalculateIndices() {
         Field lastField = Field.BEFORE_FIRST;
         for(Field f : fields) {
             f.isAfter(lastField);
@@ -24,6 +24,7 @@ public class ConstantLineWidthTextFileDefinition {
 
     public void add(Field newField) {
         fields.add(newField);
+        newField.isContainedIn(this);
         recalculateIndices();
     }
 

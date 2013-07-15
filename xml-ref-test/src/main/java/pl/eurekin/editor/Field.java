@@ -15,10 +15,12 @@ public class Field {
 
     Integer begin = 0;
     Integer end;
+    private ConstantLineWidthTextFileDefinition parent;
 
 
     public void actionnnnnn() {
-        System.out.println("Action fired!!!");
+        this.length += 1;
+        parent.recalculateIndices();
     }
     public void action(int Input) {
         System.out.println("Action fired!!!");
@@ -35,6 +37,10 @@ public class Field {
     }
 
     public static final Field BEFORE_FIRST = new BeforeFirst();
+
+    public void isContainedIn(ConstantLineWidthTextFileDefinition parent) {
+        this.parent = parent;
+    }
 
     public static class BeforeFirst extends Field {
         public BeforeFirst() {
