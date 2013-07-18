@@ -41,8 +41,10 @@ public class Property<T> implements Observable<T> {
         }
 
         public void setValue(T oldValue, T newValue) {
-            propertyChangeSupport.firePropertyChangeEvent(oldValue, newValue);
             setter.set(newValue);
+            propertyChangeSupport.beginNotifying();
+            propertyChangeSupport.firePropertyChangeEvent(oldValue, newValue);
+            propertyChangeSupport.finishNotifying();
         }
     }
 }

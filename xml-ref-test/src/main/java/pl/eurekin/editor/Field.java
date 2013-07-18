@@ -22,14 +22,19 @@ public class Field {
         this.length += 1;
         parent.recalculateIndices();
     }
+
     public void action(int Input) {
         System.out.println("Action fired!!!");
     }
+
     public int action(int input1, int input2) {
         System.out.println("Action fired!!!");
         return 4;
     }
 
+    public boolean canShrink() {
+        return this.length >=2;
+    }
 
     public void isAfter(Field f) {
         begin = f.end;
