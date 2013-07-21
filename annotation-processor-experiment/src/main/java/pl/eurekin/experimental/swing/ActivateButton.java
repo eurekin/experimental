@@ -7,10 +7,11 @@ import javax.swing.*;
 
 public class ActivateButton {
     private final JButton buttonToUpdate;
+    private final ObservableState observableState;
     private int counter = 0;
-    private Boolean lastValue;
 
     public ActivateButton(ObservableState observableState, JButton button) {
+        this.observableState = observableState;
         if (button.getAction() != null) throw new ActionOnButtonExistException();
         buttonToUpdate = button;
         observableState.registerChangeListener(new ChangedPropertyListener<Boolean>() {
@@ -21,7 +22,9 @@ public class ActivateButton {
 
             @Override
             public void propertyChanged(Boolean oldValue, Boolean newValue) {
-                onUpdate(newValue);
+                // silently ignore
+                //
+                // the data provided here is susceptible to data races
             }
 
             @Override
@@ -32,10 +35,6 @@ public class ActivateButton {
         buttonToUpdate.setEnabled(observableState.value());
     }
 
-    private void onUpdate(Boolean newValue) {
-        lastValue = newValue;
-    }
-
     private void onFinishNotifying() {
         counter--;
         actIfAllEventsAreFired();
@@ -43,7 +42,7 @@ public class ActivateButton {
 
     private void actIfAllEventsAreFired() {
         if (counter == 0)
-            this.buttonToUpdate.setEnabled(lastValue);
+            this.buttonToUpdate.setEnabled(observableState.value());
 
     }
 

@@ -81,8 +81,8 @@ public class LineDefinitionEditorView {
         tableModel.addColumn(FieldViewModel.NAME_PROPERTY, "name");
         table1.setModel(tableModel);
 
-        final SingleTableItemSelectedState singleTableItemSelectedState = new SingleTableItemSelectedState(table1);
         final SelectionModelAdapter observableSelectionModel = new SelectionModelAdapter(table1);
+        final ObservableState singleTableItemSelectedState = new SingleTableItemSelectedState(observableSelectionModel);
 
         ObservableState firstTableItemSelected = new ObservableStateInterpreterAdapter<>(observableSelectionModel, new Interpreter<Integer[], Boolean>() {
             @Override

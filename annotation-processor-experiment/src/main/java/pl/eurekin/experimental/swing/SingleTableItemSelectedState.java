@@ -8,9 +8,9 @@ import javax.swing.*;
 public class SingleTableItemSelectedState
         extends StateObservableAdapter {
 
-    public SingleTableItemSelectedState(JTable table) {
+    public SingleTableItemSelectedState(SelectionModelAdapter selectionModelAdapter) {
         super(new ObservableInterpreterAdapter<>(
-                new SelectionModelAdapter(table),
+                selectionModelAdapter,
                 new SingleItemArrayInterpreter()),
                 false);
     }
