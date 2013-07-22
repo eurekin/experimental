@@ -1,18 +1,18 @@
 package pl.eurekin.editor;
 
-import pl.eurekin.experimental.AnythingHappenedListener;
-import pl.eurekin.experimental.JavaBeanTableModel;
-import pl.eurekin.experimental.ObservableListWrapper;
-import pl.eurekin.experimental.SimpleChangedPropertyListener;
+import pl.eurekin.experimental.*;
 import pl.eurekin.experimental.state.Interpreter;
 import pl.eurekin.experimental.state.ObservableState;
 import pl.eurekin.experimental.state.ObservableStateInterpreterAdapter;
-import pl.eurekin.experimental.swing.*;
+import pl.eurekin.experimental.swing.JTextComponentBinder;
+import pl.eurekin.experimental.swing.SelectionModelAdapter;
+import pl.eurekin.experimental.swing.SingleTableItemSelectedState;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Arrays;
 
 import static pl.eurekin.experimental.ExpressionBuilder.not;
 import static pl.eurekin.experimental.ExpressionBuilder.when;
@@ -83,17 +83,18 @@ public class LineDefinitionEditorView {
 
         final SelectionModelAdapter observableSelectionModel = new SelectionModelAdapter(table1);
         final ObservableState singleTableItemSelectedState = new SingleTableItemSelectedState(observableSelectionModel);
+        SelectedObjectsAdapter<Field> selectedObjectsAdapter = new SelectedObjectsAdapter<>(observableSelectionModel, backingList);
 
         ObservableState firstTableItemSelected = new ObservableStateInterpreterAdapter<>(observableSelectionModel, new Interpreter<Integer[], Boolean>() {
             @Override
             public Boolean interpret(Integer[] selectedRows) {
-                return selectedRows != null && selectedRows.length == 1 && selectedRows[0] == 0;
+                return Arrays.asList(selectedRows).contains(0);
             }
         });
         ObservableState lastTableItemSelected = new ObservableStateInterpreterAdapter<>(observableSelectionModel, new Interpreter<Integer[], Boolean>() {
             @Override
             public Boolean interpret(Integer[] selectedRows) {
-                return selectedRows != null && selectedRows.length == 1 && selectedRows[0] == table1.getRowCount() - 1;
+                return Arrays.asList(selectedRows).contains(table1.getRowCount() - 1);
             }
         });
         when(singleTableItemSelectedState).activate(deleteButton);
