@@ -13,7 +13,6 @@ public class SelectedObjectsAdapter<T>
         extends ObservableInterpreterAdapter<Integer[], List<T>>
         implements Observable<List<T>> {
 
-
     public SelectedObjectsAdapter(
             Observable<Integer[]> observableSelectionModel,
             ObservableList<T> backingList) {

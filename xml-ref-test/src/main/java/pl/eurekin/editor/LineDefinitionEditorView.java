@@ -2,6 +2,7 @@ package pl.eurekin.editor;
 
 import pl.eurekin.experimental.*;
 import pl.eurekin.experimental.state.Interpreter;
+import pl.eurekin.experimental.state.ObservableInterpreterAdapter;
 import pl.eurekin.experimental.state.ObservableState;
 import pl.eurekin.experimental.state.ObservableStateInterpreterAdapter;
 import pl.eurekin.experimental.swing.JTextComponentBinder;
@@ -13,6 +14,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Arrays;
+import java.util.List;
 
 import static pl.eurekin.experimental.ExpressionBuilder.not;
 import static pl.eurekin.experimental.ExpressionBuilder.when;
@@ -30,7 +32,7 @@ public class LineDefinitionEditorView {
     private JButton downButton;
     private JTextField textField1;
     private JButton editButton;
-    private ObservableListWrapper<Field> backingList;
+    private ObservableListAdapter<Field> backingList;
     private ConstantLineWidthTextFileDefinition domainModelObject;
 
 
@@ -73,7 +75,7 @@ public class LineDefinitionEditorView {
 
         domainModelObject = new ConstantLineWidthTextFileDefinition();
 
-        backingList = new ObservableListWrapper<>(domainModelObject.fields);
+        backingList = new ObservableListAdapter<>(domainModelObject.fields);
         JavaBeanTableModel<Field> tableModel = new JavaBeanTableModel<>(backingList);
         tableModel.addColumn(FieldViewModel.BEGIN_PROPERTY, "begin");
         tableModel.addColumn(FieldViewModel.END_PROPERTY, "end");
@@ -84,6 +86,9 @@ public class LineDefinitionEditorView {
         final SelectionModelAdapter observableSelectionModel = new SelectionModelAdapter(table1);
         final ObservableState singleTableItemSelectedState = new SingleTableItemSelectedState(observableSelectionModel);
         SelectedObjectsAdapter<Field> selectedObjectsAdapter = new SelectedObjectsAdapter<>(observableSelectionModel, backingList);
+        Interpreter<List<Field>, Field> selectedFieldInterpreter = new FirstItemFromList<>();
+        ObservableInterpreterAdapter selectedObject = new ObservableInterpreterAdapter(selectedObjectsAdapter, selectedFieldInterpreter);
+
 
         ObservableState firstTableItemSelected = new ObservableStateInterpreterAdapter<>(observableSelectionModel, new Interpreter<Integer[], Boolean>() {
             @Override
@@ -97,6 +102,8 @@ public class LineDefinitionEditorView {
                 return Arrays.asList(selectedRows).contains(table1.getRowCount() - 1);
             }
         });
+
+        bind(textField1).to(FieldViewModel.NAME_PROPERTY, selectedObject);
         when(singleTableItemSelectedState).activate(deleteButton);
         when(singleTableItemSelectedState).and(not(firstTableItemSelected)).activate(upButton);
         when(singleTableItemSelectedState).and(not(lastTableItemSelected)).activate(downButton);

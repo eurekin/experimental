@@ -1,10 +1,12 @@
 package pl.eurekin.experimental.state;
 
 import pl.eurekin.experimental.ChangedPropertyListener;
+import pl.eurekin.experimental.Getter;
 import pl.eurekin.experimental.Observable;
 import pl.eurekin.experimental.StatelessPropertyChangeSupport;
 
-public class ObservableInterpreterAdapter<I, O> implements Observable<O> {
+public class ObservableInterpreterAdapter<I, O>
+        implements Observable<O>, Getter<O> {
 
     private final Observable<I> observableInput;
     private final Interpreter<I, O> interpreter;
@@ -61,5 +63,10 @@ public class ObservableInterpreterAdapter<I, O> implements Observable<O> {
     @Override
     public void unregisterChangeListener(ChangedPropertyListener<O> listener) {
         changeSupport.unregisterListener(listener);
+    }
+
+    @Override
+    public O get() {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 }

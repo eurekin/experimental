@@ -1,16 +1,14 @@
 package pl.eurekin.experimental.swing;
 
-import pl.eurekin.experimental.AnythingHappenedListener;
-import pl.eurekin.experimental.Property;
-import pl.eurekin.experimental.SimpleChangedPropertyListener;
+import pl.eurekin.experimental.*;
 
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.JTextComponent;
 
 /**
-* @author greg.matoga@gmail.com
-*/
+ * @author greg.matoga@gmail.com
+ */
 public class JTextComponentBinder {
     private final JTextComponent textComponent;
     private Property<String> property;
@@ -18,6 +16,27 @@ public class JTextComponentBinder {
 
     public JTextComponentBinder(JTextComponent textComponent) {
         this.textComponent = textComponent;
+    }
+
+    public <T, E extends Observable<T> & Getter<T>> void to(final PropertyAccessor<String, T> accessor,
+                                                            final E object) {
+        this.property = new Property<>(new Getter<String>() {
+            @Override
+            public String get() {
+                if (object.get() == null) return null;
+                return accessor.get(object.get());
+            }
+        }, new Setter<String>() {
+            @Override
+            public void set(String newValue) {
+                if (object.get() != null)
+                    accessor.set(object.get(), newValue);
+            }
+        }
+        );
+        bindPropertyToWidget();
+        bindWidgetToProperty();
+        copyFromPropertyToDocument();
     }
 
     public void to(Property<String> property) {
