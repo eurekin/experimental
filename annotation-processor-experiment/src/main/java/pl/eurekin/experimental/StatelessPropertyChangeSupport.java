@@ -4,7 +4,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class StatelessPropertyChangeSupport<T> {
-    Set<ChangedPropertyListener<T>> listeners = new HashSet<>();
+    final Set<ChangedPropertyListener<T>> listeners = new HashSet<>();
 
     public void registerNewListener(ChangedPropertyListener<T> propertyListener) {
         listeners.add(propertyListener);

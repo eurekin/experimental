@@ -5,7 +5,7 @@ package pl.eurekin.experimental;
 */
 public class SimpleChangedPropertyListener implements ChangedPropertyListener<String> {
     public int counter;
-    public AnythingHappenedListener listener;
+    public final AnythingHappenedListener listener;
 
     public SimpleChangedPropertyListener(AnythingHappenedListener anythingHappenedListener) {
         this.listener = anythingHappenedListener;

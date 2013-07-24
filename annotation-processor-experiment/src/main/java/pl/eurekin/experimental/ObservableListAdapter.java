@@ -7,8 +7,8 @@ import java.util.ListIterator;
 
 public class ObservableListAdapter<T> implements ObservableList<T> {
 
-    private List<T> delegateList;
-    private StatelessPropertyChangeSupport<List<T>> changeSupport = new StatelessPropertyChangeSupport<>();
+    private final List<T> delegateList;
+    private final StatelessPropertyChangeSupport<List<T>> changeSupport = new StatelessPropertyChangeSupport<>();
 
     public ObservableListAdapter(List<T> delegateList) {
         this.delegateList = delegateList;

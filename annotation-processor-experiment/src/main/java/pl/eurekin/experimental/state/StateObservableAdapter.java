@@ -7,7 +7,7 @@ import pl.eurekin.experimental.StatefulPropertyChangeSupport;
 public class StateObservableAdapter implements ObservableState {
 
     private final Observable<Boolean> observable;
-    private StatefulPropertyChangeSupport<Boolean> changeSupport;
+    private final StatefulPropertyChangeSupport<Boolean> changeSupport;
 
     public StateObservableAdapter(Observable<Boolean> observable, boolean initialValue) {
         this.observable = observable;

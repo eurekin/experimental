@@ -6,7 +6,7 @@ import pl.eurekin.experimental.StatelessPropertyChangeSupport;
 public class StateProxy implements ObservableState {
 
     private final ObservableState base;
-    StatelessPropertyChangeSupport<Boolean> changeSupport;
+    final StatelessPropertyChangeSupport<Boolean> changeSupport;
 
     public StateProxy(ObservableState base) {
         this.base = base;

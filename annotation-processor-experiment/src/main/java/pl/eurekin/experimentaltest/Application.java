@@ -10,7 +10,7 @@ public class Application {
     Property<String> aStringProperty;
     String backingObject;
     private void testPropertyConstruction() {
-        aStringProperty = new Property<String>(
+        aStringProperty = new Property<>(
                 new Getter<String>() {@Override public String get() {
                 return Application.this.backingObject;}},
                 new Setter<String>() {@Override public void set(String newValue) {

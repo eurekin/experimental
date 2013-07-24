@@ -12,6 +12,7 @@ import static java.util.Arrays.asList;
 public class ConstantLineWidthTextFileDefinition {
 
     @XmlElement(name = "field")
+    final
     List<Field> fields = new ArrayList<>();
 
     void recalculateIndices() {

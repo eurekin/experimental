@@ -11,7 +11,7 @@ public class Property<T> implements Observable<T> {
         backingModel = new PropertyModel();
     }
 
-    private PropertyModel backingModel;
+    private final PropertyModel backingModel;
 
     public T get() {
         return backingModel.getValue();
@@ -31,7 +31,7 @@ public class Property<T> implements Observable<T> {
         propertyChangeSupport.unregisterListener(listener);
     }
 
-    StatelessPropertyChangeSupport<T> propertyChangeSupport = new StatelessPropertyChangeSupport<T>();
+    final StatelessPropertyChangeSupport<T> propertyChangeSupport = new StatelessPropertyChangeSupport<>();
 
     private class PropertyModel {
         T value;

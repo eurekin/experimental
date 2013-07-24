@@ -67,6 +67,6 @@ public class ObservableInterpreterAdapter<I, O>
 
     @Override
     public O get() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return null;
     }
 }

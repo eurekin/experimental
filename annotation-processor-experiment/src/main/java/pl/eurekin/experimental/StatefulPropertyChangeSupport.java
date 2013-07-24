@@ -5,7 +5,7 @@ import java.util.Set;
 
 public class StatefulPropertyChangeSupport<T> {
     private T value;
-    Set<ChangedPropertyListener<T>> listeners = new HashSet<>();
+    final Set<ChangedPropertyListener<T>> listeners = new HashSet<>();
 
     public StatefulPropertyChangeSupport(T initialValue) {
         this.value = initialValue;

@@ -17,7 +17,7 @@ public class SelectedObjectsAdapter<T>
             Observable<Integer[]> observableSelectionModel,
             ObservableList<T> backingList) {
         super(observableSelectionModel,
-                new IntegerToObjectInterpreter<T>(backingList));
+                new IntegerToObjectInterpreter<>(backingList));
     }
 
     private static class IntegerToObjectInterpreter<T> implements Interpreter<Integer[], List<T>> {

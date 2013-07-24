@@ -37,7 +37,7 @@ public class SelectionModelAdapter implements Observable<Integer[]> {
         ArrayList<Integer> modelRows = new ArrayList<>(selectedViewRows.length);
         for (Integer viewRow : selectedViewRows)
             modelRows.add(table.convertRowIndexToModel(viewRow));
-        return modelRows.toArray(new Integer[]{});
+        return modelRows.toArray(new Integer[modelRows.size()]);
     }
 
     @Override

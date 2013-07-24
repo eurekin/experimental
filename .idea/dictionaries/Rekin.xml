@@ -5,13 +5,21 @@
       <w>changelog</w>
       <w>changeset</w>
       <w>databasename</w>
+      <w>hgap</w>
+      <w>hsize</w>
       <w>pacelibom</w>
       <w>postgresql</w>
       <w>proxied</w>
       <w>rhat</w>
+      <w>scrollpane</w>
       <w>sonatype</w>
       <w>unmarshal</w>
+      <w>unmarshaller</w>
       <w>unregister</w>
+      <w>vgap</w>
+      <w>vsize</w>
+      <w>vspacer</w>
+      <w>xmlns</w>
     </words>
   </dictionary>
 </component>

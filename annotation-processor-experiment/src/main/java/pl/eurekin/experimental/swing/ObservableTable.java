@@ -8,10 +8,10 @@ import pl.eurekin.experimental.state.ObservableState;
  */
 public class ObservableTable<T> {
     public ObservableState singleItemSelected() {
-        return null;
+        return null; // TODO
     }
     public Property<T> selectedItem() {
-        return null;
+        return null; // TODO
 
     }
 }

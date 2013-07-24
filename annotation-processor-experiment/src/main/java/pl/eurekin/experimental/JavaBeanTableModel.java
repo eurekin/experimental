@@ -6,8 +6,8 @@ import java.util.List;
 
 public class JavaBeanTableModel<T> extends AbstractTableModel {
 
-    private List<T> backingList;
-    private List<JavaBeanColumnModel<?, T>> columnModel;
+    private final List<T> backingList;
+    private final List<JavaBeanColumnModel<?, T>> columnModel;
 
     public JavaBeanTableModel(ObservableList<T> test) {
         columnModel = new ArrayList<>();

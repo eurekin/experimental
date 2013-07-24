@@ -27,9 +27,8 @@ public class Test {
 
         Test test = (Test) o;
 
-        if (id != null ? !id.equals(test.id) : test.id != null) return false;
+        return !(id != null ? !id.equals(test.id) : test.id != null);
 
-        return true;
     }
 
     @Override

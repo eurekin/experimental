@@ -7,7 +7,7 @@ import pl.eurekin.experimental.swing.ActivateButton;
 */
 public class SafePropertyListener<T> implements ChangedPropertyListener<T> {
     private int counter = 0;
-    private ChangeListener listener;
+    private final ChangeListener listener;
 
     public SafePropertyListener(ChangeListener listener) {
         this.listener = listener;

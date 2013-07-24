@@ -9,7 +9,7 @@ import javax.swing.*;
 
 public class StateBuilder {
 
-    private ObservableState state;
+    private final ObservableState state;
 
     public StateBuilder(ObservableState state) {
         this.state = state;
