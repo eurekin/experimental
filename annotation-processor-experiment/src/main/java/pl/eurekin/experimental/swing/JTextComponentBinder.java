@@ -18,7 +18,7 @@ public class JTextComponentBinder {
         this.textComponent = textComponent;
     }
 
-    public <T, E extends Observable<T> & Getter<T>> void to(final PropertyAccessor<String, T> accessor,
+    public <T, E extends Observable<T>> void to(final PropertyAccessor<String, T> accessor,
                                                             final E object) {
         this.property = new Property<>(new Getter<String>() {
             @Override
@@ -34,10 +34,24 @@ public class JTextComponentBinder {
             }
         }
         );
-        bindPropertyToWidget();
+        bindToWidget(object);
         bindWidgetToProperty();
         copyFromPropertyToDocument();
     }
+
+    private <T, E extends Observable<T>> void bindToWidget(E object) {
+
+        // This madness is to properly handle the data race scenario
+        object.registerChangeListener(
+                new SimpleChangedPropertyListener<T>(
+                        new AnythingHappenedListener() {
+                            @Override
+                            public void onPropertyChanged() {
+                                basePropertyChanged();
+                            }
+                        }));
+    }
+
 
     public void to(Property<String> property) {
         this.property = property;
@@ -95,7 +109,7 @@ public class JTextComponentBinder {
 
         // This madness is to properly handle the data race scenario
         property.registerChangeListener(
-                new SimpleChangedPropertyListener(
+                new SimpleChangedPropertyListener<String>(
                         new AnythingHappenedListener() {
                             @Override
                             public void onPropertyChanged() {

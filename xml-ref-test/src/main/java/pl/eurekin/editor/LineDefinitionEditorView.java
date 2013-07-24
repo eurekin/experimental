@@ -124,12 +124,13 @@ public class LineDefinitionEditorView {
 
                 // Since there is no real connection between the selected object and the one edited
                 // in the text field, the table has to be notified of any change
-                model.nameProperty.registerChangeListener(new SimpleChangedPropertyListener(new AnythingHappenedListener() {
-                    @Override
-                    public void onPropertyChanged() {
-                        backingList.changed();
-                    }
-                }));
+                model.nameProperty.registerChangeListener(
+                        new SimpleChangedPropertyListener<String>(new AnythingHappenedListener() {
+                            @Override
+                            public void onPropertyChanged() {
+                                backingList.changed();
+                            }
+                        }));
             }
         });
 

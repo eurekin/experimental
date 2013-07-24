@@ -3,7 +3,7 @@ package pl.eurekin.experimental;
 /**
 * @author greg.matoga@gmail.com
 */
-public class SimpleChangedPropertyListener implements ChangedPropertyListener<String> {
+public class SimpleChangedPropertyListener<T> implements ChangedPropertyListener<T> {
     public int counter;
     public final AnythingHappenedListener listener;
 
@@ -18,7 +18,7 @@ public class SimpleChangedPropertyListener implements ChangedPropertyListener<St
     }
 
     @Override
-    public void propertyChanged(String oldValue, String newValue) {
+    public void propertyChanged(T oldValue, T newValue) {
     }
 
     @Override

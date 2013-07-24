@@ -67,6 +67,6 @@ public class ObservableInterpreterAdapter<I, O>
 
     @Override
     public O get() {
-        return null;
+        return interpreter.interpret(observableInput.get());
     }
 }
