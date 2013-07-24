@@ -24,7 +24,7 @@ public class SimpleState extends StatelessObservableState {
     }
 
     @Override
-    public boolean value() {
+    public Boolean get() {
         return state;
     }
 }

@@ -19,7 +19,7 @@ public class ObservableStateInterpreterAdapter<I>
     }
 
     @Override
-    public boolean value() {
+    public Boolean get() {
         return lastKnownValue;
     }
 }

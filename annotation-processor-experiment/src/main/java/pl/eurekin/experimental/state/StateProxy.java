@@ -41,8 +41,8 @@ public class StateProxy implements ObservableState {
         changeSupport.firePropertyChangeEvent(oldValue, newValue);
     }
 
-    public boolean value() {
-        return base.value();
+    public Boolean get() {
+        return base.get();
     }
 
     public void registerChangeListener(ChangedPropertyListener<Boolean> listener) {

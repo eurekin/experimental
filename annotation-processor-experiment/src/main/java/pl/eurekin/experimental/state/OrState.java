@@ -8,6 +8,6 @@ public class OrState extends DerivedState {
 
     @Override
     protected boolean value(ObservableState... baseStates) {
-        return baseStates[0].value() || baseStates[1].value();
+        return baseStates[0].get() || baseStates[1].get();
     }
 }

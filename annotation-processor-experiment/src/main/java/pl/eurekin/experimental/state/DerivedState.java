@@ -33,17 +33,17 @@ public abstract class DerivedState extends StatelessObservableState {
     protected abstract boolean value(ObservableState... baseStates);
 
     void initializeStartValue() {
-        lastValue = value();
+        lastValue = get();
     }
 
     @Override
-    public boolean value() {
+    public Boolean get() {
         return value(baseStates);
     }
 
     void update() {
         boolean oldValue = lastValue;
-        boolean newValue = value();
+        boolean newValue = get();
         lastValue = newValue;
         notifyOfStateChange(oldValue, newValue);
     }

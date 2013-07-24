@@ -49,4 +49,9 @@ public class SelectionModelAdapter implements Observable<Integer[]> {
     public void unregisterChangeListener(ChangedPropertyListener<Integer[]> listener) {
         changeSupport.unregisterListener(listener);
     }
+
+    @Override
+    public Integer[] get() {
+        return selection();
+    }
 }

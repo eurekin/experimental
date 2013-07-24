@@ -167,4 +167,9 @@ public class ObservableListAdapter<T> implements ObservableList<T> {
     public void unregisterChangeListener(ChangedPropertyListener<List<T>> listener) {
         changeSupport.unregisterListener(listener);
     }
+
+    @Override
+    public List<T> get() {
+        return delegateList;
+    }
 }

@@ -24,6 +24,6 @@ public class ActivateAction {
                 throw new UnsupportedOperationException("not implemented");
             }
         });
-        actionToUpdate.setEnabled(state.value());
+        actionToUpdate.setEnabled(state.get());
     }
 }

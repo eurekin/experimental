@@ -20,11 +20,11 @@ public class ActivateButton {
                         onAct();
                     }
                 }));
-        buttonToUpdate.setEnabled(observableState.value());
+        buttonToUpdate.setEnabled(observableState.get());
     }
 
     private void onAct() {
-        this.buttonToUpdate.setEnabled(observableState.value());
+        this.buttonToUpdate.setEnabled(observableState.get());
     }
 
     public class ActionOnButtonExistException extends RuntimeException {

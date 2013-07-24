@@ -8,7 +8,7 @@ public class AndState extends DerivedState {
 
     @Override
     public boolean value(ObservableState ... states) {
-        return states[0].value() && states[1].value();
+        return states[0].get() && states[1].get();
     }
 
 }

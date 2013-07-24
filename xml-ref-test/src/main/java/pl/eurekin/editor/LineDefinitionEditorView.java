@@ -87,7 +87,7 @@ public class LineDefinitionEditorView {
         final ObservableState singleTableItemSelectedState = new SingleTableItemSelectedState(observableSelectionModel);
         SelectedObjectsAdapter<Field> selectedObjectsAdapter = new SelectedObjectsAdapter<>(observableSelectionModel, backingList);
         Interpreter<List<Field>, Field> selectedFieldInterpreter = new FirstItemFromList<>();
-        ObservableInterpreterAdapter selectedObject = new ObservableInterpreterAdapter(selectedObjectsAdapter, selectedFieldInterpreter);
+        ObservableInterpreterAdapter<List<Field>, Field> selectedObject = new ObservableInterpreterAdapter<>(selectedObjectsAdapter, selectedFieldInterpreter);
 
 
         ObservableState firstTableItemSelected = new ObservableStateInterpreterAdapter<>(observableSelectionModel, new Interpreter<Integer[], Boolean>() {

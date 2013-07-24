@@ -6,7 +6,7 @@ import pl.eurekin.experimental.Observable;
 import pl.eurekin.experimental.StatelessPropertyChangeSupport;
 
 public class ObservableInterpreterAdapter<I, O>
-        implements Observable<O>, Getter<O> {
+        implements Observable<O> {
 
     private final Observable<I> observableInput;
     private final Interpreter<I, O> interpreter;

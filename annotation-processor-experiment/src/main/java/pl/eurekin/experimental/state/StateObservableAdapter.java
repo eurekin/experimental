@@ -53,7 +53,7 @@ public class StateObservableAdapter implements ObservableState {
     }
 
     @Override
-    public boolean value() {
+    public Boolean get() {
         return changeSupport.getValue();
     }
 }

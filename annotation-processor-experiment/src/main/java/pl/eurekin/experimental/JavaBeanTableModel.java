@@ -7,7 +7,7 @@ import java.util.List;
 public class JavaBeanTableModel<T> extends AbstractTableModel {
 
     private List<T> backingList;
-    private List<JavaBeanColumnModel> columnModel;
+    private List<JavaBeanColumnModel<?, T>> columnModel;
 
     public JavaBeanTableModel(ObservableList<T> test) {
         columnModel = new ArrayList<>();
@@ -55,17 +55,17 @@ public class JavaBeanTableModel<T> extends AbstractTableModel {
         return columnModel.get(columnIndex).getFrom(backingList.get(rowIndex));
     }
 
-    public void addColumn(PropertyAccessor<?, T> length_property, String name) {
-        columnModel.add(new JavaBeanColumnModel<T>(length_property, name));
+    public <E> void addColumn(PropertyAccessor<E, T> length_property, String name) {
+        columnModel.add(new JavaBeanColumnModel<>(length_property, name));
     }
 
-    private class JavaBeanColumnModel<T> {
+    private class JavaBeanColumnModel<E, T> {
 
 
-        private final PropertyAccessor<?, T> propertyAccessor;
+        private final PropertyAccessor<E, T> propertyAccessor;
         private final String name;
 
-        public JavaBeanColumnModel(PropertyAccessor<?, T> propertyAccessor, String name) {
+        public JavaBeanColumnModel(PropertyAccessor<E, T> propertyAccessor, String name) {
             this.propertyAccessor = propertyAccessor;
             this.name = name;
         }
@@ -74,7 +74,7 @@ public class JavaBeanTableModel<T> extends AbstractTableModel {
             return name;
         }
 
-        public Object getFrom(T o) {
+        public E getFrom(T o) {
             return propertyAccessor.get(o);
         }
     }

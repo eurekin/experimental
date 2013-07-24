@@ -7,6 +7,6 @@ public class NegateState extends DerivedState {
     }
 
     public boolean value(ObservableState... states) {
-        return !states[0].value();
+        return !states[0].get();
     }
 }
