@@ -103,7 +103,15 @@ public class LineDefinitionEditorView {
             }
         });
 
-        bind(textField1).to(FieldViewModel.NAME_PROPERTY, selectedObject);
+        // bind(textField1).to(FieldViewModel.NAME_PROPERTY, selectedObject);
+
+        // prototype for automatic binding
+        FieldViewModel model = standardViewModelConverterFor(FieldViewModel.factory(), selectedObject.get());
+
+        FieldViewModel selectedObjectFromTable = null;
+        bind(textField1).to(model.nameProperty);
+        // prototype end
+
         when(singleTableItemSelectedState).activate(deleteButton);
         when(singleTableItemSelectedState).and(not(firstTableItemSelected)).activate(upButton);
         when(singleTableItemSelectedState).and(not(lastTableItemSelected)).activate(downButton);
@@ -134,6 +142,20 @@ public class LineDefinitionEditorView {
             }
         });
 
+    }
+
+    private <T, E extends ViewModel<T>> E standardViewModelConverterFor(ViewModelFactory<T, E> factory, T base) {
+        E viewModel = factory.newValueModel(base);
+        for(Observable observable : viewModel.allProperties())
+            observable.registerChangeListener(new SafePropertyListener<>(
+                    new SafePropertyListener.ChangeListener() {
+                        @Override
+                        public void act() {
+                            System.out.println("changed - probably the table should be updated");
+                        }
+                    }
+            ));
+        return viewModel;
     }
 
     private Runnable getFieldViewModel() {
