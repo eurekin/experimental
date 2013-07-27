@@ -5,7 +5,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 
-public class ObservableListAdapter<T> implements ObservableList<T> {
+public class ObservableListAdapter<T> implements ObservableList<T>, ExternallyUpdatable {
 
     private final List<T> delegateList;
     private final StatelessPropertyChangeSupport<List<T>> changeSupport = new StatelessPropertyChangeSupport<>();
@@ -20,6 +20,7 @@ public class ObservableListAdapter<T> implements ObservableList<T> {
         return add;
     }
 
+    @Override
     public void changed() {
         changeSupport.beginNotifying();
         changeSupport.firePropertyChangeEvent(null, this);

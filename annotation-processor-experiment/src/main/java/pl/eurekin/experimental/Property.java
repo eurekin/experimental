@@ -13,6 +13,11 @@ public class Property<T> implements Observable<T> {
 
     private final PropertyModel backingModel;
 
+    public void signalExternalUpdate() {
+        // TODO A hack
+        set(get());
+    }
+
     public T get() {
         return backingModel.getValue();
     }

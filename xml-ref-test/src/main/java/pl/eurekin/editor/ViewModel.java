@@ -1,12 +1,15 @@
 package pl.eurekin.editor;
 
-import pl.eurekin.experimental.Observable;
+import pl.eurekin.experimental.Property;
 
 /**
  * @author greg.matoga@gmail.com
  */
 public interface ViewModel<T> {
 
+    T base();
 
-    Observable[] allProperties();
+    void set(T newBase);
+
+    Property<?>[] allProperties();
 }

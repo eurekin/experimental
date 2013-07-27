@@ -8,6 +8,10 @@
     <artifactId>xml-def-test</artifactId>
     <version>1.0-SNAPSHOT</version>
 
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
     <repositories>
         <repository>
             <id>oss.sonatype.org</id>
@@ -24,17 +28,17 @@
         </dependency>
 
         <dependency>
-
             <groupId>pl.eurekin.experiments</groupId>
             <artifactId>annotation-processor-experiment</artifactId>
             <version>1.0-SNAPSHOT</version>
-
         </dependency>
+
         <dependency>
             <groupId>com.intellij</groupId>
             <artifactId>javac2</artifactId>
             <version>6.0.3</version>
         </dependency>
+
         <dependency>
             <groupId>com.intellij</groupId>
             <artifactId>forms_rt</artifactId>
@@ -42,12 +46,42 @@
         </dependency>
     </dependencies>
 
+    <profiles>
+        <profile>
+            <id>run</id>
+            <build>
+                <defaultGoal>verify</defaultGoal>
+                <plugins>
+
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>exec-maven-plugin</artifactId>
+                        <version>1.2.1</version>
+                        <executions>
+                            <execution>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>java</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+
+                        <configuration>
+                            <mainClass>pl.eurekin.editor.LineDefinitionEditorView</mainClass>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+
+        </profile>
+    </profiles>
 
     <build>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
+                <version>2.4</version>
                 <configuration>
                     <archive>
                         <manifest>
@@ -62,6 +96,7 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>ideauidesigner-maven-plugin</artifactId>
+                <version>1.0-beta-1</version>
                 <executions>
                     <execution>
                         <goals>
@@ -76,22 +111,6 @@
                 </configuration>
             </plugin>
 
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>exec-maven-plugin</artifactId>
-                <version>1.2.1</version>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>java</goal>
-                        </goals>
-                    </execution>
-                </executions>
-
-                <configuration>
-                    <mainClass>pl.eurekin.editor.LineDefinitionEditorView</mainClass>
-                </configuration>
-            </plugin>
 
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -100,12 +119,12 @@
                 <configuration>
                     <source>1.7</source>
                     <target>1.7</target>
-                    <verbose>true</verbose>
+                    <verbose>false</verbose>
                     <showWarnings>true</showWarnings>
                     <forceJavacCompilerUse/>
                     <compilerArguments>
-                        <XprintProcessorInfo/>
-                        <XprintRounds/>
+                        <!--<XprintProcessorInfo/>-->
+                        <!--<XprintRounds/>-->
                     </compilerArguments>
                 </configuration>
             </plugin>

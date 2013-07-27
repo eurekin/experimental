@@ -30,8 +30,8 @@ public class LineDefinitionEditorView {
     private JButton deleteButton;
     private JButton upButton;
     private JButton downButton;
-    private JTextField textField1;
-    private JButton editButton;
+    private JTextField textField;
+    private JPanel cardPanel;
     private ObservableListAdapter<Field> backingList;
     private ConstantLineWidthTextFileDefinition domainModelObject;
 
@@ -77,14 +77,14 @@ public class LineDefinitionEditorView {
 
         backingList = new ObservableListAdapter<>(domainModelObject.fields);
         JavaBeanTableModel<Field> tableModel = new JavaBeanTableModel<>(backingList);
-        tableModel.addColumn(FieldViewModel.BEGIN_PROPERTY, "begin");
-        tableModel.addColumn(FieldViewModel.END_PROPERTY, "end");
-        tableModel.addColumn(FieldViewModel.LENGTH_PROPERTY, "length");
-        tableModel.addColumn(FieldViewModel.NAME_PROPERTY, "name");
+        tableModel.addColumn(FieldViewModelPROTOTYPE.BEGIN_PROPERTY, "begin");
+        tableModel.addColumn(FieldViewModelPROTOTYPE.END_PROPERTY, "end");
+        tableModel.addColumn(FieldViewModelPROTOTYPE.LENGTH_PROPERTY, "length");
+        tableModel.addColumn(FieldViewModelPROTOTYPE.NAME_PROPERTY, "name");
         table1.setModel(tableModel);
 
         final SelectionModelAdapter observableSelectionModel = new SelectionModelAdapter(table1);
-        final ObservableState singleTableItemSelectedState = new SingleTableItemSelectedState(observableSelectionModel);
+        final ObservableState singleTableItemSelected = new SingleTableItemSelectedState(observableSelectionModel);
         SelectedObjectsAdapter<Field> selectedObjectsAdapter = new SelectedObjectsAdapter<>(observableSelectionModel, backingList);
         Interpreter<List<Field>, Field> selectedFieldInterpreter = new FirstItemFromList<>();
         ObservableInterpreterAdapter<List<Field>, Field> selectedObject = new ObservableInterpreterAdapter<>(selectedObjectsAdapter, selectedFieldInterpreter);
@@ -103,64 +103,87 @@ public class LineDefinitionEditorView {
             }
         });
 
-        // bind(textField1).to(FieldViewModel.NAME_PROPERTY, selectedObject);
+        // bind(textField).to(FieldViewModelPROTOTYPE.NAME_PROPERTY, selectedObject);
 
         // prototype for automatic binding
-        FieldViewModel model = standardViewModelConverterFor(FieldViewModel.factory(), selectedObject.get());
+        FieldViewModelPROTOTYPE selectedObjectFromTable = standardViewModelConverterFor(FieldViewModelPROTOTYPE.factory(), selectedObject, tableModel);
+        // works!!!
 
-        FieldViewModel selectedObjectFromTable = null;
-        bind(textField1).to(model.nameProperty);
+
+        bind(textField).to(selectedObjectFromTable.nameProperty);
+        when(singleTableItemSelected).enable(textField);
+        when(singleTableItemSelected).enable(textField);
+
+        // visual null value handling
+        when(singleTableItemSelected).showCard(cardPanel, "edit");
+        when(not(singleTableItemSelected)).showCard(cardPanel, "null");
+        String initialCardName = "null";
+        showCard(initialCardName);
         // prototype end
 
-        when(singleTableItemSelectedState).activate(deleteButton);
-        when(singleTableItemSelectedState).and(not(firstTableItemSelected)).activate(upButton);
-        when(singleTableItemSelectedState).and(not(lastTableItemSelected)).activate(downButton);
+        when(singleTableItemSelected).activate(deleteButton);
+        when(singleTableItemSelected).and(not(firstTableItemSelected)).activate(upButton);
+        when(singleTableItemSelected).and(not(lastTableItemSelected)).activate(downButton);
 
+        // prototype for action binding
         upButton.addActionListener(new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                getFieldViewModel().run();
+                getSampleAction().run();
                 backingList.changed();
             }
         });
-        // TODO manual mock, implement declarative version
-        editButton.addActionListener(new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                FieldViewModel model = new FieldViewModel(backingList.get(table1.getSelectedRow()));
-                bind(textField1).to(model.nameProperty);
-
-                // Since there is no real connection between the selected object and the one edited
-                // in the text field, the table has to be notified of any change
-                model.nameProperty.registerChangeListener(
-                        new SimpleChangedPropertyListener<String>(new AnythingHappenedListener() {
-                            @Override
-                            public void onPropertyChanged() {
-                                backingList.changed();
-                            }
-                        }));
-            }
-        });
-
+        // prototype end
     }
 
-    private <T, E extends ViewModel<T>> E standardViewModelConverterFor(ViewModelFactory<T, E> factory, T base) {
-        E viewModel = factory.newValueModel(base);
-        for(Observable observable : viewModel.allProperties())
+    public void showCard(String cardName) {
+        CardLayout layout = (CardLayout) cardPanel.getLayout();
+        layout.show(cardPanel, cardName);
+    }
+
+    private <T, E extends ViewModel<T>, O extends Observable<T>> E standardViewModelConverterFor(
+            ViewModelFactory<T, E> factory, final O base, final JavaBeanTableModel<?> toChange) {
+
+        final E viewModel = factory.newValueModel(base.get());
+        final T initialBaseValue = viewModel.base();
+
+
+        // TODO handle unchecked here
+        for (Property observable : viewModel.allProperties())
             observable.registerChangeListener(new SafePropertyListener<>(
                     new SafePropertyListener.ChangeListener() {
                         @Override
                         public void act() {
-                            System.out.println("changed - probably the table should be updated");
+                            toChange.fireTableDataChanged();
                         }
                     }
             ));
+
+
+        // Selected object => ViewModel ( => JTextArea.document )
+        base.registerChangeListener(new SafePropertyListener<T>(new SafePropertyListener.ChangeListener() {
+            @Override
+            public void act() {
+                if (base.get() != null)
+                    viewModel.set(base.get());
+                else
+                    viewModel.set(initialBaseValue);
+
+                // base.get() = null
+                //
+                // This is a very interesting case.
+                // This cannot happen in the initalization phase and
+                // thus the dummy NullObject from Factory won't be used.
+                //
+            }
+        }));
+
         return viewModel;
     }
 
-    private Runnable getFieldViewModel() {
+    private Runnable getSampleAction() {
         // TODO implement a delegating fieldViewModel, which can be used as selected table item
-        return new FieldViewModel(backingList.get(table1.getSelectedRow())).actionAction;
+        return new FieldViewModelPROTOTYPE(backingList.get(table1.getSelectedRow())).actionAction;
     }
 
 }
