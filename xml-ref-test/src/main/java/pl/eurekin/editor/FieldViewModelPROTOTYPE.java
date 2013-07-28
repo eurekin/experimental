@@ -79,7 +79,16 @@ public class FieldViewModelPROTOTYPE implements ViewModel<Field> {
             new TemplateSetter<Integer, Field>() {@Override public void set(Field base, Integer newValue) { base.end = newValue; }});
 
 
-
-    public Runnable actionAction = new Runnable() {
+    public Runnable shrinkAction = new Runnable() {
+        @Override public void run() { base.shrink(); }};
+    public Runnable actionnnnnnAction = new Runnable() {
         @Override public void run() { base.actionnnnnn(); }};
+
+    public Runnable removeAction = new Runnable() {
+        @Override public void run() { base.remove(); }};
+    public Runnable moveUpAction = new Runnable() {
+        @Override public void run() { base.moveUp(); }};
+    public Runnable moveDownAction = new Runnable() {
+        @Override public void run() { base.moveDown(); }};
+
 }

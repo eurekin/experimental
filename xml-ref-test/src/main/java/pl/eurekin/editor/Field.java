@@ -17,6 +17,10 @@ public class Field {
     Integer end;
     private ConstantLineWidthTextFileDefinition parent;
 
+    public void shrink() {
+        this.length -= 1;
+        parent.recalculateIndices();
+    }
 
     public void actionnnnnn() {
         this.length += 1;
@@ -25,6 +29,18 @@ public class Field {
 
     public void action(int Input) {
         System.out.println("Action fired!!!");
+    }
+
+    public void remove() {
+        parent.remove(this);
+    }
+
+    public void moveUp() {
+        parent.moveUp(this);
+    }
+
+    public void moveDown() {
+        parent.moveDown(this);
     }
 
     public int action(int input1, int input2) {

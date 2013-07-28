@@ -17,8 +17,9 @@ public class StateBuilder {
         this.state = state;
     }
 
-    public void activate(JButton deleteButton) {
+    public StateBuilder activate(JButton deleteButton) {
         new ActivateButton(state, deleteButton);
+        return this;
     }
 
     public StateBuilder and(ObservableState anotherState) {

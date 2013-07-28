@@ -5,14 +5,16 @@ import pl.eurekin.experimental.state.Interpreter;
 import pl.eurekin.experimental.state.ObservableInterpreterAdapter;
 import pl.eurekin.experimental.state.ObservableState;
 import pl.eurekin.experimental.state.ObservableStateInterpreterAdapter;
-import pl.eurekin.experimental.swing.JTextComponentBinder;
-import pl.eurekin.experimental.swing.SelectionModelAdapter;
-import pl.eurekin.experimental.swing.SingleTableItemSelectedState;
+import pl.eurekin.experimental.swing.*;
+import pl.eurekin.experimental.swing.selection.SelectionRestore;
+import pl.eurekin.experimental.swing.selection.SelectionStore;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -28,10 +30,14 @@ public class LineDefinitionEditorView {
     private JPanel panel1;
     private JButton newButton;
     private JButton deleteButton;
-    private JButton upButton;
+    private JButton growButton;
     private JButton downButton;
     private JTextField textField;
     private JPanel cardPanel;
+    private JButton saveButton;
+    private JButton loadButton;
+    private JButton upButton;
+    private JButton shrinkButton;
     private ObservableListAdapter<Field> backingList;
     private ConstantLineWidthTextFileDefinition domainModelObject;
 
@@ -85,7 +91,7 @@ public class LineDefinitionEditorView {
 
         final SelectionModelAdapter observableSelectionModel = new SelectionModelAdapter(table1);
         final ObservableState singleTableItemSelected = new SingleTableItemSelectedState(observableSelectionModel);
-        SelectedObjectsAdapter<Field> selectedObjectsAdapter = new SelectedObjectsAdapter<>(observableSelectionModel, backingList);
+        final SelectedObjectsAdapter<Field> selectedObjectsAdapter = new SelectedObjectsAdapter<>(observableSelectionModel, backingList);
         Interpreter<List<Field>, Field> selectedFieldInterpreter = new FirstItemFromList<>();
         ObservableInterpreterAdapter<List<Field>, Field> selectedObject = new ObservableInterpreterAdapter<>(selectedObjectsAdapter, selectedFieldInterpreter);
 
@@ -106,7 +112,8 @@ public class LineDefinitionEditorView {
         // bind(textField).to(FieldViewModelPROTOTYPE.NAME_PROPERTY, selectedObject);
 
         // prototype for automatic binding
-        FieldViewModelPROTOTYPE selectedObjectFromTable = standardViewModelConverterFor(FieldViewModelPROTOTYPE.factory(), selectedObject, tableModel);
+        final FieldViewModelPROTOTYPE selectedObjectFromTable =
+                standardViewModelConverterFor(FieldViewModelPROTOTYPE.factory(), selectedObject, tableModel);
         // works!!!
 
 
@@ -121,19 +128,36 @@ public class LineDefinitionEditorView {
         showCard(initialCardName);
         // prototype end
 
-        when(singleTableItemSelected).activate(deleteButton);
+        when(singleTableItemSelected).activate(deleteButton).activate(growButton).activate(shrinkButton).activate(deleteButton);
         when(singleTableItemSelected).and(not(firstTableItemSelected)).activate(upButton);
         when(singleTableItemSelected).and(not(lastTableItemSelected)).activate(downButton);
 
-        // prototype for action binding
-        upButton.addActionListener(new AbstractAction() {
+        Runnable refreshList = new Runnable() {
+
             @Override
-            public void actionPerformed(ActionEvent e) {
-                getSampleAction().run();
+            public void run() {
                 backingList.changed();
             }
-        });
+        };
+        selectedFields = new ArrayList<>();
+        storeSelection = new SelectionStore<>(selectedObjectsAdapter, selectedFields);
+        restoreSelection = new SelectionRestore<>(backingList, table1.getSelectionModel(), selectedFields);
+
+        deleteButton.addActionListener(selectionSafeAction(selectedObjectFromTable.removeAction, refreshList));
+        shrinkButton.addActionListener(selectionSafeAction(selectedObjectFromTable.shrinkAction, refreshList));
+        growButton.addActionListener(selectionSafeAction(selectedObjectFromTable.actionnnnnnAction, refreshList));
+        upButton.addActionListener(selectionSafeAction(selectedObjectFromTable.moveUpAction, refreshList));
+        downButton.addActionListener(selectionSafeAction(selectedObjectFromTable.moveDownAction, refreshList));
         // prototype end
+    }
+
+    private DelegateAction selectionSafeAction(Runnable someAction, Runnable refreshList) {
+        return new DelegateAction(new SequentialComposedRunnable(new SequentialComposedRunnable(new SequentialComposedRunnable(
+                storeSelection,
+                someAction),
+                refreshList),
+                restoreSelection)
+        );
     }
 
     public void showCard(String cardName) {
@@ -181,9 +205,8 @@ public class LineDefinitionEditorView {
         return viewModel;
     }
 
-    private Runnable getSampleAction() {
-        // TODO implement a delegating fieldViewModel, which can be used as selected table item
-        return new FieldViewModelPROTOTYPE(backingList.get(table1.getSelectedRow())).actionAction;
-    }
+    private List<WeakReference<Field>> selectedFields;
+    private Runnable storeSelection;
+    private Runnable restoreSelection;
 
 }

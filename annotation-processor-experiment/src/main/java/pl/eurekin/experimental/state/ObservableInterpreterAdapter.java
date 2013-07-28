@@ -46,7 +46,11 @@ public class ObservableInterpreterAdapter<I, O>
     }
 
     private void update(I oldValue, I newValue) {
-        O oldInterpretedValue = interpreter.interpret(oldValue);
+        O oldInterpretedValue = interpreter.interpret(newValue); // TODO dangerous in case of mutation
+        // if the object from table is being removed, it's not going to evaluate
+        // to any sensible value during update! Should've used statefulPropertyChange
+        // support instead!
+
         O newInterpretedValue = interpreter.interpret(newValue);
         updateInterpreted(oldInterpretedValue, newInterpretedValue);
     }

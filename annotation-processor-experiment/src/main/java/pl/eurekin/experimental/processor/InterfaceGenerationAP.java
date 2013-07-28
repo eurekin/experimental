@@ -139,8 +139,12 @@ public class InterfaceGenerationAP extends AbstractProcessor {
                         boolean qualifiesForActionGeneration = isMethod && voidParameterType && voidReturnType;
                         if (qualifiesForActionGeneration) {
                             final ExecutableType executableType = (ExecutableType) element.asType();
-                            bw.append("    public Runnable actionAction = new Runnable() {\n" +
-                                    "        @Override public void run() { base.$$action(); }};"
+
+                            final String actionTemplate =
+                                    "    public Runnable $$actionAction = new Runnable() {\n" +
+                                    "        @Override public void run() { base.$$action(); }};";
+
+                            bw.append(actionTemplate
                                             .replaceAll(quote("$$action"), element.getSimpleName().toString()));
                         }
                     }
