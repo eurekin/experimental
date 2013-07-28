@@ -1,1 +1,1 @@
-.\mvnw -f module-run/pom.xml -pl ../xml-ref-test -Prun
+.\mvnw -f module-run/pom.xml -Prun
