@@ -1,0 +1,2 @@
+#!/bin/sh
+./mvnw -f module-run/pom.xml -Prun
