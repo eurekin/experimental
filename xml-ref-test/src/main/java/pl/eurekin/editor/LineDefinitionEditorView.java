@@ -86,10 +86,10 @@ public class LineDefinitionEditorView {
 
         backingList = new ObservableListAdapter<Field>(domainModelObject.fields);
         JavaBeanTableModel<Field> tableModel = new JavaBeanTableModel<Field>(backingList);
-        tableModel.addColumn(FieldViewModelPROTOTYPE.BEGIN_PROPERTY, "begin");
-        tableModel.addColumn(FieldViewModelPROTOTYPE.END_PROPERTY, "end");
-        tableModel.addColumn(FieldViewModelPROTOTYPE.LENGTH_PROPERTY, "length");
-        tableModel.addColumn(FieldViewModelPROTOTYPE.NAME_PROPERTY, "name");
+        tableModel.addColumn(FieldViewModel.BEGIN_PROPERTY, "begin");
+        tableModel.addColumn(FieldViewModel.END_PROPERTY, "end");
+        tableModel.addColumn(FieldViewModel.LENGTH_PROPERTY, "length");
+        tableModel.addColumn(FieldViewModel.NAME_PROPERTY, "name");
         table1.setModel(tableModel);
 
         final SelectionModelAdapter observableSelectionModel = new SelectionModelAdapter(table1);
@@ -112,11 +112,12 @@ public class LineDefinitionEditorView {
             }
         });
 
-        // bind(textField).to(FieldViewModelPROTOTYPE.NAME_PROPERTY, selectedObject);
+        // bind(textField).to(FieldViewModel.NAME_PROPERTY, selectedObject);
 
         // prototype for automatic binding
-        final FieldViewModelPROTOTYPE selectedObjectFromTable =
-                standardViewModelConverterFor(FieldViewModelPROTOTYPE.factory(), selectedObject, tableModel);
+        ViewModelFactory<Field, FieldViewModel> factory  = new FieldViewModelFactory();
+        final FieldViewModel selectedObjectFromTable =
+                standardViewModelConverterFor(factory, selectedObject, tableModel);
         // works!!!
 
 
