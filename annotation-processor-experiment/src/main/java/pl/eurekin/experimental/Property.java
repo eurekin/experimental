@@ -36,7 +36,7 @@ public class Property<T> implements Observable<T> {
         propertyChangeSupport.unregisterListener(listener);
     }
 
-    final StatelessPropertyChangeSupport<T> propertyChangeSupport = new StatelessPropertyChangeSupport<>();
+    final StatelessPropertyChangeSupport<T> propertyChangeSupport = new StatelessPropertyChangeSupport<T>();
 
     private class PropertyModel {
         T value;

@@ -4,7 +4,7 @@ import pl.eurekin.experimental.ChangedPropertyListener;
 import pl.eurekin.experimental.StatelessPropertyChangeSupport;
 
 public abstract class StatelessObservableState implements ObservableState {
-    private final StatelessPropertyChangeSupport<Boolean> changeSupport = new StatelessPropertyChangeSupport<>();
+    private final StatelessPropertyChangeSupport<Boolean> changeSupport = new StatelessPropertyChangeSupport<Boolean>();
 
     public void registerChangeListener(ChangedPropertyListener<Boolean> listener) {
         changeSupport.registerNewListener(listener);

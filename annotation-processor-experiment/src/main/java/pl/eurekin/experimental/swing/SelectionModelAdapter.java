@@ -23,7 +23,7 @@ public class SelectionModelAdapter implements Observable<Integer[]> {
                 update();
             }
         });
-        changeSupport = new StatefulPropertyChangeSupport<>(selection());
+        changeSupport = new StatefulPropertyChangeSupport<Integer[]>(selection());
     }
 
     private void update() {
@@ -34,7 +34,7 @@ public class SelectionModelAdapter implements Observable<Integer[]> {
 
     private Integer[] selection() {
         int[] selectedViewRows = table.getSelectedRows();
-        ArrayList<Integer> modelRows = new ArrayList<>(selectedViewRows.length);
+        ArrayList<Integer> modelRows = new ArrayList<Integer>(selectedViewRows.length);
         for (Integer viewRow : selectedViewRows)
             modelRows.add(table.convertRowIndexToModel(viewRow));
         return modelRows.toArray(new Integer[modelRows.size()]);

@@ -17,7 +17,7 @@ public class SelectedObjectsAdapter<T>
             Observable<Integer[]> observableSelectionModel,
             ObservableList<T> backingList) {
         super(observableSelectionModel,
-                new IntegerToObjectInterpreter<>(backingList));
+                new IntegerToObjectInterpreter<T>(backingList));
     }
 
     private static class IntegerToObjectInterpreter<T> implements Interpreter<Integer[], List<T>> {
@@ -29,7 +29,7 @@ public class SelectedObjectsAdapter<T>
 
         @Override
         public List<T> interpret(Integer[] input) {
-            List<T> objects = new ArrayList<>(input.length);
+            List<T> objects = new ArrayList<T>(input.length);
 
             for (Integer i : input)
                 objects.add(observableList.get(i));

@@ -11,7 +11,7 @@ public class StateObservableAdapter implements ObservableState {
 
     public StateObservableAdapter(Observable<Boolean> observable, boolean initialValue) {
         this.observable = observable;
-        changeSupport = new StatefulPropertyChangeSupport<>(initialValue);
+        changeSupport = new StatefulPropertyChangeSupport<Boolean>(initialValue);
         observable.registerChangeListener(new ChangedPropertyListener<Boolean>() {
             @Override
             public void beginNotifying() {

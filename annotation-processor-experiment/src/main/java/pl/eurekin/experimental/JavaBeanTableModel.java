@@ -11,7 +11,7 @@ public class JavaBeanTableModel<T> extends AbstractTableModel {
     private final List<JavaBeanColumnModel<?, T>> columnModel;
 
     public JavaBeanTableModel(ObservableList<T> test) {
-        columnModel = new ArrayList<>();
+        columnModel = new ArrayList<JavaBeanColumnModel<?, T>>();
         backingList = test;
         test.registerChangeListener(new ChangedPropertyListener<List<T>>() {
             @Override
@@ -66,7 +66,7 @@ public class JavaBeanTableModel<T> extends AbstractTableModel {
     }
 
     public <E> void addColumn(PropertyAccessor<E, T> length_property, String name) {
-        columnModel.add(new JavaBeanColumnModel<>(length_property, name));
+        columnModel.add(new JavaBeanColumnModel<E, T>(length_property, name));
     }
 
     private class JavaBeanColumnModel<E, T> {

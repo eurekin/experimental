@@ -27,8 +27,8 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="annotation-processor-experiment" target="1.7" />
-      <module name="xml-ref-test" target="1.7" />
+      <module name="annotation-processor-experiment" target="1.6" />
+      <module name="xml-ref-test" target="1.6" />
     </bytecodeTargetLevel>
   </component>
 </project>

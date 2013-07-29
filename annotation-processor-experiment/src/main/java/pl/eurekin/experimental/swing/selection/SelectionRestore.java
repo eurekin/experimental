@@ -24,7 +24,7 @@ public class SelectionRestore<T> implements Runnable {
 
     @Override
     public void run() {
-        List<Integer> ids = new ArrayList<>();
+        List<Integer> ids = new ArrayList<Integer>();
         for(WeakReference<T> field : selectedFields) {
             T fieldOrNull = field.get();
             if(fieldOrNull !=null)

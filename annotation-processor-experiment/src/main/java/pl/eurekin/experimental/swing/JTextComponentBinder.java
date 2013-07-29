@@ -20,7 +20,7 @@ public class JTextComponentBinder {
 
     public <T, E extends Observable<T>> void to(final PropertyAccessor<String, T> accessor,
                                                             final E object) {
-        this.property = new Property<>(new Getter<String>() {
+        this.property = new Property<String>(new Getter<String>() {
             @Override
             public String get() {
                 if (object.get() == null) return null;

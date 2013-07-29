@@ -10,7 +10,7 @@ public class ObservableInterpreterAdapter<I, O>
 
     private final Observable<I> observableInput;
     private final Interpreter<I, O> interpreter;
-    private final StatelessPropertyChangeSupport<O> changeSupport = new StatelessPropertyChangeSupport<>();
+    private final StatelessPropertyChangeSupport<O> changeSupport = new StatelessPropertyChangeSupport<O>();
 
     public ObservableInterpreterAdapter(Observable<I> observableInput, Interpreter<I, O> interpreter) {
         this.observableInput = observableInput;

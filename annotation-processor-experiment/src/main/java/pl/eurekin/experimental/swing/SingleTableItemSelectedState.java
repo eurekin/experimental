@@ -7,7 +7,7 @@ public class SingleTableItemSelectedState
         extends StateObservableAdapter {
 
     public SingleTableItemSelectedState(SelectionModelAdapter selectionModelAdapter) {
-        super(new ObservableInterpreterAdapter<>(
+        super(new ObservableInterpreterAdapter<Integer[], Boolean>(
                 selectionModelAdapter,
                 new SingleItemArrayInterpreter()),
                 false);

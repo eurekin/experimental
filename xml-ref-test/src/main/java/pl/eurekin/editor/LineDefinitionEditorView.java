@@ -81,8 +81,8 @@ public class LineDefinitionEditorView {
 
         domainModelObject = new ConstantLineWidthTextFileDefinition();
 
-        backingList = new ObservableListAdapter<>(domainModelObject.fields);
-        JavaBeanTableModel<Field> tableModel = new JavaBeanTableModel<>(backingList);
+        backingList = new ObservableListAdapter<Field>(domainModelObject.fields);
+        JavaBeanTableModel<Field> tableModel = new JavaBeanTableModel<Field>(backingList);
         tableModel.addColumn(FieldViewModelPROTOTYPE.BEGIN_PROPERTY, "begin");
         tableModel.addColumn(FieldViewModelPROTOTYPE.END_PROPERTY, "end");
         tableModel.addColumn(FieldViewModelPROTOTYPE.LENGTH_PROPERTY, "length");
@@ -91,18 +91,18 @@ public class LineDefinitionEditorView {
 
         final SelectionModelAdapter observableSelectionModel = new SelectionModelAdapter(table1);
         final ObservableState singleTableItemSelected = new SingleTableItemSelectedState(observableSelectionModel);
-        final SelectedObjectsAdapter<Field> selectedObjectsAdapter = new SelectedObjectsAdapter<>(observableSelectionModel, backingList);
-        Interpreter<List<Field>, Field> selectedFieldInterpreter = new FirstItemFromList<>();
-        ObservableInterpreterAdapter<List<Field>, Field> selectedObject = new ObservableInterpreterAdapter<>(selectedObjectsAdapter, selectedFieldInterpreter);
+        final SelectedObjectsAdapter<Field> selectedObjectsAdapter = new SelectedObjectsAdapter<Field>(observableSelectionModel, backingList);
+        Interpreter<List<Field>, Field> selectedFieldInterpreter = new FirstItemFromList<Field>();
+        ObservableInterpreterAdapter<List<Field>, Field> selectedObject = new ObservableInterpreterAdapter<List<Field>, Field>(selectedObjectsAdapter, selectedFieldInterpreter);
 
 
-        ObservableState firstTableItemSelected = new ObservableStateInterpreterAdapter<>(observableSelectionModel, new Interpreter<Integer[], Boolean>() {
+        ObservableState firstTableItemSelected = new ObservableStateInterpreterAdapter<Integer[]>(observableSelectionModel, new Interpreter<Integer[], Boolean>() {
             @Override
             public Boolean interpret(Integer[] selectedRows) {
                 return Arrays.asList(selectedRows).contains(0);
             }
         });
-        ObservableState lastTableItemSelected = new ObservableStateInterpreterAdapter<>(observableSelectionModel, new Interpreter<Integer[], Boolean>() {
+        ObservableState lastTableItemSelected = new ObservableStateInterpreterAdapter<Integer[]>(observableSelectionModel, new Interpreter<Integer[], Boolean>() {
             @Override
             public Boolean interpret(Integer[] selectedRows) {
                 return Arrays.asList(selectedRows).contains(table1.getRowCount() - 1);
@@ -139,9 +139,9 @@ public class LineDefinitionEditorView {
                 backingList.changed();
             }
         };
-        selectedFields = new ArrayList<>();
-        storeSelection = new SelectionStore<>(selectedObjectsAdapter, selectedFields);
-        restoreSelection = new SelectionRestore<>(backingList, table1.getSelectionModel(), selectedFields);
+        selectedFields = new ArrayList<WeakReference<Field>>();
+        storeSelection = new SelectionStore<Field>(selectedObjectsAdapter, selectedFields);
+        restoreSelection = new SelectionRestore<Field>(backingList, table1.getSelectionModel(), selectedFields);
 
         deleteButton.addActionListener(selectionSafeAction(selectedObjectFromTable.removeAction, refreshList));
         shrinkButton.addActionListener(selectionSafeAction(selectedObjectFromTable.shrinkAction, refreshList));
@@ -174,7 +174,7 @@ public class LineDefinitionEditorView {
 
         // TODO handle unchecked here
         for (Property observable : viewModel.allProperties())
-            observable.registerChangeListener(new SafePropertyListener<>(
+            observable.registerChangeListener(new SafePropertyListener<Object>(
                     new SafePropertyListener.ChangeListener() {
                         @Override
                         public void act() {

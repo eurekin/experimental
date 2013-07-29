@@ -12,7 +12,7 @@ public class ConstantLineWidthTextFileDefinition {
 
     @XmlElement(name = "field")
     final
-    List<Field> fields = new ArrayList<>();
+    List<Field> fields = new ArrayList<Field>();
 
     void recalculateIndices() {
         Field lastField = Field.BEFORE_FIRST;

@@ -7,7 +7,7 @@ public class StatefulObservableState implements ObservableState {
     private final StatefulPropertyChangeSupport<Boolean> changeSupport;
 
     public StatefulObservableState(Boolean initialValue) {
-        this.changeSupport = new StatefulPropertyChangeSupport<>(initialValue);
+        this.changeSupport = new StatefulPropertyChangeSupport<Boolean>(initialValue);
     }
 
     public void registerChangeListener(ChangedPropertyListener<Boolean> listener) {

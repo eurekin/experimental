@@ -10,7 +10,7 @@ public class StateProxy implements ObservableState {
 
     public StateProxy(ObservableState base) {
         this.base = base;
-        changeSupport = new StatelessPropertyChangeSupport<>();
+        changeSupport = new StatelessPropertyChangeSupport<Boolean>();
         base.registerChangeListener(new ChangedPropertyListener<Boolean>() {
             @Override
             public void beginNotifying() {
