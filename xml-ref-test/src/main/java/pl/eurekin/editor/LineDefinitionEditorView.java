@@ -8,6 +8,8 @@ import pl.eurekin.experimental.state.ObservableStateInterpreterAdapter;
 import pl.eurekin.experimental.swing.*;
 import pl.eurekin.experimental.swing.selection.SelectionRestore;
 import pl.eurekin.experimental.swing.selection.SelectionStore;
+import pl.eurekin.experimental.viewmodel.ViewModel;
+import pl.eurekin.experimental.viewmodel.ViewModelFactory;
 
 import javax.swing.*;
 import java.awt.*;
@@ -40,7 +42,8 @@ public class LineDefinitionEditorView {
     private JButton shrinkButton;
     private ObservableListAdapter<Field> backingList;
     private ConstantLineWidthTextFileDefinition domainModelObject;
-
+    private Runnable storeSelection;
+    private Runnable restoreSelection;
 
     public LineDefinitionEditorView() {
         newButton.addActionListener(new ActionListener() {
@@ -139,7 +142,7 @@ public class LineDefinitionEditorView {
                 backingList.changed();
             }
         };
-        selectedFields = new ArrayList<WeakReference<Field>>();
+        List<WeakReference<Field>> selectedFields = new ArrayList<WeakReference<Field>>();
         storeSelection = new SelectionStore<Field>(selectedObjectsAdapter, selectedFields);
         restoreSelection = new SelectionRestore<Field>(backingList, table1.getSelectionModel(), selectedFields);
 
@@ -165,6 +168,7 @@ public class LineDefinitionEditorView {
         layout.show(cardPanel, cardName);
     }
 
+    @SuppressWarnings("unchecked")
     private <T, E extends ViewModel<T>, O extends Observable<T>> E standardViewModelConverterFor(
             ViewModelFactory<T, E> factory, final O base, final JavaBeanTableModel<?> toChange) {
 
@@ -174,14 +178,15 @@ public class LineDefinitionEditorView {
 
         // TODO handle unchecked here
         for (Property observable : viewModel.allProperties())
-            observable.registerChangeListener(new SafePropertyListener<Object>(
-                    new SafePropertyListener.ChangeListener() {
-                        @Override
-                        public void act() {
-                            toChange.fireTableDataChanged();
-                        }
-                    }
-            ));
+            observable.registerChangeListener(
+                    new SafePropertyListener<Object>(
+                            new SafePropertyListener.ChangeListener() {
+                                @Override
+                                public void act() {
+                                    toChange.fireTableDataChanged();
+                                }
+                            }
+                    ));
 
 
         // Selected object => ViewModel ( => JTextArea.document )
@@ -196,7 +201,7 @@ public class LineDefinitionEditorView {
                 // base.get() = null
                 //
                 // This is a very interesting case.
-                // This cannot happen in the initalization phase and
+                // This cannot happen in the initialization phase and
                 // thus the dummy NullObject from Factory won't be used.
                 //
             }
@@ -204,9 +209,5 @@ public class LineDefinitionEditorView {
 
         return viewModel;
     }
-
-    private List<WeakReference<Field>> selectedFields;
-    private Runnable storeSelection;
-    private Runnable restoreSelection;
 
 }

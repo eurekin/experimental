@@ -18,9 +18,9 @@ public class SimpleState extends StatelessObservableState {
     public void set(boolean newValue) {
         boolean oldValue = state;
         state = newValue;
-        //super.onBeginNotifying();
+        super.onBeginNotifying();
         super.notifyOfStateChange(oldValue, newValue);
-        //super.onFinishNotifying();
+        super.onFinishNotifying();
     }
 
     @Override

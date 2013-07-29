@@ -14,6 +14,9 @@ import javax.tools.Diagnostic;
 import javax.tools.JavaFileObject;
 import java.io.BufferedWriter;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
 
 import static java.util.regex.Pattern.quote;
@@ -45,14 +48,19 @@ public class InterfaceGenerationAP extends AbstractProcessor {
                     PackageElement packageElement =
                             (PackageElement) classElement.getEnclosingElement();
 
-                    JavaFileObject jfo = null;
+                    JavaFileObject jfo = null, jfo2;
                     String classSuffix = "ViewModel";
+                    String factorySuffix = "ViewModelFactory";
                     Name baseClassName = classElement.getQualifiedName();
                     String generatedClassFQName = baseClassName + classSuffix;
-                    jfo = processingEnv.getFiler().createSourceFile(
-                            generatedClassFQName);
+                    String generatedFactoryFQName = baseClassName + factorySuffix;
+
+                    jfo = processingEnv.getFiler().createSourceFile(generatedClassFQName);
+                    jfo2 =  processingEnv.getFiler().createSourceFile(generatedFactoryFQName);
+
                     String generatedClassName = classElement.getSimpleName() + classSuffix;
                     BufferedWriter bw = new BufferedWriter(jfo.openWriter());
+                    BufferedWriter bw2 = new BufferedWriter(jfo2.openWriter());
 
 
                     // top of the file
@@ -62,29 +70,63 @@ public class InterfaceGenerationAP extends AbstractProcessor {
                     bw.newLine();
                     bw.newLine();
                     bw.newLine();
-                    bw.append("import pl.eurekin.experimental.Getter;");
-                    bw.newLine();
-                    bw.append("import pl.eurekin.experimental.Property;");
-                    bw.newLine();
-                    bw.append("import pl.eurekin.experimental.Setter;");
-                    bw.newLine();
-                    bw.append("import pl.eurekin.experimental.TemplateSetter;\n" +
+                    bw.append("import pl.eurekin.experimental.Getter;\n" +
+                            "import pl.eurekin.experimental.Observable;\n" +
+                            "import pl.eurekin.experimental.Property;\n" +
+                            "import pl.eurekin.experimental.PropertyAccessor;\n" +
+                            "import pl.eurekin.experimental.SafePropertyListener;\n" +
+                            "import pl.eurekin.experimental.Setter;\n" +
                             "import pl.eurekin.experimental.TemplateGetter;\n" +
-                            "import pl.eurekin.experimental.PropertyAccessor;");
+                            "import pl.eurekin.experimental.TemplateSetter;\n" +
+                            "import pl.eurekin.experimental.state.ObservableState;\n" +
+                            "import pl.eurekin.experimental.state.SimpleState;\n" +
+                            "import pl.eurekin.experimental.viewmodel.ViewModel;\n" +
+                            "\n" +
+                            "import static pl.eurekin.experimental.SafePropertyListener.ChangeListener;\n");
                     bw.newLine();
-                    bw.append("public class " + generatedClassName + " {");
+                    bw.append("public class " + generatedClassName + " implements ViewModel<" + classElement.getSimpleName() + "> {");
                     bw.newLine();
                     bw.newLine();
+                    bw.append("\n" +
+                            "    @Override\n" +
+                            "    public " + baseClassName + " base() {\n" +
+                            "        return base;\n" +
+                            "    }\n");
+                    bw.append("\n" +
+                            "    private SimpleState baseNotNullState = new SimpleState(false);\n" +
+                            "    @Override\n" +
+                            "    public ObservableState baseNotNullState() {\n" +
+                            "        return baseNotNullState;\n" +
+                            "    }\n");
+
+                    bw.append("\n" +
+                            "    public void fireAllPropertyChange() {\n" +
+                            "        for(Property p : allProperties())\n" +
+                            "            p.signalExternalUpdate();\n" +
+                            "    }\n");
+                    bw.append("\n" +
+                            "    @Override\n" +
+                            "    public void set(" + baseClassName + " newBase) {\n" +
+                            "        this.base = newBase;\n" +
+                            "        baseNotNullState.set(newBase != null);\n" +
+                            "        fireAllPropertyChange();\n" +
+                            "    }\n");
 
                     // base object
-                    bw.append("    public " + baseClassName + " base;\n" +
+                    bw.append("\n" +
+                            "    public " + baseClassName + " base;\n" +
                             "\n" +
                             "    public " + generatedClassName + "(" + baseClassName + " base) {\n" +
                             "        this.base = base;\n" +
                             "    }\n");
 
                     bw.newLine();
+                    bw.append("    public FieldViewModel(final Observable<" + baseClassName + "> base) {\n" +
+                            "        base.registerChangeListener(new SafePropertyListener<" + baseClassName + ">(new ChangeListener() {\n" +
+                            "                    @Override public void act() {set(base.get());}}));\n" +
+                            "    }\n");
 
+                    List<String> propNameList = new ArrayList<String>();
 
                     // properties
                     for (Element element : classElement.getEnclosedElements()) {
@@ -121,6 +163,7 @@ public class InterfaceGenerationAP extends AbstractProcessor {
                             bw.append(generatePropertyDeclarationString(propType, fieldName));
                             bw.newLine();
                             bw.append(staticPropertyString);
+                            propNameList.add(fieldName + "Property");
 
                             bw.newLine();
                             bw.newLine();
@@ -138,20 +181,50 @@ public class InterfaceGenerationAP extends AbstractProcessor {
                         }
                         boolean qualifiesForActionGeneration = isMethod && voidParameterType && voidReturnType;
                         if (qualifiesForActionGeneration) {
-                            final ExecutableType executableType = (ExecutableType) element.asType();
+                            // final ExecutableType executableType = (ExecutableType) element.asType();
 
                             final String actionTemplate =
                                     "    public Runnable $$actionAction = new Runnable() {\n" +
-                                    "        @Override public void run() { base.$$action(); }};";
+                                            "        @Override public void run() { base.$$action(); }};";
 
                             bw.append(actionTemplate
-                                            .replaceAll(quote("$$action"), element.getSimpleName().toString()));
+                                    .replaceAll(quote("$$action"), element.getSimpleName().toString()));
                         }
                     }
 
+                    String propertyArraySB = Arrays.toString(propNameList.toArray(new String[]{}));
+                    String propertyArray = propertyArraySB.substring(1, propertyArraySB.length() - 1);
+
+                    bw.append("\n" +
+                            "    @Override\n" +
+                            "    public Property<?>[] allProperties() {\n" +
+                            "        return new Property<?>[]{" + propertyArray + "};\n" +
+                            "    }\n");
 
                     bw.append("}");
                     bw.close();
+
+
+
+                    String vmName = classElement.getSimpleName() +"ViewModel";
+                    bw2.append("package pl.eurekin.editor;\n" +
+                            "\n" +
+                            "import pl.eurekin.experimental.Observable;\n" +
+                            "import pl.eurekin.experimental.viewmodel.ViewModelFactory;\n" +
+                            "\n" +
+                            "public class "+generatedClassName+"Factory implements ViewModelFactory<"+classElement.getSimpleName()
+                            +", "+vmName+"> {\n" +
+                            "    @Override\n" +
+                            "    public "+vmName+" newValueModel("+baseClassName+" base) {\n" +
+                            "        return new "+vmName+"(base);\n" +
+                            "    }\n" +
+                            "\n" +
+                            "    @Override\n" +
+                            "    public "+vmName+" newObservingValueModel(Observable<"+baseClassName+"> observableBase) {\n" +
+                            "        return new "+vmName+"(observableBase);\n" +
+                            "    }\n" +
+                            "}\n");
+                    bw2.close();
                 } catch (IOException e) {
                     processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR,
                             "ERROR during write of the file" + e.getMessage());
@@ -167,14 +240,14 @@ public class InterfaceGenerationAP extends AbstractProcessor {
 
     private String generateStaticPropertyDescriptor(String fieldName, String propType, String baseType, String staticFName) {
         return "    public static PropertyAccessor<" + propType + ", " + baseType + "> " + staticFName + " = new PropertyAccessor<" + propType + ", " + baseType + ">(\n" +
-                "            new TemplateGetter<" + propType + ", " + baseType + ">() {@Override public " + propType + " get(" + baseType + " base) { return base." + fieldName + ";}},\n" +
-                "            new TemplateSetter<" + propType + ", " + baseType + ">() {@Override public void set(" + baseType + " base, " + propType + " newValue) { base." + fieldName + " = newValue; }});";
+                "            new TemplateGetter<" + propType + ", " + baseType + ">() {@Override public " + propType + " get(" + baseType + " base) { if(base!=null) return base." + fieldName + "; else return null;}},\n" +
+                "            new TemplateSetter<" + propType + ", " + baseType + ">() {@Override public void set(" + baseType + " base, " + propType + " newValue) { if(base!=null) base." + fieldName + " = newValue; }});";
     }
 
     private String generatePropertyDeclarationString(String propType, String propName) {
         return "    public Property<" + propType + "> " + propName + "Property = new Property<" + propType + ">(\n" +
-                "        new Getter<" + propType + ">() {@Override public " + propType + " get() { return base." + propName + ";}},\n" +
-                "        new Setter<" + propType + ">() {@Override public void set(" + propType + " newValue) { base." + propName + " = newValue; }});";
+                "        new Getter<" + propType + ">() {@Override public " + propType + " get() {  if(base()!=null) return base()." + propName + "; else return null;}},\n" +
+                "        new Setter<" + propType + ">() {@Override public void set(" + propType + " newValue) { if(base()!=null) base()." + propName + " = newValue; }});";
     }
 
     @Override

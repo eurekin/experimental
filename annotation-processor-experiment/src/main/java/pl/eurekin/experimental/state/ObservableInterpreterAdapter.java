@@ -1,7 +1,6 @@
 package pl.eurekin.experimental.state;
 
 import pl.eurekin.experimental.ChangedPropertyListener;
-import pl.eurekin.experimental.Getter;
 import pl.eurekin.experimental.Observable;
 import pl.eurekin.experimental.StatelessPropertyChangeSupport;
 

@@ -1,13 +1,11 @@
 package pl.eurekin.experimental;
 
-import pl.eurekin.experimental.swing.ActivateButton;
-
 /**
-* @author greg.matoga@gmail.com
-*/
+ * @author greg.matoga@gmail.com
+ */
 public class SafePropertyListener<T> implements ChangedPropertyListener<T> {
-    private int counter = 0;
     private final ChangeListener listener;
+    private int counter = 0;
 
     public SafePropertyListener(ChangeListener listener) {
         this.listener = listener;

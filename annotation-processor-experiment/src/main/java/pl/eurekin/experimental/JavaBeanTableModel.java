@@ -69,13 +69,13 @@ public class JavaBeanTableModel<T> extends AbstractTableModel {
         columnModel.add(new JavaBeanColumnModel<E, T>(length_property, name));
     }
 
-    private class JavaBeanColumnModel<E, T> {
+    private class JavaBeanColumnModel<E, A> {
 
 
-        private final PropertyAccessor<E, T> propertyAccessor;
+        private final PropertyAccessor<E, A> propertyAccessor;
         private final String name;
 
-        public JavaBeanColumnModel(PropertyAccessor<E, T> propertyAccessor, String name) {
+        public JavaBeanColumnModel(PropertyAccessor<E, A> propertyAccessor, String name) {
             this.propertyAccessor = propertyAccessor;
             this.name = name;
         }
@@ -84,7 +84,7 @@ public class JavaBeanTableModel<T> extends AbstractTableModel {
             return name;
         }
 
-        public E getFrom(T o) {
+        public E getFrom(A o) {
             return propertyAccessor.get(o);
         }
     }

@@ -3,7 +3,6 @@ package pl.eurekin.experimental.fluent;
 import pl.eurekin.experimental.SafePropertyListener;
 import pl.eurekin.experimental.state.ObservableState;
 
-import javax.swing.*;
 import javax.swing.text.JTextComponent;
 
 /**

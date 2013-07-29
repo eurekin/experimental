@@ -2,6 +2,9 @@ package pl.eurekin.editor;
 
 
 import pl.eurekin.experimental.*;
+import pl.eurekin.experimental.state.ObservableState;
+import pl.eurekin.experimental.viewmodel.ViewModel;
+import pl.eurekin.experimental.viewmodel.ViewModelFactory;
 
 public class FieldViewModelPROTOTYPE implements ViewModel<Field> {
 
@@ -16,7 +19,7 @@ public class FieldViewModelPROTOTYPE implements ViewModel<Field> {
         fireAllPropertyChange();
     }
 
-    private void fireAllPropertyChange() {
+    public void fireAllPropertyChange() {
         for(Property p : allProperties())
             p.signalExternalUpdate();
     }
@@ -38,6 +41,11 @@ public class FieldViewModelPROTOTYPE implements ViewModel<Field> {
                 }
                 return new FieldViewModelPROTOTYPE(base);
             }
+
+            @Override
+            public FieldViewModelPROTOTYPE newObservingValueModel(Observable<Field> observableBase) {
+                return null;  //To change body of implemented methods use File | Settings | File Templates.
+            }
         };
     }
 
@@ -45,6 +53,11 @@ public class FieldViewModelPROTOTYPE implements ViewModel<Field> {
     @Override
     public Property<?>[] allProperties() {
         return new Property<?>[]{lengthProperty, nameProperty, beginProperty, endProperty};
+    }
+
+    @Override
+    public ObservableState baseNotNullState() {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
     public Property<Integer> lengthProperty = new Property<Integer>(
