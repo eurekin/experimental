@@ -1,1 +1,1 @@
-.\mvnw -f module-run/pom.xml -Prun
+.\mvnw -f module-run/pom.xml -Prun -q -DskipTests
