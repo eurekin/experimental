@@ -19,7 +19,7 @@ import java.util.Set;
 import static java.util.regex.Pattern.quote;
 
 @SupportedAnnotationTypes("pl.eurekin.experimental.GenerateJavaBeanInterface")
-@SupportedSourceVersion(SourceVersion.RELEASE_7)
+@SupportedSourceVersion(SourceVersion.RELEASE_6)
 public class InterfaceGenerationAP extends AbstractProcessor {
 
     public InterfaceGenerationAP() {
