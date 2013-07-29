@@ -76,8 +76,8 @@ goto error
 :chkMHome
 if not "%M2_HOME%"=="" goto valMHome
 
-if "%OS%"=="Windows_NT" SET "M2_HOME=%~dp0.."
-if "%OS%"=="WINNT" SET "M2_HOME=%~dp0.."
+if "%OS%"=="Windows_NT" SET "M2_HOME=%~dp0"
+if "%OS%"=="WINNT" SET "M2_HOME=%~dp0"
 if not "%M2_HOME%"=="" goto valMHome
 
 echo.
@@ -96,6 +96,7 @@ goto stripMHome
 
 :checkMBat
 if exist "%M2_HOME%\bin\mvn.bat" goto init
+if exist "%M2_HOME%\mvnw.bat" goto init
 
 echo.
 echo ERROR: M2_HOME is set to an invalid directory.
