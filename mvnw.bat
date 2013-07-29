@@ -54,6 +54,7 @@ if "%OS%"=="WINNT" @setlocal
 
 @REM ==== START VALIDATION ====
 if not "%JAVA_HOME%" == "" goto OkJHome
+if exist "%SystemRoot%\system32\java.exe" goto chkMHome
 
 echo.
 echo ERROR: JAVA_HOME not found in your environment.
@@ -143,6 +144,7 @@ goto Win9xApp
 @REM Reaching here means variables are defined and arguments have been captured
 :endInit
 SET MAVEN_JAVA_EXE="%JAVA_HOME%\bin\java.exe"
+if not exist "%JAVA_HOME%\bin\java.exe" (SET MAVEN_JAVA_EXE="java.exe")
 
 @REM -- Regular WinNT shell
 set WRAPPER_JAR="".\maven\wrapper\maven-wrapper.jar""
