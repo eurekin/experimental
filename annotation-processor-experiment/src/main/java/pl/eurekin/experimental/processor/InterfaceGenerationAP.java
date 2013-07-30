@@ -207,36 +207,34 @@ public class InterfaceGenerationAP extends AbstractProcessor {
 
                         boolean qualifiesForCallableGeneration = isMethod && voidParameterType && !voidReturnType;
                         if (qualifiesForCallableGeneration) {
-                            final ExecutableType executableType = (ExecutableType) element.asType();
-                            bw.append("\n// executableType.getReturnType().class " + executableType.getReturnType().getClass());
-                            bw.append("\n// executableType.getReturnType().getKind() " + executableType.getReturnType().getKind());
-                            bw.append("\n// executableType.getReturnType().getKind().getClass() " + executableType.getReturnType().getKind().getClass());
-                            TypeMirror returnType = executableType.getReturnType();
-                            bw.append("\n// executableType.getReturnType().getKind() instanceof PrimitiveType " + Boolean.toString(returnType instanceof PrimitiveType));
 
+                            final ExecutableType executableType = (ExecutableType) element.asType();
+                            TypeMirror returnType = executableType.getReturnType();
+                            if (debug) {
+                                bw.append("\n// executableType.getReturnType().class " + executableType.getReturnType().getClass());
+                                bw.append("\n// executableType.getReturnType().getKind() " + executableType.getReturnType().getKind());
+                                bw.append("\n// executableType.getReturnType().getKind().getClass() " + executableType.getReturnType().getKind().getClass());
+                                bw.append("\n// executableType.getReturnType().getKind() instanceof PrimitiveType " + Boolean.toString(returnType instanceof PrimitiveType));
+                            }
                             if (executableType.getReturnType() instanceof PrimitiveType) {
                                 PrimitiveType primitiveType = (PrimitiveType) executableType.getReturnType();
 
                                 TypeKind kind = executableType.getReturnType().getKind();
                                 Types typeUtils = processingEnv.getTypeUtils();
-                                bw.append("\n// executableType.getReturnType().getKind().getClass() box " + typeUtils.boxedClass(primitiveType));
+                                if (debug)
+                                    bw.append("\n// executableType.getReturnType().getKind().getClass() box " + typeUtils.boxedClass(primitiveType));
                                 returnType = typeUtils.boxedClass(primitiveType).asType();
                             }
                             bw.newLine();
-                            bw.append("// final returnType " + returnType);
+                            if (debug)
+                                bw.append("// final returnType " + returnType);
                             bw.newLine();
                             String callableTemplate = "    public Callable<$$returntype> $$executablename = new Callable<$$returntype>() {\n" +
                                     "        @Override public $$returntype call() throws Exception {return base.$$executablename();}};\n";
                             String callableTemplateAfterSubstitution = callableTemplate
                                     .replaceAll(Pattern.quote("$$returntype"), returnType.toString())
-                                    .replaceAll(Pattern.quote("$$executablename"), element.getSimpleName().toString())
-                                    ;
+                                    .replaceAll(Pattern.quote("$$executablename"), element.getSimpleName().toString());
                             bw.append(callableTemplateAfterSubstitution);
-                            bw.newLine();
-                            bw.newLine();
-                            bw.newLine();
-                            //processingEnv.getTypeUtils().boxedClass(executableType.getReturnType());
-
                         }
                     }
 

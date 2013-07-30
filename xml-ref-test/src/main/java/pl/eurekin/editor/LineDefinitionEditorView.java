@@ -1,10 +1,7 @@
 package pl.eurekin.editor;
 
 import pl.eurekin.experimental.*;
-import pl.eurekin.experimental.state.Interpreter;
-import pl.eurekin.experimental.state.ObservableInterpreterAdapter;
-import pl.eurekin.experimental.state.ObservableState;
-import pl.eurekin.experimental.state.ObservableStateInterpreterAdapter;
+import pl.eurekin.experimental.state.*;
 import pl.eurekin.experimental.swing.*;
 import pl.eurekin.experimental.swing.selection.SelectionRestore;
 import pl.eurekin.experimental.swing.selection.SelectionStore;
@@ -96,7 +93,7 @@ public class LineDefinitionEditorView {
         final ObservableState singleTableItemSelected = new SingleTableItemSelectedState(observableSelectionModel);
         final SelectedObjectsAdapter<Field> selectedObjectsAdapter = new SelectedObjectsAdapter<Field>(observableSelectionModel, backingList);
         Interpreter<List<Field>, Field> selectedFieldInterpreter = new FirstItemFromList<Field>();
-        ObservableInterpreterAdapter<List<Field>, Field> selectedObject = new ObservableInterpreterAdapter<List<Field>, Field>(selectedObjectsAdapter, selectedFieldInterpreter);
+        final ObservableInterpreterAdapter<List<Field>, Field> selectedObject = new ObservableInterpreterAdapter<List<Field>, Field>(selectedObjectsAdapter, selectedFieldInterpreter);
 
 
         ObservableState firstTableItemSelected = new ObservableStateInterpreterAdapter<Integer[]>(observableSelectionModel, new Interpreter<Integer[], Boolean>() {
@@ -132,9 +129,17 @@ public class LineDefinitionEditorView {
         showCard(initialCardName);
         // prototype end
 
-        when(singleTableItemSelected).activate(deleteButton).activate(growButton).activate(shrinkButton).activate(deleteButton);
+        when(singleTableItemSelected).activate(deleteButton).activate(growButton).activate(deleteButton);
+        when(singleTableItemSelected).and(new SimpleState(false){
+            @Override
+            public Boolean get() {
+                return selectedObject.get().canShrink();
+            }
+        }).activate(shrinkButton);
         when(singleTableItemSelected).and(not(firstTableItemSelected)).activate(upButton);
         when(singleTableItemSelected).and(not(lastTableItemSelected)).activate(downButton);
+
+
 
         Runnable refreshList = new Runnable() {
 
