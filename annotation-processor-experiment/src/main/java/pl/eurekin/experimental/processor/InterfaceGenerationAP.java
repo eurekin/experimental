@@ -9,7 +9,10 @@ import javax.annotation.processing.SupportedSourceVersion;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.*;
 import javax.lang.model.type.ExecutableType;
+import javax.lang.model.type.PrimitiveType;
 import javax.lang.model.type.TypeKind;
+import javax.lang.model.type.TypeMirror;
+import javax.lang.model.util.Types;
 import javax.tools.Diagnostic;
 import javax.tools.JavaFileObject;
 import java.io.BufferedWriter;
@@ -18,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import static java.util.regex.Pattern.quote;
 
@@ -56,7 +60,7 @@ public class InterfaceGenerationAP extends AbstractProcessor {
                     String generatedFactoryFQName = baseClassName + factorySuffix;
 
                     jfo = processingEnv.getFiler().createSourceFile(generatedClassFQName);
-                    jfo2 =  processingEnv.getFiler().createSourceFile(generatedFactoryFQName);
+                    jfo2 = processingEnv.getFiler().createSourceFile(generatedFactoryFQName);
 
                     String generatedClassName = classElement.getSimpleName() + classSuffix;
                     BufferedWriter bw = new BufferedWriter(jfo.openWriter());
@@ -81,6 +85,8 @@ public class InterfaceGenerationAP extends AbstractProcessor {
                             "import pl.eurekin.experimental.state.ObservableState;\n" +
                             "import pl.eurekin.experimental.state.SimpleState;\n" +
                             "import pl.eurekin.experimental.viewmodel.ViewModel;\n" +
+                            "\n" +
+                            "import java.util.concurrent.Callable;\n" +
                             "\n" +
                             "import static pl.eurekin.experimental.SafePropertyListener.ChangeListener;\n");
                     bw.newLine();
@@ -180,6 +186,10 @@ public class InterfaceGenerationAP extends AbstractProcessor {
                             voidReturnType = TypeKind.VOID.equals(executableType.getReturnType().getKind());
                         }
                         boolean qualifiesForActionGeneration = isMethod && voidParameterType && voidReturnType;
+
+                        // ACTION
+
+
                         if (qualifiesForActionGeneration) {
                             // final ExecutableType executableType = (ExecutableType) element.asType();
 
@@ -189,6 +199,44 @@ public class InterfaceGenerationAP extends AbstractProcessor {
 
                             bw.append(actionTemplate
                                     .replaceAll(quote("$$action"), element.getSimpleName().toString()));
+                        }
+
+
+                        // CALLABLE
+
+
+                        boolean qualifiesForCallableGeneration = isMethod && voidParameterType && !voidReturnType;
+                        if (qualifiesForCallableGeneration) {
+                            final ExecutableType executableType = (ExecutableType) element.asType();
+                            bw.append("\n// executableType.getReturnType().class " + executableType.getReturnType().getClass());
+                            bw.append("\n// executableType.getReturnType().getKind() " + executableType.getReturnType().getKind());
+                            bw.append("\n// executableType.getReturnType().getKind().getClass() " + executableType.getReturnType().getKind().getClass());
+                            TypeMirror returnType = executableType.getReturnType();
+                            bw.append("\n// executableType.getReturnType().getKind() instanceof PrimitiveType " + Boolean.toString(returnType instanceof PrimitiveType));
+
+                            if (executableType.getReturnType() instanceof PrimitiveType) {
+                                PrimitiveType primitiveType = (PrimitiveType) executableType.getReturnType();
+
+                                TypeKind kind = executableType.getReturnType().getKind();
+                                Types typeUtils = processingEnv.getTypeUtils();
+                                bw.append("\n// executableType.getReturnType().getKind().getClass() box " + typeUtils.boxedClass(primitiveType));
+                                returnType = typeUtils.boxedClass(primitiveType).asType();
+                            }
+                            bw.newLine();
+                            bw.append("// final returnType " + returnType);
+                            bw.newLine();
+                            String callableTemplate = "    public Callable<$$returntype> $$executablename = new Callable<$$returntype>() {\n" +
+                                    "        @Override public $$returntype call() throws Exception {return base.$$executablename();}};\n";
+                            String callableTemplateAfterSubstitution = callableTemplate
+                                    .replaceAll(Pattern.quote("$$returntype"), returnType.toString())
+                                    .replaceAll(Pattern.quote("$$executablename"), element.getSimpleName().toString())
+                                    ;
+                            bw.append(callableTemplateAfterSubstitution);
+                            bw.newLine();
+                            bw.newLine();
+                            bw.newLine();
+                            //processingEnv.getTypeUtils().boxedClass(executableType.getReturnType());
+
                         }
                     }
 
@@ -205,23 +253,22 @@ public class InterfaceGenerationAP extends AbstractProcessor {
                     bw.close();
 
 
-
-                    String vmName = classElement.getSimpleName() +"ViewModel";
+                    String vmName = classElement.getSimpleName() + "ViewModel";
                     bw2.append("package pl.eurekin.editor;\n" +
                             "\n" +
                             "import pl.eurekin.experimental.Observable;\n" +
                             "import pl.eurekin.experimental.viewmodel.ViewModelFactory;\n" +
                             "\n" +
-                            "public class "+generatedClassName+"Factory implements ViewModelFactory<"+classElement.getSimpleName()
-                            +", "+vmName+"> {\n" +
+                            "public class " + generatedClassName + "Factory implements ViewModelFactory<" + classElement.getSimpleName()
+                            + ", " + vmName + "> {\n" +
                             "    @Override\n" +
-                            "    public "+vmName+" newValueModel("+baseClassName+" base) {\n" +
-                            "        return new "+vmName+"(base);\n" +
+                            "    public " + vmName + " newValueModel(" + baseClassName + " base) {\n" +
+                            "        return new " + vmName + "(base);\n" +
                             "    }\n" +
                             "\n" +
                             "    @Override\n" +
-                            "    public "+vmName+" newObservingValueModel(Observable<"+baseClassName+"> observableBase) {\n" +
-                            "        return new "+vmName+"(observableBase);\n" +
+                            "    public " + vmName + " newObservingValueModel(Observable<" + baseClassName + "> observableBase) {\n" +
+                            "        return new " + vmName + "(observableBase);\n" +
                             "    }\n" +
                             "}\n");
                     bw2.close();

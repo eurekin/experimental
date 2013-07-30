@@ -22,7 +22,7 @@ public class Field {
         parent.recalculateIndices();
     }
 
-    public void actionnnnnn() {
+    public void grow() {
         this.length += 1;
         parent.recalculateIndices();
     }

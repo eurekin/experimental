@@ -71,7 +71,8 @@
                         </executions>
 
                         <configuration>
-                            <!-- Java Swing app disappears - exec:java or maven issue, workaround from:							http://mail-archives.apache.org/mod_mbox/maven-users/200703.mbox/%3C5a2cf1f60703300629qd0d5338x19327e12b88b905d@mail.gmail.com%3E -->
+                        <!-- Java Swing app disappears - exec:java or maven issue, workaround from:
+                        http://mail-archives.apache.org/mod_mbox/maven-users/200703.mbox/%3C5a2cf1f60703300629qd0d5338x19327e12b88b905d@mail.gmail.com%3E -->
                             <keepAlive>true</keepAlive>
                             <mainClass>pl.eurekin.editor.LineDefinitionEditorView</mainClass>
                         </configuration>

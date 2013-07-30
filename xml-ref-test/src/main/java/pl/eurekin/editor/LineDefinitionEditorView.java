@@ -149,7 +149,7 @@ public class LineDefinitionEditorView {
 
         deleteButton.addActionListener(selectionSafeAction(selectedObjectFromTable.removeAction, refreshList));
         shrinkButton.addActionListener(selectionSafeAction(selectedObjectFromTable.shrinkAction, refreshList));
-        growButton.addActionListener(selectionSafeAction(selectedObjectFromTable.actionnnnnnAction, refreshList));
+        growButton.addActionListener(selectionSafeAction(selectedObjectFromTable.growAction, refreshList));
         upButton.addActionListener(selectionSafeAction(selectedObjectFromTable.moveUpAction, refreshList));
         downButton.addActionListener(selectionSafeAction(selectedObjectFromTable.moveDownAction, refreshList));
         // prototype end
