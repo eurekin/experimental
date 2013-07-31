@@ -89,25 +89,17 @@ public class LineDefinitionEditorView {
         tableModel.addColumn(FieldViewModel.NAME_PROPERTY, "name");
         table1.setModel(tableModel);
 
-        final SelectionModelAdapter observableSelectionModel = new SelectionModelAdapter(table1);
-        final ObservableState singleTableItemSelected = new SingleTableItemSelectedState(observableSelectionModel);
-        final SelectedObjectsAdapter<Field> selectedObjectsAdapter = new SelectedObjectsAdapter<Field>(observableSelectionModel, backingList);
-        Interpreter<List<Field>, Field> selectedFieldInterpreter = new FirstItemFromList<Field>();
+        final SelectionModelAdapter selectedIndices = new SelectionModelAdapter(table1);
+        final ObservableState singleTableItemSelected = new SingleTableItemSelectedState(selectedIndices);
+        final SelectedObjectsAdapter<Field> selectedObjectsAdapter = new SelectedObjectsAdapter<Field>(selectedIndices, backingList);
+        Interpreter<List<Field>, Field> selectedFieldInterpreter = new ItemFromSingularList<Field>();
         final ObservableInterpreterAdapter<List<Field>, Field> selectedObject = new ObservableInterpreterAdapter<List<Field>, Field>(selectedObjectsAdapter, selectedFieldInterpreter);
 
+        Observable<Integer> lastIndex = subtract(sizeOf(backingList), constant(1));
+        Constant<Integer> firstIndex = constant(0);
 
-        ObservableState firstTableItemSelected = new ObservableStateInterpreterAdapter<Integer[]>(observableSelectionModel, new Interpreter<Integer[], Boolean>() {
-            @Override
-            public Boolean interpret(Integer[] selectedRows) {
-                return Arrays.asList(selectedRows).contains(0);
-            }
-        });
-        ObservableState lastTableItemSelected = new ObservableStateInterpreterAdapter<Integer[]>(observableSelectionModel, new Interpreter<Integer[], Boolean>() {
-            @Override
-            public Boolean interpret(Integer[] selectedRows) {
-                return Arrays.asList(selectedRows).contains(table1.getRowCount() - 1);
-            }
-        });
+        ObservableState firstTableItemSelected = does(selectedIndices, contain(firstIndex)); // ?
+        ObservableState lastTableItemSelected = does(selectedIndices, contain(lastIndex)); // ?
 
         // bind(textField).to(FieldViewModel.NAME_PROPERTY, selectedObject);
 
@@ -158,6 +150,31 @@ public class LineDefinitionEditorView {
         upButton.addActionListener(selectionSafeAction(selectedObjectFromTable.moveUpAction, refreshList));
         downButton.addActionListener(selectionSafeAction(selectedObjectFromTable.moveDownAction, refreshList));
         // prototype end
+    }
+
+    private static <T> ObservableListSize<T> sizeOf(ObservableList<T> list) {
+        return new ObservableListSize<T>(list);
+    }
+
+    private Observable<Integer> subtract(Observable<Integer> operandA, Observable<Integer> operandB) {
+        return new DerivedObservable<Integer>(operandA, operandB) {
+            @Override
+            protected Integer value(Observable<Integer>... baseStates) {
+                return baseStates[0].get() - baseStates[1].get();
+            }
+        };
+    }
+
+    private static <T> ObservableState does(Observable<T[]> observableArray, Interpreter<T[], Boolean> interpreter) {
+        return new ObservableStateInterpreterAdapter<T[]>(observableArray, interpreter);
+    }
+
+    private <T> ArrayContains<T> contain(Observable<T> constant) {
+        return new ArrayContains<T>(constant);
+    }
+
+    private <T> Constant<T> constant(T constant) {
+        return new Constant<T>(constant);
     }
 
     private DelegateAction selectionSafeAction(Runnable someAction, Runnable refreshList) {
@@ -216,4 +233,97 @@ public class LineDefinitionEditorView {
         return viewModel;
     }
 
+    public class Constant<T> implements Observable<T> {
+
+        private T constantValue;
+
+        public Constant(T constantValue) {
+            this.constantValue = constantValue;
+        }
+
+        @Override
+        public void registerChangeListener(ChangedPropertyListener<T> listener) {}
+
+        @Override
+        public void unregisterChangeListener(ChangedPropertyListener<T> listener) {}
+
+        @Override
+        public T get() {
+            return constantValue;
+        }
+    }
+
+    private class ArrayContains<T> implements Interpreter<T[], Boolean> {
+
+        private Observable<T> elementIndex;
+
+        private ArrayContains(Observable<T> elementIndex) {
+            this.elementIndex = elementIndex;
+        }
+
+        @Override
+        public Boolean interpret(T[] selectedRows) {
+            return Arrays.asList(selectedRows).contains(elementIndex.get());
+        }
+    }
+
+    private static class ObservableListSize<T> implements Observable<Integer> {
+        private final Observable<List<T>> backingList;
+        StatefulPropertyChangeSupport<Integer> changeSupport;
+        public ObservableListSize(Observable<List<T>> backingList) {
+            this.backingList = backingList;
+            changeSupport = new StatefulPropertyChangeSupport(size());
+            backingList.registerChangeListener(
+                    new ChangedPropertyListener<List<T>>() {
+                        @Override
+                        public void beginNotifying() {
+                            begin();
+                        }
+
+                        @Override
+                        public void propertyChanged(List<T> oldValue, List<T> newValue) {
+                            changed();
+                        }
+
+                        @Override
+                        public void finishNotifying() {
+                            end();
+                        }
+                    }
+            );
+        }
+
+        private Integer size() {
+            if(backingList.get()==null) return null;
+            return backingList.get().size();
+        }
+
+        private void end() {
+            changeSupport.onBeginNotifying();
+        }
+
+        private void changed() {
+            changeSupport.firePropertyChangeEvent(size());
+        }
+
+        private void begin() {
+            changeSupport.onBeginNotifying();
+        }
+
+
+        @Override
+        public void registerChangeListener(ChangedPropertyListener<Integer> listener) {
+            changeSupport.registerNewListener(listener);
+        }
+
+        @Override
+        public void unregisterChangeListener(ChangedPropertyListener<Integer> listener) {
+            changeSupport.unregisterListener(listener);
+        }
+
+        @Override
+        public Integer get() {
+            return size();
+        }
+    }
 }

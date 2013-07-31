@@ -7,7 +7,7 @@ import java.util.List;
 /**
 * @author greg.matoga@gmail.com
 */
-public class FirstItemFromList<T> implements Interpreter<List<T>, T> {
+public class ItemFromSingularList<T> implements Interpreter<List<T>, T> {
 
     @Override
     public T interpret(List<T> input) {
