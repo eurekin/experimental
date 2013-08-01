@@ -19,6 +19,7 @@ import java.util.List;
 
 import static pl.eurekin.experimental.ExpressionBuilder.not;
 import static pl.eurekin.experimental.ExpressionBuilder.when;
+import static pl.eurekin.experimental.fluent.CustomObservables.*;
 
 /**
  * @author Rekin
@@ -69,9 +70,6 @@ public class LineDefinitionEditorView {
         });
     }
 
-    private static JTextComponentBinder bind(JTextField textField1) {
-        return new JTextComponentBinder(textField1);
-    }
 
     private void domainObjectChanged() {
         backingList.changed();
@@ -104,7 +102,7 @@ public class LineDefinitionEditorView {
         // bind(textField).to(FieldViewModel.NAME_PROPERTY, selectedObject);
 
         // prototype for automatic binding
-        ViewModelFactory<Field, FieldViewModel> factory  = new FieldViewModelFactory();
+        ViewModelFactory<Field, FieldViewModel> factory = new FieldViewModelFactory();
         final FieldViewModel selectedObjectFromTable =
                 standardViewModelConverterFor(factory, selectedObject, tableModel);
         // works!!!
@@ -122,7 +120,7 @@ public class LineDefinitionEditorView {
         // prototype end
 
         when(singleTableItemSelected).activate(deleteButton).activate(growButton).activate(deleteButton);
-        when(singleTableItemSelected).and(new SimpleState(false){
+        when(singleTableItemSelected).and(new SimpleState(false) {
             @Override
             public Boolean get() {
                 return selectedObject.get().canShrink();
@@ -130,7 +128,6 @@ public class LineDefinitionEditorView {
         }).activate(shrinkButton);
         when(singleTableItemSelected).and(not(firstTableItemSelected)).activate(upButton);
         when(singleTableItemSelected).and(not(lastTableItemSelected)).activate(downButton);
-
 
 
         Runnable refreshList = new Runnable() {
@@ -152,31 +149,7 @@ public class LineDefinitionEditorView {
         // prototype end
     }
 
-    private static <T> ObservableListSize<T> sizeOf(ObservableList<T> list) {
-        return new ObservableListSize<T>(list);
-    }
-
-    private Observable<Integer> subtract(Observable<Integer> operandA, Observable<Integer> operandB) {
-        return new DerivedObservable<Integer>(operandA, operandB) {
-            @Override
-            protected Integer value(Observable<Integer>... baseStates) {
-                return baseStates[0].get() - baseStates[1].get();
-            }
-        };
-    }
-
-    private static <T> ObservableState does(Observable<T[]> observableArray, Interpreter<T[], Boolean> interpreter) {
-        return new ObservableStateInterpreterAdapter<T[]>(observableArray, interpreter);
-    }
-
-    private <T> ArrayContains<T> contain(Observable<T> constant) {
-        return new ArrayContains<T>(constant);
-    }
-
-    private <T> Constant<T> constant(T constant) {
-        return new Constant<T>(constant);
-    }
-
+    // todo this really belongs to either table model, selection model or both
     private DelegateAction selectionSafeAction(Runnable someAction, Runnable refreshList) {
         return new DelegateAction(new SequentialComposedRunnable(new SequentialComposedRunnable(new SequentialComposedRunnable(
                 storeSelection,
@@ -233,97 +206,4 @@ public class LineDefinitionEditorView {
         return viewModel;
     }
 
-    public class Constant<T> implements Observable<T> {
-
-        private T constantValue;
-
-        public Constant(T constantValue) {
-            this.constantValue = constantValue;
-        }
-
-        @Override
-        public void registerChangeListener(ChangedPropertyListener<T> listener) {}
-
-        @Override
-        public void unregisterChangeListener(ChangedPropertyListener<T> listener) {}
-
-        @Override
-        public T get() {
-            return constantValue;
-        }
-    }
-
-    private class ArrayContains<T> implements Interpreter<T[], Boolean> {
-
-        private Observable<T> elementIndex;
-
-        private ArrayContains(Observable<T> elementIndex) {
-            this.elementIndex = elementIndex;
-        }
-
-        @Override
-        public Boolean interpret(T[] selectedRows) {
-            return Arrays.asList(selectedRows).contains(elementIndex.get());
-        }
-    }
-
-    private static class ObservableListSize<T> implements Observable<Integer> {
-        private final Observable<List<T>> backingList;
-        StatefulPropertyChangeSupport<Integer> changeSupport;
-        public ObservableListSize(Observable<List<T>> backingList) {
-            this.backingList = backingList;
-            changeSupport = new StatefulPropertyChangeSupport(size());
-            backingList.registerChangeListener(
-                    new ChangedPropertyListener<List<T>>() {
-                        @Override
-                        public void beginNotifying() {
-                            begin();
-                        }
-
-                        @Override
-                        public void propertyChanged(List<T> oldValue, List<T> newValue) {
-                            changed();
-                        }
-
-                        @Override
-                        public void finishNotifying() {
-                            end();
-                        }
-                    }
-            );
-        }
-
-        private Integer size() {
-            if(backingList.get()==null) return null;
-            return backingList.get().size();
-        }
-
-        private void end() {
-            changeSupport.onBeginNotifying();
-        }
-
-        private void changed() {
-            changeSupport.firePropertyChangeEvent(size());
-        }
-
-        private void begin() {
-            changeSupport.onBeginNotifying();
-        }
-
-
-        @Override
-        public void registerChangeListener(ChangedPropertyListener<Integer> listener) {
-            changeSupport.registerNewListener(listener);
-        }
-
-        @Override
-        public void unregisterChangeListener(ChangedPropertyListener<Integer> listener) {
-            changeSupport.unregisterListener(listener);
-        }
-
-        @Override
-        public Integer get() {
-            return size();
-        }
-    }
 }
