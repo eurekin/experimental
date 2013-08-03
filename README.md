@@ -83,6 +83,18 @@ public class LineDefinitionEditorView {
     when(singleTableItemSelectedState).activate(deleteButton);
     when(singleTableItemSelectedState).and(not(firstTableItemSelected)).activate(upButton);
     when(singleTableItemSelectedState).and(not(lastTableItemSelected)).activate(downButton);
+    
+    // EDIT field on the bottom
+    when(singleTableItemSelected).showCard(cardPanel, "edit");
+    when(not(singleTableItemSelected)).showCard(cardPanel, "null");
+    
+    // Observable abuse - not very useful, but fluent API allows to read itself quite easily
+    Observable<Integer> lastIndex = subtract(sizeOf(backingList), constant(1));
+    Constant<Integer> firstIndex = constant(0);
+
+    ObservableState firstTableItemSelected = does(selectedIndices, contain(firstIndex)); // ?
+    ObservableState lastTableItemSelected = does(selectedIndices, contain(lastIndex)); // ?
+
   }    
 }
 ```
