@@ -6,7 +6,7 @@ public abstract class DerivedState
         extends DerivedObservable<Boolean>
         implements ObservableState {
 
-    protected DerivedState(Observable<Boolean>... baseStates) {
+    public DerivedState(Observable<Boolean>... baseStates) {
         super(baseStates);
     }
 }
