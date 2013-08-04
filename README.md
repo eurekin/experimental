@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/eurekin/experimental.png?branch=master)](https://travis-ci.org/eurekin/experimental)
+
 experimental
 ============
 
