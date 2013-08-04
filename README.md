@@ -10,6 +10,9 @@ Running example
 
 ![Swing using the experimental project](http://i.imgur.com/zl7qy4P.gif?1 "Preview")
 
+Execute directly using Java WebStart:
+[![JNLP run](http://www.fileinfo.com/images/icons/files/128/jnlp-1858.png)](https://dl-web.dropbox.com/spa/5e9kbyw5dxyp93u/experimental/public/app.jnlp)
+
 Example code
 ============
 

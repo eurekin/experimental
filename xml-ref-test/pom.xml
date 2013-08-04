@@ -7,7 +7,12 @@
     <groupId>pl.eurekin.xml.fun</groupId>
     <artifactId>xml-ref-test</artifactId>
     <version>1.0-SNAPSHOT</version>
+    <packaging>jar</packaging>
 
+    <organization>
+        <name>Experimental</name>
+    </organization>
+    <name>Experimental</name>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
@@ -79,10 +84,126 @@
                         </executions>
 
                         <configuration>
-                        <!-- Java Swing app disappears - exec:java or maven issue, workaround from:
-                        http://mail-archives.apache.org/mod_mbox/maven-users/200703.mbox/%3C5a2cf1f60703300629qd0d5338x19327e12b88b905d@mail.gmail.com%3E -->
+                            <!-- Java Swing app disappears - exec:java or maven issue, workaround from:
+                            http://mail-archives.apache.org/mod_mbox/maven-users/200703.mbox/%3C5a2cf1f60703300629qd0d5338x19327e12b88b905d@mail.gmail.com%3E -->
                             <keepAlive>true</keepAlive>
                             <mainClass>pl.eurekin.editor.LineDefinitionEditorView</mainClass>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+
+        </profile>
+
+
+        <profile>
+            <id>jnlp</id>
+
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>webstart-maven-plugin</artifactId>
+                        <version>1.0-beta-3</version>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>jnlp-inline</goal>
+                                </goals>
+                                <phase>package</phase>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <!--outputDirectory></outputDirectory--> <!-- not required?? -->
+
+                            <!-- Set to true to exclude all transitive dependencies. Default is false. -->
+                            <excludeTransitive>false</excludeTransitive>
+
+                            <!-- The path where the libraries are stored within the jnlp structure. not required. by default the libraries are within the working directory -->
+                            <libPath>lib</libPath>
+                            <outputJarVersions>true</outputJarVersions>
+                            <!-- [optional] transitive dependencies filter - if omitted, all transitive dependencies are included -->
+                            <dependencies>
+                                <!-- Note that only groupId and artifactId must be specified here. because of a limitation of the Include/ExcludesArtifactFilter -->
+                                <!--
+                                <includes>
+                                    <include>commons-logging:commons-logging</include>
+                                    <include>commons-cli:commons-cli</include>
+                                </includes>
+                                -->
+                                <!--
+                                <excludes>
+                                    <exclude></exclude>
+                                <excludes>
+                                -->
+                            </dependencies>
+
+                            <!--
+                            <resourcesDirectory>${project.basedir}/src/main/jnlp/resources</resourcesDirectory>
+                            -->
+                            <!-- default value -->
+
+                            <!-- JNLP generation -->
+                            <jnlp>
+                                <!-- default values -->
+                                <!--inputTemplateResourcePath>${project.basedir}</inputTemplateResourcePath-->
+                                <!--inputTemplate>src/main/jnlp/template.vm</inputTemplate--> <!-- relative to inputTemplateResourcePath -->
+                                <outputFile>app.jnlp</outputFile>
+                                <!-- defaults to launch.jnlp -->
+
+                                <!-- used to automatically identify the jar containing the main class. -->
+                                <!-- this is perhaps going to change -->
+                                <mainClass>pl.eurekin.editor.LineDefinitionEditorView</mainClass>
+                                <!--jnlpCodebase-->
+
+                            </jnlp>
+
+
+                            <!-- SIGNING -->
+                            <!-- defining this will automatically sign the jar and its dependencies, if necessary -->
+                            <sign>
+                                <keystore>${basedir}/keystore</keystore>
+                                <keypass>password</keypass>
+                                <!-- we need to override passwords easily from the command line. ${keypass} -->
+                                <storepass>password</storepass>
+                                <!-- ${storepass} -->
+                                <!--storetype>fillme</storetype-->
+                                <alias>EmbeddedTomcatWebstart</alias>
+
+                                <!--validity>fillme</validity-->
+
+                                <!-- only required for generating the keystore -->
+                                <dnameCn>EmbeddedTomcatWebstart</dnameCn>
+                                <dnameOu>Organisation Unit</dnameOu>
+                                <dnameO>Organisation</dnameO>
+                                <dnameL>Location</dnameL>
+                                <dnameSt>State</dnameSt>
+                                <dnameC>Country</dnameC>
+
+                                <verify>true</verify>
+                                <!-- verify that the signing operation succeeded -->
+
+                                <!-- KEYSTORE MANAGEMENT -->
+                                <keystoreConfig>
+                                    <delete>false</delete>
+                                    <!-- delete the keystore -->
+                                    <gen>false</gen>
+                                    <!-- optional shortcut to generate the store. -->
+                                </keystoreConfig>
+                            </sign>
+
+                            <!-- BUILDING PROCESS -->
+
+                            <pack200>true</pack200>
+                            <gzip>true</gzip>
+                            <!-- default force when pack200 false, true when pack200 selected ?? -->
+
+                            <!-- causes a version attribute to be output in each jar resource element, optional, default is false -->
+                            <outputJarVersions>false</outputJarVersions>
+                            <canUnsign>true</canUnsign>
+                            <unsignAlreadySignedJars>true</unsignAlreadySignedJars>
+                            <!--install>false</install--> <!-- not yet supported -->
+                            <verbose>true</verbose>
                         </configuration>
                     </plugin>
                 </plugins>
@@ -125,7 +246,6 @@
                     <failOnError>true</failOnError>
                 </configuration>
             </plugin>
-
 
 
             <plugin>
