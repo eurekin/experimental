@@ -1,6 +1,5 @@
-[![Build Status](https://travis-ci.org/eurekin/experimental.png?branch=master)](https://travis-ci.org/eurekin/experimental)
 
-experimental
+[![Build Status](https://travis-ci.org/eurekin/experimental.png?branch=master)](https://travis-ci.org/eurekin/experimental) Experimental 
 ============
 
 GUI-related boilerplate code generation + declarative interface description builders
@@ -8,9 +7,12 @@ GUI-related boilerplate code generation + declarative interface description buil
 Running example
 ============
 
+Simple master-detail table view application implemented using this project is illustrated below.
+
 ![Swing using the experimental project](http://i.imgur.com/zl7qy4P.gif?1 "Preview")
 
-Execute directly using Java WebStart:
+You can run the example directly using Java WebStart - click on the icon below:
+
 [![JNLP run](http://www.fileinfo.com/images/icons/files/128/jnlp-1858.png)](https://dl-web.dropbox.com/spa/5e9kbyw5dxyp93u/experimental/public/app.jnlp)
 
 Example code
