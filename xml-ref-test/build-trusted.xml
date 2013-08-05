@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!-- This is a wrapper for all the other build files. -->
+<project basedir="." name="project_name">
+  <target name="addTrustedLibraryProperty">
+    <jar file="${jarFile}" update="true">
+      <manifest>
+        <attribute name="Permissions" value="all-permissions" />
+		<attribute name="Codebase" value="https://dl-web.dropbox.com/spa/5e9kbyw5dxyp93u/experimental/public"/>
+      </manifest>
+    </jar>
+  </target>
+
+  <target name="addTrustedLibraries">
+  <echo message="I was called"/>
+    <ac:foreach target="addTrustedLibraryProperty" param="jarFile" xmlns:ac="antlib:net.sf.antcontrib">
+      <path>
+        <fileset dir="target/jnlp/lib" includes="**/*.jar" />
+      </path>
+    </ac:foreach>
+  </target>
+
+</project>

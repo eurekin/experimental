@@ -102,6 +102,21 @@
             <build>
                 <plugins>
                     <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-jar-plugin</artifactId>
+                        <configuration>
+                            <archive>
+                                <manifestEntries>
+                                    <Permissions>all-permissions</Permissions>
+                                    <Codebase>https://dl-web.dropbox.com/spa/5e9kbyw5dxyp93u/experimental/public</Codebase>
+                                </manifestEntries>
+                            </archive>
+                        </configuration>
+                    </plugin>
+
+
+
+                    <plugin>
                         <groupId>org.codehaus.mojo</groupId>
                         <artifactId>webstart-maven-plugin</artifactId>
                         <version>1.0-beta-3</version>
@@ -161,41 +176,41 @@
 
                             <!-- SIGNING -->
                             <!-- defining this will automatically sign the jar and its dependencies, if necessary -->
-                            <sign>
-                                <keystore>${basedir}/keystore</keystore>
-                                <keypass>password</keypass>
-                                <!-- we need to override passwords easily from the command line. ${keypass} -->
-                                <storepass>password</storepass>
-                                <!-- ${storepass} -->
-                                <!--storetype>fillme</storetype-->
-                                <alias>EmbeddedTomcatWebstart</alias>
+                            <!--<sign>-->
+                                <!--<keystore>${basedir}/keystore</keystore>-->
+                                <!--<keypass>password</keypass>-->
+                                <!--&lt;!&ndash; we need to override passwords easily from the command line. ${keypass} &ndash;&gt;-->
+                                <!--<storepass>password</storepass>-->
+                                <!--&lt;!&ndash; ${storepass} &ndash;&gt;-->
+                                <!--&lt;!&ndash;storetype>fillme</storetype&ndash;&gt;-->
+                                <!--<alias>EmbeddedTomcatWebstart</alias>-->
 
-                                <!--validity>fillme</validity-->
+                                <!--&lt;!&ndash;validity>fillme</validity&ndash;&gt;-->
 
-                                <!-- only required for generating the keystore -->
-                                <dnameCn>EmbeddedTomcatWebstart</dnameCn>
-                                <dnameOu>Organisation Unit</dnameOu>
-                                <dnameO>Organisation</dnameO>
-                                <dnameL>Location</dnameL>
-                                <dnameSt>State</dnameSt>
-                                <dnameC>Country</dnameC>
+                                <!--&lt;!&ndash; only required for generating the keystore &ndash;&gt;-->
+                                <!--<dnameCn>EmbeddedTomcatWebstart</dnameCn>-->
+                                <!--<dnameOu>Organisation Unit</dnameOu>-->
+                                <!--<dnameO>Organisation</dnameO>-->
+                                <!--<dnameL>Location</dnameL>-->
+                                <!--<dnameSt>State</dnameSt>-->
+                                <!--<dnameC>Country</dnameC>-->
 
-                                <verify>true</verify>
-                                <!-- verify that the signing operation succeeded -->
+                                <!--<verify>true</verify>-->
+                                <!--&lt;!&ndash; verify that the signing operation succeeded &ndash;&gt;-->
 
-                                <!-- KEYSTORE MANAGEMENT -->
-                                <keystoreConfig>
-                                    <delete>false</delete>
-                                    <!-- delete the keystore -->
-                                    <gen>false</gen>
-                                    <!-- optional shortcut to generate the store. -->
-                                </keystoreConfig>
-                            </sign>
+                                <!--&lt;!&ndash; KEYSTORE MANAGEMENT &ndash;&gt;-->
+                                <!--<keystoreConfig>-->
+                                    <!--<delete>false</delete>-->
+                                    <!--&lt;!&ndash; delete the keystore &ndash;&gt;-->
+                                    <!--<gen>false</gen>-->
+                                    <!--&lt;!&ndash; optional shortcut to generate the store. &ndash;&gt;-->
+                                <!--</keystoreConfig>-->
+                            <!--</sign>-->
 
                             <!-- BUILDING PROCESS -->
 
-                            <pack200>true</pack200>
-                            <gzip>true</gzip>
+                            <pack200>false</pack200>
+                            <gzip>false</gzip>
                             <!-- default force when pack200 false, true when pack200 selected ?? -->
 
                             <!-- causes a version attribute to be output in each jar resource element, optional, default is false -->
@@ -206,6 +221,119 @@
                             <verbose>true</verbose>
                         </configuration>
                     </plugin>
+
+                    <!--Trying out the missing codebase and permissions attribute solution from:-->
+
+                    <plugin>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <version>1.7</version>
+                        <executions>
+                            <execution>
+                                <id>add-trusted-library-attribute</id>
+                                <phase>package</phase>
+                                <configuration>
+                                    <target>
+                                        <ant antfile="${basedir}/build-trusted.xml">
+                                            <target name="addTrustedLibraries" />
+                                        </ant>
+
+                                        <macrodef name="unsignjar">
+
+                                            <attribute name="jar"/>
+
+                                            <sequential>
+                                                <!-- Remove any existing signatures from a JAR file. -->
+                                                <tempfile prefix="usignjar-" destdir="${java.io.tmpdir}" property="temp.file"/>
+                                                <echo message="Removing signatures from JAR: @{jar}"/>
+                                                <mkdir dir="${temp.file}"/>
+
+                                                <unjar src="@{jar}" dest="${temp.file}">
+                                                    <patternset>
+                                                        <include name="**"/>
+                                                        <exclude name="META-INF/*.SF"/>
+                                                        <exclude name="META-INF/*.DSA"/>
+                                                        <exclude name="META-INF/*.RSA"/>
+                                                    </patternset>
+                                                </unjar>
+
+                                                <delete file="@{jar}" failonerror="true"/>
+
+                                                <!-- Touch it in case the file didn't have a manifest.
+                                                     Otherwise the JAR task below will fail if the manifest
+                                                     file doesn't exist. -->
+                                                <mkdir dir="${temp.file}/META-INF"/>
+                                                <touch file="${temp.file}/META-INF/MANIFEST.MF"/>
+
+                                                <jar destfile="@{jar}"
+                                                     basedir="${temp.file}"
+                                                     includes="**"
+                                                     manifest="${temp.file}/META-INF/MANIFEST.MF"/>
+
+                                                <delete dir="${temp.file}" failonerror="true"/>
+                                            </sequential>
+                                        </macrodef>
+
+                                        <!--unsign and then re-sign fileset -->
+                                        <for param="file">
+                                            <path>
+                                                <fileset dir="target/jnlp/lib" includes="**/*.jar"/>
+                                            </path>
+                                            <sequential>
+                                                <antcall target="unsignjar">
+                                                    <param name="jar" value="@{file}"/>
+                                                </antcall>
+                                            </sequential>
+                                        </for>
+
+                                        <echo message="Repacking libs in target/jnlp/lib"/>
+                                        <apply executable="pack200" parallel="false">
+                                            <arg value="--repack"/>
+                                            <fileset dir="target/jnlp/lib" includes="**/*.jar" />
+                                        </apply>
+                                        <for param="file">
+                                            <path>
+                                                <fileset dir="target/jnlp/lib" includes="**/*.jar"/>
+                                            </path>
+                                            <sequential>
+                                                <signjar
+                                                        jar="@{file}"
+                                                        alias="myalias"
+                                                        storepass="mypass"
+                                                        keystore="${basedir}/keystore"/>
+                                            </sequential>
+                                        </for>
+
+
+                                    </target>
+                                </configuration>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <dependencies>
+                            <dependency>
+                                <groupId>ant-contrib</groupId>
+                                <artifactId>ant-contrib</artifactId>
+                                <version>1.0b3</version>
+                                <exclusions>
+                                    <exclusion>
+                                        <groupId>ant</groupId>
+                                        <artifactId>ant</artifactId>
+                                    </exclusion>
+                                </exclusions>
+                            </dependency>
+                            <dependency>
+                                <groupId>org.apache.ant</groupId>
+                                <artifactId>ant-nodeps</artifactId>
+                                <version>1.8.1</version>
+                            </dependency>
+                        </dependencies>
+                    </plugin>
+
+
+
+
                 </plugins>
             </build>
 
