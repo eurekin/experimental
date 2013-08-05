@@ -1,0 +1,122 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- This is a wrapper for all the other build files. -->
+<project basedir="." name="project_name2">
+
+
+    <target name="remove-shas">
+        <copy tofile="file.txt.edit" file="file.txt">
+            <filterchain>
+                <linecontains negate="true">
+                    <contains value="assert"/>
+                </linecontains>
+            </filterchain>
+        </copy>
+    </target>
+
+    <target name="unsignjar">
+        <sequential>
+            <!-- Remove any existing signatures from a JAR file. -->
+            <tempfile prefix="usignjar-" destdir="${java.io.tmpdir}" property="temp.file"/>
+            <echo message="Removing signatures from JAR: ${jar}"/>
+            <mkdir dir="${temp.file}"/>
+
+            <unjar src="${jar}" dest="${temp.file}">
+                <patternset>
+                    <include name="**"/>
+                    <exclude name="META-INF/*.SF"/>
+                    <exclude name="META-INF/*.DSA"/>
+                    <exclude name="META-INF/*.RSA"/>
+                </patternset>
+            </unjar>
+
+            <delete file="${jar}" failonerror="true"/>
+
+            <!-- Touch it in case the file didn't have a manifest.
+                 Otherwise the JAR task below will fail if the manifest
+                 file doesn't exist. -->
+            <mkdir dir="${temp.file}/META-INF"/>
+            <touch file="${temp.file}/META-INF/MANIFEST.MF"/>
+            <copy file="${temp.file}/META-INF/MANIFEST.MF" tofile="${temp.file}/META-INF/MANIFEST.MF-mod">
+                <filterchain>
+                    <linecontains negate="true">
+                        <contains value="SHA1-Digest"/>
+                    </linecontains>
+                    <linecontains negate="true">
+                        <contains value="SHA-256-Digest"/>
+                    </linecontains>
+                </filterchain>
+            </copy>
+            <delete file="${temp.file}/META-INF/MANIFEST.MF" failonerror="true"/>
+            <copy file="${temp.file}/META-INF/MANIFEST.MF-mod" tofile="${temp.file}/META-INF/MANIFEST.MF" />
+            <delete file="${temp.file}/META-INF/MANIFEST.MF-moc" failonerror="true"/>
+
+            <jar destfile="${jar}"
+                 basedir="${temp.file}"
+                 includes="**"
+                 manifest="${temp.file}/META-INF/MANIFEST.MF"/>
+
+            <delete dir="${temp.file}" failonerror="true"/>
+        </sequential>
+    </target>
+
+
+    <target name="addPermissionAndCodebaseProperty">
+        <jar file="${jarFile}" update="true">
+            <manifest>
+                <attribute name="Permissions" value="all-permissions"/>
+                <attribute name="Codebase" value="https://dl-web.dropbox.com/spa/5e9kbyw5dxyp93u/experimental/public"/>
+            </manifest>
+        </jar>
+    </target>
+    <target name="resign-jars">
+        <echo message="resign-jars was called"/>
+        <property name="rootdir" value="target/jnlp/lib" />
+        <sequential>
+            <echo message="Repacking libs in ${rootdir}"/>
+            <apply executable="pack200" parallel="false">
+                <arg value="--repack"/>
+                <fileset dir="target/jnlp/lib" includes="**/*.jar" />
+            </apply>
+            <echo message="Signing libs in ${rootdir}"/>
+            <signjar
+                alias="${keystore.alias}" keystore="${keystore.file}" storepass="${keystore.password}"
+                lazy="true">
+                <path>
+                    <fileset dir="target/jnlp/lib" includes="**/*.jar"/>
+                </path>
+            </signjar>
+        </sequential>
+    </target>
+
+    <target name="unsign-jars">
+        <echo message="unsign-jars was called"/>
+        <ac:foreach target="unsignjar" param="jar" xmlns:ac="antlib:net.sf.antcontrib">
+            <path>
+                <fileset dir="target/jnlp/lib" includes="**/*.jar"/>
+            </path>
+        </ac:foreach>
+    </target>
+
+    <target name="addPermissionAndCodebase">
+        <echo message="addPermissionAndCodebase was called"/>
+        <antcall target="unsign-jars"/>
+        <ac:foreach target="addPermissionAndCodebaseProperty" param="jarFile" xmlns:ac="antlib:net.sf.antcontrib">
+            <path>
+                <fileset dir="target/jnlp/lib" includes="**/*.jar"/>
+            </path>
+        </ac:foreach>
+        <antcall target="resign-jars"/>
+
+
+        <apply executable="pack200" parallel="false" dest="target/jnlp/lib">
+            <arg value="--modification-time=latest"/>
+            <arg value="--deflate-hint=true"/>
+            <arg value="--segment-limit=-1"/>
+            <targetfile/>
+            <srcfile/>
+            <fileset dir="target/jnlp/lib" includes="**/*.jar" />
+            <mapper type="glob" from="*" to="*.pack.gz" />
+        </apply>
+    </target>
+</project>
