@@ -123,7 +123,11 @@ public class LineDefinitionEditorView {
         when(singleTableItemSelected).and(new SimpleState(false) {
             @Override
             public Boolean get() {
-                return selectedObject.get().canShrink();
+                try {
+                    return selectedObjectFromTable.canShrink.call();
+                } catch (Exception e) {
+                    return false;
+                }
             }
         }).activate(shrinkButton);
         when(singleTableItemSelected).and(not(firstTableItemSelected)).activate(upButton);
