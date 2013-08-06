@@ -3,6 +3,7 @@ package experimental.sweeper;
 import org.junit.Before;
 import org.junit.Test;
 
+import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -21,6 +22,28 @@ public class SweeperControllerTest {
     }
 
     @Test
+    public void aZeroMineFieldIsUncoveredDueToNeighboringMineBecameUncovered() {
+        // 1 x 1
+        // 1 1 1
+        // 0 0 0
+        //   ^
+        //   To uncover
+
+        // the situation illustrated above
+        mineField = new MineField(3,3);
+        mineField.get(0, 1).mine.set(true);
+
+        // uncovering designated element
+        sweeperController.moveOnFieldAt(1, 2);
+
+        assertThat(mineField.get(0, 2).uncovered().get(), is(true));
+        assertThat(mineField.get(1, 2).uncovered().get(), is(true));
+        assertThat(mineField.get(2, 2).uncovered().get(), is(true));
+
+        assertThat(mineField.get(1, 1).uncovered().get(), is(false));
+    }
+
+    @Test
     public void oneFieldGameNoMinesWins() {
         mineField.mineAt(0, 0).set(false);
         sweeperController.moveOnFieldAt(0, 0);
@@ -34,6 +57,18 @@ public class SweeperControllerTest {
         sweeperController.moveOnFieldAt(0, 0);
 
         assertLost();
+    }
+
+    @Test
+    public void aFieldWithTwoMinesInNeighborhoodHasNeighbourCountTwo() {
+        mineField = new MineField(3,3);
+
+        mineField.get(0,0).mine.set(true);
+        mineField.get(1,0).mine.set(true);
+
+        Integer minesInNeighborhood = mineField.get(1,1).countMinesInNeighborhood().get();
+
+        assertThat(minesInNeighborhood, is(equalTo(2)));
     }
 
     private void assertLost() {

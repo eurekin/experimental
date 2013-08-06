@@ -1,6 +1,8 @@
 package experimental.sweeper;
 
+import pl.eurekin.experimental.ChangedPropertyListener;
 import pl.eurekin.experimental.Observable;
+import pl.eurekin.experimental.SafePropertyListener;
 import pl.eurekin.experimental.state.*;
 
 import java.util.ArrayList;
@@ -25,17 +27,16 @@ public class SweeperController {
                 new AllFalse(allBooms()));
     }
 
-
     private List<Observable<Boolean>> allVisited() {
         List<Observable<Boolean>> observables = new ArrayList<Observable<Boolean>>();
-        for(FieldElement e : mineField.allFields())
+        for (FieldElement e : mineField.allFields())
             observables.add(e.visited());
         return observables;
     }
 
-    private List<Observable<Boolean>>  allBooms() {
+    private List<Observable<Boolean>> allBooms() {
         List<Observable<Boolean>> observables = new ArrayList<Observable<Boolean>>();
-        for(FieldElement e : mineField.allFields())
+        for (FieldElement e : mineField.allFields())
             observables.add(e.boom);
         return observables;
     }
@@ -53,14 +54,60 @@ public class SweeperController {
     }
 
     public void moveOnFieldAt(int row, int column) {
-        mineField.get(row, column).visited.set(true);
+        mineField.get(row, column).moveOn();
     }
 
     public static class FieldElement {
+        private final SimpleState zeroMinesInNeighbourhood = new SimpleState(true);
+        public ObservableState boom;
         SimpleState mine = new SimpleState(false);
-        private SimpleState visited = new SimpleState(false);
+        private SimpleState visited;
+        private SimpleState noMineNeighbourUncovered = new SimpleState(false);
+        private ObservableState uncovered;
+        private StatefulObservable<Integer> neighboringMineCount;
+        private FieldElement.Updater updaterCallback;
+        private List<FieldElement> neighboringElements;
+        private AnyTrue anyTrue;
 
-        public ObservableState boom = new AndState(visited, mine);
+        public FieldElement() {
+            neighboringMineCount = new StatefulObservable<Integer>(0);
+            updaterCallback = new Updater();
+            visited = new SimpleState(false);
+            uncovered = new OrState(visited,
+                    noMineNeighbourUncovered);
+            boom = new AndState(visited, mine);
+        }
+
+        public void initiateNeighbourCount(List<FieldElement> neighboringElements) {
+            this.neighboringElements = neighboringElements;
+            for (FieldElement neighbour : neighboringElements)
+                neighbour.mine.registerChangeListener(updaterCallback);
+        }
+
+        private void initiateStateWhichDependsOnNeighbourhood() {
+            List<Observable<Boolean>> neighbourStates = new ArrayList<Observable<Boolean>>();
+            for (FieldElement neighbour : neighboringElements)
+                neighbourStates.add(new AndState(neighbour.uncovered, neighbour.zeroMinesInNeighbourhood));
+            anyTrue = new AnyTrue(neighbourStates);
+            anyTrue.registerChangeListener(new SafePropertyListener<Boolean>(new SafePropertyListener.ChangeListener() {
+                @Override
+                public void act() {
+                    noMineNeighbourUncovered.set(anyTrue.get());
+                }
+            }));
+        }
+
+        public ObservableState uncovered() {
+            return uncovered;
+        }
+
+        private void updateCount(Boolean increment) {
+            Integer currentValue = neighboringMineCount.get();
+            int factor = increment ? 1 : -1;
+            Integer newValue = currentValue + factor;
+            neighboringMineCount.notifyOfStateChange(newValue);
+            zeroMinesInNeighbourhood.set(newValue == 0);
+        }
 
         public ObservableState visited() {
             return visited;
@@ -68,6 +115,26 @@ public class SweeperController {
 
         public void moveOn() {
             visited.set(true);
+        }
+
+        public Observable<Integer> countMinesInNeighborhood() {
+            return neighboringMineCount;
+        }
+
+        private class Updater implements ChangedPropertyListener<Boolean> {
+            @Override
+            public void beginNotifying() {
+
+            }
+
+            @Override
+            public void propertyChanged(Boolean oldValue, Boolean newValue) {
+                updateCount(newValue);
+            }
+
+            @Override
+            public void finishNotifying() {
+            }
         }
     }
 

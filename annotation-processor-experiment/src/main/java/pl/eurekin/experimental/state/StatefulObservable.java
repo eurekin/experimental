@@ -19,7 +19,7 @@ public class StatefulObservable<T> implements Observable<T> {
         changeSupport.unregisterListener(listener);
     }
 
-    void notifyOfStateChange(T newValue) {
+    public void notifyOfStateChange(T newValue) {
         changeSupport.firePropertyChangeEvent(newValue);
     }
 

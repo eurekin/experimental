@@ -99,8 +99,6 @@ public class LineDefinitionEditorView {
         ObservableState firstTableItemSelected = does(selectedIndices, contain(firstIndex)); // ?
         ObservableState lastTableItemSelected = does(selectedIndices, contain(lastIndex)); // ?
 
-        // bind(textField).to(FieldViewModel.NAME_PROPERTY, selectedObject);
-
         // prototype for automatic binding
         ViewModelFactory<Field, FieldViewModel> factory = new FieldViewModelFactory();
         final FieldViewModel selectedObjectFromTable =

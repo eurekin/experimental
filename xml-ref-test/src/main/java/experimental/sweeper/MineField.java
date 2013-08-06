@@ -31,6 +31,16 @@ public class MineField {
                 allElements.add(fieldElement);
             }
         }
+
+        for (int i = 0; i < x; i++) {
+            for (int j = 0; j < y; j++) {
+                elements[i][j].initiateNeighbourCount(getNeighboursOf(i,j));
+            }
+        }
+    }
+
+    public static int clampToRange(int minimum, int value, int maximum) {
+        return min(max(minimum, value), maximum);
     }
 
     public FieldElement get(int x, int y) {
@@ -47,23 +57,20 @@ public class MineField {
 
     public List<FieldElement> getNeighboursOf(int x, int y) {
         Integer neighbourhoodRadius = 1;
-        int adjustedXMin = clampToRange(0, x - neighbourhoodRadius, rows-1);
-        int adjustedXMax = clampToRange(0, x + neighbourhoodRadius, rows-1);
+        int adjustedXMin = clampToRange(0, x - neighbourhoodRadius, rows - 1);
+        int adjustedXMax = clampToRange(0, x + neighbourhoodRadius, rows - 1);
 
-        int adjustedYMin = clampToRange(0, y - neighbourhoodRadius, cols-1);
-        int adjustedYMax = clampToRange(0, y + neighbourhoodRadius, cols-1);
+        int adjustedYMin = clampToRange(0, y - neighbourhoodRadius, cols - 1);
+        int adjustedYMax = clampToRange(0, y + neighbourhoodRadius, cols - 1);
 
         Integer precomputedSize = (adjustedXMax - adjustedXMin + 1) * (adjustedYMax - adjustedYMin + 1);
         List<FieldElement> neighbourhood = new ArrayList<FieldElement>(precomputedSize);
 
         for (int row = adjustedXMin; row <= adjustedXMax; row++)
             for (int col = adjustedYMin; col <= adjustedYMax; col++)
-                neighbourhood.add(elements[row][col]);
+                if (!(row == x && col == y))
+                    neighbourhood.add(elements[row][col]);
 
         return neighbourhood;
-    }
-
-    public static int clampToRange(int minimum, int value, int maximum) {
-        return min(max(minimum, value), maximum);
     }
 }
