@@ -32,11 +32,12 @@ public class MineField {
             }
         }
 
-        for (int i = 0; i < x; i++) {
-            for (int j = 0; j < y; j++) {
-                elements[i][j].initiateNeighbourCount(getNeighboursOf(i,j));
-            }
-        }
+        for (int i = 0; i < x; i++)
+            for (int j = 0; j < y; j++)
+                elements[i][j].initiateNeighbourCount(getNeighboursOf(i, j));
+
+        for(FieldElement eachElement : allElements)
+            eachElement.initiateStateWhichDependsOnNeighbourhood();
     }
 
     public static int clampToRange(int minimum, int value, int maximum) {

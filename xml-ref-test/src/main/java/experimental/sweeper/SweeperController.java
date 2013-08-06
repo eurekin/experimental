@@ -67,7 +67,8 @@ public class SweeperController {
         private StatefulObservable<Integer> neighboringMineCount;
         private FieldElement.Updater updaterCallback;
         private List<FieldElement> neighboringElements;
-        private AnyTrue anyTrue;
+        private AnyTrue atLeastOneNeighbourIsUncoveredAndWithoutMines;
+        private boolean imBeingMovedOn;
 
         public FieldElement() {
             neighboringMineCount = new StatefulObservable<Integer>(0);
@@ -84,20 +85,21 @@ public class SweeperController {
                 neighbour.mine.registerChangeListener(updaterCallback);
         }
 
-        private void initiateStateWhichDependsOnNeighbourhood() {
+        public void initiateStateWhichDependsOnNeighbourhood() {
             List<Observable<Boolean>> neighbourStates = new ArrayList<Observable<Boolean>>();
             for (FieldElement neighbour : neighboringElements)
                 neighbourStates.add(new AndState(neighbour.uncovered, neighbour.zeroMinesInNeighbourhood));
-            anyTrue = new AnyTrue(neighbourStates);
-            anyTrue.registerChangeListener(new SafePropertyListener<Boolean>(new SafePropertyListener.ChangeListener() {
+            atLeastOneNeighbourIsUncoveredAndWithoutMines = new AnyTrue(neighbourStates);
+            atLeastOneNeighbourIsUncoveredAndWithoutMines.registerChangeListener(new SafePropertyListener<Boolean>(new SafePropertyListener.ChangeListener() {
                 @Override
                 public void act() {
-                    noMineNeighbourUncovered.set(anyTrue.get());
+                    noMineNeighbourUncovered.set(atLeastOneNeighbourIsUncoveredAndWithoutMines.get());
                 }
             }));
         }
 
         public ObservableState uncovered() {
+            if(imBeingMovedOn) return new SimpleState(false);
             return uncovered;
         }
 
@@ -114,7 +116,9 @@ public class SweeperController {
         }
 
         public void moveOn() {
+            imBeingMovedOn = true;
             visited.set(true);
+            imBeingMovedOn = false;
         }
 
         public Observable<Integer> countMinesInNeighborhood() {

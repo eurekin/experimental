@@ -32,13 +32,14 @@ public class SweeperControllerTest {
         // the situation illustrated above
         mineField = new MineField(3,3);
         mineField.get(0, 1).mine.set(true);
+        sweeperController = new SweeperController(mineField);
 
         // uncovering designated element
         sweeperController.moveOnFieldAt(1, 2);
 
-        assertThat(mineField.get(0, 2).uncovered().get(), is(true));
         assertThat(mineField.get(1, 2).uncovered().get(), is(true));
         assertThat(mineField.get(2, 2).uncovered().get(), is(true));
+        assertThat(mineField.get(0, 2).uncovered().get(), is(true));
 
         assertThat(mineField.get(1, 1).uncovered().get(), is(false));
     }
