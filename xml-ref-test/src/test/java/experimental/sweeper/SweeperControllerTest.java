@@ -36,13 +36,15 @@ public class SweeperControllerTest {
 
         // uncovering designated element
         System.out.println("MOVING");
-        sweeperController.moveOnFieldAt(1, 2);
+        sweeperController.moveOnFieldAt(2, 1);
 
-        assertThat(mineField.get(1, 2).uncovered().get(), is(true));
+        assertThat(mineField.get(2, 0).uncovered().get(), is(true));
+        assertThat(mineField.get(2, 1).uncovered().get(), is(true));
         assertThat(mineField.get(2, 2).uncovered().get(), is(true));
-        assertThat(mineField.get(0, 2).uncovered().get(), is(true));
 
-        assertThat(mineField.get(1, 1).uncovered().get(), is(false));
+        assertThat(mineField.get(1, 0).uncovered().get(), is(true));
+        assertThat(mineField.get(1, 1).uncovered().get(), is(true));
+        assertThat(mineField.get(1, 2).uncovered().get(), is(true));
     }
 
     @Test
