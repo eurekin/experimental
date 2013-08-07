@@ -88,18 +88,34 @@ public class SweeperController {
         public void initiateStateWhichDependsOnNeighbourhood() {
             List<Observable<Boolean>> neighbourStates = new ArrayList<Observable<Boolean>>();
             for (FieldElement neighbour : neighboringElements)
-                neighbourStates.add(new AndState(neighbour.uncovered, neighbour.zeroMinesInNeighbourhood));
+                neighbourStates.add(
+                        new OrState(
+                        new AndState(neighbour.uncovered, neighbour.zeroMinesInNeighbourhood),
+                                neighbour.visited)
+
+                );
             atLeastOneNeighbourIsUncoveredAndWithoutMines = new AnyTrue(neighbourStates);
-            atLeastOneNeighbourIsUncoveredAndWithoutMines.registerChangeListener(new SafePropertyListener<Boolean>(new SafePropertyListener.ChangeListener() {
+            atLeastOneNeighbourIsUncoveredAndWithoutMines.registerChangeListener(new ChangedPropertyListener<Boolean>() {
                 @Override
-                public void act() {
-                    noMineNeighbourUncovered.set(atLeastOneNeighbourIsUncoveredAndWithoutMines.get());
+                public void beginNotifying() {
+                    //To change body of implemented methods use File | Settings | File Templates.
                 }
-            }));
+
+                @Override
+                public void propertyChanged(Boolean oldValue, Boolean newValue) {
+                    if(newValue!=oldValue)
+                        noMineNeighbourUncovered.set(atLeastOneNeighbourIsUncoveredAndWithoutMines.get());
+                }
+
+                @Override
+                public void finishNotifying() {
+                    //To change body of implemented methods use File | Settings | File Templates.
+                }
+            });
         }
 
         public ObservableState uncovered() {
-            if(imBeingMovedOn) return new SimpleState(false);
+            System.out.println("uncovered"+toString()+" = " + uncovered.get());
             return uncovered;
         }
 
@@ -108,7 +124,9 @@ public class SweeperController {
             int factor = increment ? 1 : -1;
             Integer newValue = currentValue + factor;
             neighboringMineCount.notifyOfStateChange(newValue);
-            zeroMinesInNeighbourhood.set(newValue == 0);
+            boolean zeroMinesHere = newValue == 0;
+            System.out.println("count" + toString() + " zeromineshere = " + zeroMinesHere + " count = "+ newValue);
+            zeroMinesInNeighbourhood.set(zeroMinesHere);
         }
 
         public ObservableState visited() {
@@ -116,9 +134,7 @@ public class SweeperController {
         }
 
         public void moveOn() {
-            imBeingMovedOn = true;
             visited.set(true);
-            imBeingMovedOn = false;
         }
 
         public Observable<Integer> countMinesInNeighborhood() {

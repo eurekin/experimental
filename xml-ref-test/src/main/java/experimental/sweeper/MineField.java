@@ -26,7 +26,13 @@ public class MineField {
         for (int i = 0; i < x; i++) {
             elements[i] = new FieldElement[y];
             for (int j = 0; j < y; j++) {
-                FieldElement fieldElement = new FieldElement();
+                final int ii = i, jj = j;
+                FieldElement fieldElement = new FieldElement() {
+                    @Override
+                    public String toString() {
+                        return "["+ii+", " + jj + "]";
+                    }
+                };
                 elements[i][j] = fieldElement;
                 allElements.add(fieldElement);
             }

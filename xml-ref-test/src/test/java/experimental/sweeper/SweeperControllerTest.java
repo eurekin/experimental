@@ -35,6 +35,7 @@ public class SweeperControllerTest {
         sweeperController = new SweeperController(mineField);
 
         // uncovering designated element
+        System.out.println("MOVING");
         sweeperController.moveOnFieldAt(1, 2);
 
         assertThat(mineField.get(1, 2).uncovered().get(), is(true));

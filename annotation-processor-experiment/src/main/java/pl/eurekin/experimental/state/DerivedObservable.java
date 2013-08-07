@@ -21,7 +21,7 @@ public abstract class DerivedObservable<T> extends StatelessObservable<T> {
 
             @Override
             public void propertyChanged(T oldValue, T newValue) {
-                update();
+                update(newValue);
             }
 
             @Override
@@ -57,7 +57,7 @@ public abstract class DerivedObservable<T> extends StatelessObservable<T> {
         return value(observables);
     }
 
-    void update() {
+    protected void update(T newValueFromSingleSource) {
         T oldValue = lastValue;
         T newValue = get();
         lastValue = newValue;

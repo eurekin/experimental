@@ -15,17 +15,19 @@ public class StatelessPropertyChangeSupport<T> {
     }
 
     public void firePropertyChangeEvent(T oldValue, T newValue) {
+        if(oldValue!=newValue)
         for (ChangedPropertyListener<T> listener : listeners)
             listener.propertyChanged(oldValue, newValue);
     }
 
     public void beginNotifying() {
-        for (ChangedPropertyListener<T> listener : listeners)
-            listener.beginNotifying();
+//
+//        for (ChangedPropertyListener<T> listener : listeners)
+//            listener.beginNotifying();
     }
 
     public void finishNotifying() {
-        for (ChangedPropertyListener<T> listener : listeners)
-            listener.finishNotifying();
+//        for (ChangedPropertyListener<T> listener : listeners)
+//            listener.finishNotifying();
     }
 }
