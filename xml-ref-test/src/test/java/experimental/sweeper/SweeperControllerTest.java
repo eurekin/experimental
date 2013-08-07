@@ -22,6 +22,18 @@ public class SweeperControllerTest {
     }
 
     @Test
+    public void testBiiiiigMineField() throws Exception {
+        // the situation illustrated above
+        mineField = new MineField(8,8);
+        mineField.get(0, 0).mine.set(true);
+        sweeperController = new SweeperController(mineField);
+
+        sweeperController.moveOnFieldAt(3, 3);
+
+        assertWon();
+    }
+
+    @Test
     public void aZeroMineFieldIsUncoveredDueToNeighboringMineBecameUncovered() {
         // 1 x 1
         // 1 1 1

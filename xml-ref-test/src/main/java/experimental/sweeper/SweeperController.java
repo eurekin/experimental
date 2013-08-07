@@ -2,7 +2,6 @@ package experimental.sweeper;
 
 import pl.eurekin.experimental.ChangedPropertyListener;
 import pl.eurekin.experimental.Observable;
-import pl.eurekin.experimental.SafePropertyListener;
 import pl.eurekin.experimental.state.*;
 
 import java.util.ArrayList;
@@ -21,16 +20,18 @@ public class SweeperController {
         this.mineField = mineField;
         gameFinished = new OrState(
                 new AnyTrue(allBooms()),
-                new AllTrue(allVisited()));
+                new AllTrue(allNoMineFieldsUncovered()));
         won = new AndState(
-                new AllTrue(allVisited()),
+                new AllTrue(allNoMineFieldsUncovered()),
                 new AllFalse(allBooms()));
     }
 
-    private List<Observable<Boolean>> allVisited() {
+    private List<Observable<Boolean>> allNoMineFieldsUncovered() {
         List<Observable<Boolean>> observables = new ArrayList<Observable<Boolean>>();
         for (FieldElement e : mineField.allFields())
-            observables.add(e.visited());
+            observables.add(
+                    new XorState(e.uncovered(), e.mine))
+                    ;
         return observables;
     }
 
