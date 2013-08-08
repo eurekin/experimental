@@ -1,5 +1,9 @@
-[![Build Status](https://travis-ci.org/eurekin/experimental.png?branch=master)](https://travis-ci.org/eurekin/experimental) Experimental 
+experimental [![Build Status](https://travis-ci.org/eurekin/experimental.png?branch=master)](https://travis-ci.org/eurekin/experimental) [![Coverage Status](https://coveralls.io/repos/eurekin/experimental/badge.png?branch=minesweeper_uncovering_problems)](https://coveralls.io/r/eurekin/experimental?branch=minesweeper_uncovering_problems)
 ============
+
+
+
+
 
 GUI-related boilerplate code generation + declarative interface description builders
 
@@ -10,7 +14,7 @@ Simple master-detail table view application implemented using this project is il
 
 ![Swing using the experimental project](http://i.imgur.com/zl7qy4P.gif?1 "Preview")
 
-You can running the example directly using Java WebStart - click on the icon below:
+You can try running the example directly using Java WebStart - click on the icon below:
 
 [![JNLP run](http://www.fileinfo.com/images/icons/files/128/jnlp-1858.png)](https://dl-web.dropbox.com/spa/5e9kbyw5dxyp93u/experimental/public/app.jnlp)
 
