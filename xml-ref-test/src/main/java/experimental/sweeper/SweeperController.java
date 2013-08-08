@@ -91,7 +91,7 @@ public class SweeperController {
             for (FieldElement neighbour : neighboringElements)
                 neighbourStates.add(
                         new OrState(
-                        new AndState(neighbour.uncovered, neighbour.zeroMinesInNeighbourhood),
+                                new AndState(neighbour.uncovered, neighbour.zeroMinesInNeighbourhood),
                                 neighbour.visited)
 
                 );
@@ -99,24 +99,21 @@ public class SweeperController {
             atLeastOneNeighbourIsUncoveredAndWithoutMines.registerChangeListener(new ChangedPropertyListener<Boolean>() {
                 @Override
                 public void beginNotifying() {
-                    //To change body of implemented methods use File | Settings | File Templates.
                 }
 
                 @Override
                 public void propertyChanged(Boolean oldValue, Boolean newValue) {
-                    if(newValue!=oldValue)
+                    if (newValue != oldValue)
                         noMineNeighbourUncovered.set(atLeastOneNeighbourIsUncoveredAndWithoutMines.get());
                 }
 
                 @Override
                 public void finishNotifying() {
-                    //To change body of implemented methods use File | Settings | File Templates.
                 }
             });
         }
 
         public ObservableState uncovered() {
-            System.out.println("uncovered"+toString()+" = " + uncovered.get());
             return uncovered;
         }
 
@@ -126,7 +123,6 @@ public class SweeperController {
             Integer newValue = currentValue + factor;
             neighboringMineCount.notifyOfStateChange(newValue);
             boolean zeroMinesHere = newValue == 0;
-            System.out.println("count" + toString() + " zeromineshere = " + zeroMinesHere + " count = "+ newValue);
             zeroMinesInNeighbourhood.set(zeroMinesHere);
         }
 

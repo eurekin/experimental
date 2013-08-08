@@ -27,11 +27,6 @@ public class AnyTrue extends DerivedState {
 
     @Override
     public Boolean value(Observable<Boolean>... baseStates) {
-        System.out.print(""+ hashCode() + " AnyTrue count = " + trueCount + " states = ");
-        for (Observable<Boolean> state : baseStates) {
-            System.out.print(" " + state.get().toString());
-        }
-        System.out.println();
         return trueCount != 0;
 //        return false;
     }

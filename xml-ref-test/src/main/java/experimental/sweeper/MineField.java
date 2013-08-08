@@ -26,13 +26,7 @@ public class MineField {
         for (int i = 0; i < x; i++) {
             elements[i] = new FieldElement[y];
             for (int j = 0; j < y; j++) {
-                final int ii = i, jj = j;
-                FieldElement fieldElement = new FieldElement() {
-                    @Override
-                    public String toString() {
-                        return "["+ii+", " + jj + "]";
-                    }
-                };
+                FieldElement fieldElement = new FieldElement();
                 elements[i][j] = fieldElement;
                 allElements.add(fieldElement);
             }
@@ -42,7 +36,7 @@ public class MineField {
             for (int j = 0; j < y; j++)
                 elements[i][j].initiateNeighbourCount(getNeighboursOf(i, j));
 
-        for(FieldElement eachElement : allElements)
+        for (FieldElement eachElement : allElements)
             eachElement.initiateStateWhichDependsOnNeighbourhood();
     }
 

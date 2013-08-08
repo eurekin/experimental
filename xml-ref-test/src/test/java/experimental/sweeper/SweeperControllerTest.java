@@ -24,7 +24,7 @@ public class SweeperControllerTest {
     @Test
     public void testBiiiiigMineField() throws Exception {
         // the situation illustrated above
-        mineField = new MineField(8,8);
+        mineField = new MineField(16, 30);
         mineField.get(0, 0).mine.set(true);
         sweeperController = new SweeperController(mineField);
 
