@@ -1,2 +1,3 @@
 language: java
 script: "mvn test -f module-run/pom.xml"
+secure: "XXG/DQoZIykF4nYENNclAaeTAyqrT0I4X/Zc7Pc0OiZmDhAJ2Nwq/H5vIufk2lGbs1Sf48hD+DoHE21RKDlJuhxwdDlIPlw8x27NzPOn55zYCJVvhJVostrtp6Y/MHCFl5/3kc6dZmgxODN+Lvdw763IJHXG8cTeyjUWDMu3DgI="
