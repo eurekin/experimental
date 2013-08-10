@@ -226,7 +226,7 @@
 
                                 <!-- used to automatically identify the jar containing the main class. -->
                                 <!-- this is perhaps going to change -->
-                                <mainClass>pl.eurekin.editor.LineDefinitionEditorView</mainClass>
+                                <mainClass>experimental.sweeper.Sweeper</mainClass>
                                 <!--jnlpCodebase-->
 
                             </jnlp>
