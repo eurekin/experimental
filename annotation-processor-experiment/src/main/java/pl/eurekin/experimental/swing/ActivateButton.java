@@ -6,10 +6,10 @@ import pl.eurekin.experimental.state.ObservableState;
 import javax.swing.*;
 
 public class ActivateButton {
-    private final JButton buttonToUpdate;
+    private final AbstractButton buttonToUpdate;
     private final ObservableState observableState;
 
-    public ActivateButton(ObservableState observableState, JButton button) {
+    public ActivateButton(ObservableState observableState, AbstractButton button) {
         this.observableState = observableState;
         if (button.getAction() != null) throw new ActionOnButtonExistException();
         buttonToUpdate = button;

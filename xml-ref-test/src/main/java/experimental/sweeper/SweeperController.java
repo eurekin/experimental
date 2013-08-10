@@ -90,9 +90,7 @@ public class SweeperController {
             List<Observable<Boolean>> neighbourStates = new ArrayList<Observable<Boolean>>();
             for (FieldElement neighbour : neighboringElements)
                 neighbourStates.add(
-                        new OrState(
-                                new AndState(neighbour.uncovered, neighbour.zeroMinesInNeighbourhood),
-                                neighbour.visited)
+                       new AndState(neighbour.uncovered, neighbour.zeroMinesInNeighbourhood)
 
                 );
             atLeastOneNeighbourIsUncoveredAndWithoutMines = new AnyTrue(neighbourStates);

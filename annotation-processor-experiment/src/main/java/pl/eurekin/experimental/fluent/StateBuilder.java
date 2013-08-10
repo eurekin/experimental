@@ -17,7 +17,7 @@ public class StateBuilder {
         this.state = state;
     }
 
-    public StateBuilder activate(JButton deleteButton) {
+    public StateBuilder activate(AbstractButton deleteButton) {
         new ActivateButton(state, deleteButton);
         return this;
     }
