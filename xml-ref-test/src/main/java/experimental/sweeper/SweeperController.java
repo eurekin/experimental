@@ -15,15 +15,37 @@ public class SweeperController {
     private MineField mineField;
     private ObservableState gameFinished;
     private ObservableState won;
+    private ObservableState lost;
 
     public SweeperController(MineField mineField) {
         this.mineField = mineField;
         gameFinished = new OrState(
                 new AnyTrue(allBooms()),
                 new AllTrue(allNoMineFieldsUncovered()));
+        lost = new AnyTrue(allMineFieldsUncovered());
         won = new AndState(
                 new AllTrue(allNoMineFieldsUncovered()),
                 new AllFalse(allBooms()));
+    }
+
+    private List<Observable<Boolean>> allMineFieldsUncovered() {
+        return deriveStateFromCollectionUsing(mineField.allFields(),
+                new StateDerivator<FieldElement>() {
+                    @Override
+                    public ObservableState deriveFrom(FieldElement base) {
+                        return new AndState(base.visited(), base.mine);
+                    }
+                });
+    }
+
+    private <T> List<Observable<Boolean>> deriveStateFromCollectionUsing(
+            Iterable<T> collection,
+            StateDerivator<T> derivator) {
+        List<Observable<Boolean>> observables = new ArrayList<Observable<Boolean>>();
+        for (T element : collection) {
+            observables.add(derivator.deriveFrom(element));
+        }
+        return observables;
     }
 
     private List<Observable<Boolean>> allNoMineFieldsUncovered() {
@@ -50,12 +72,20 @@ public class SweeperController {
         return gameFinished;
     }
 
+    public ObservableState isLost() {
+        return lost;
+    }
+
     public ObservableState isWon() {
         return won;
     }
 
     public void moveOnFieldAt(int row, int column) {
         mineField.get(row, column).moveOn();
+    }
+
+    private static interface StateDerivator<T> {
+        public ObservableState deriveFrom(T base);
     }
 
     public static class FieldElement {
@@ -90,7 +120,7 @@ public class SweeperController {
             List<Observable<Boolean>> neighbourStates = new ArrayList<Observable<Boolean>>();
             for (FieldElement neighbour : neighboringElements)
                 neighbourStates.add(
-                       new AndState(neighbour.uncovered, neighbour.zeroMinesInNeighbourhood)
+                        new AndState(neighbour.uncovered, neighbour.zeroMinesInNeighbourhood)
 
                 );
             atLeastOneNeighbourIsUncoveredAndWithoutMines = new AnyTrue(neighbourStates);

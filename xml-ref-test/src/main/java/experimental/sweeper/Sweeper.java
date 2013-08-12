@@ -9,9 +9,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 
-import static pl.eurekin.experimental.ExpressionBuilder.not;
-import static pl.eurekin.experimental.ExpressionBuilder.when;
-
 /**
  * @author greg.matoga@gmail.com
  */
@@ -21,6 +18,7 @@ public class Sweeper {
     private final SweeperController sweeperController;
     private int rows;
     private int columns;
+    private JPanel mainPanel;
 
     public Sweeper(int rows, int columns) {
         this.rows = rows;
@@ -28,6 +26,23 @@ public class Sweeper {
 
         mineField = new MineField(rows, columns);
         sweeperController = new SweeperController(mineField);
+        sweeperController.isLost().registerChangeListener(new ChangedPropertyListener<Boolean>() {
+            @Override
+            public void beginNotifying() {
+            }
+
+            @Override
+            public void propertyChanged(Boolean oldValue, Boolean newValue) {
+                if(newValue) {
+                    System.out.println("YOU LOST!!!");
+                    ((CardLayout) mainPanel.getLayout()).show(mainPanel, "lost");
+                }
+            }
+
+            @Override
+            public void finishNotifying() {
+            }
+        });
         sweeperController.isWon().registerChangeListener(new ChangedPropertyListener<Boolean>() {
             @Override
             public void beginNotifying() {
@@ -38,6 +53,8 @@ public class Sweeper {
             public void propertyChanged(Boolean oldValue, Boolean newValue) {
                 if(newValue==true) {
                     System.out.println("YOU WON!!!");
+                    ((CardLayout) mainPanel.getLayout()).show(mainPanel, "won");
+
                 }
             }
 
@@ -46,6 +63,10 @@ public class Sweeper {
             }
         });
 
+        putRandomMines(rows, columns);
+    }
+
+    private void putRandomMines(int rows, int columns) {
         for (int i = 0; i < 10; i++) {
             mineField.get(
                     (int) (Math.random() * rows),
@@ -73,12 +94,11 @@ public class Sweeper {
 
     private JFrame constructMainFrame() {
         JFrame frame = new JFrame("MineSweeper");
-        JPanel mines = getMinePanel();
+        JPanel mines = getMainPanel();
         frame.setContentPane(mines);
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         frame.pack();
-        Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
-        frame.setLocation(dim.width / 2 - frame.getSize().width / 2, dim.height / 2 - frame.getSize().height / 2);
+        frame.setResizable(false);
         frame.setLocationRelativeTo(null);
         try {
             frame.setIconImage(ImageIO.read(
@@ -89,10 +109,26 @@ public class Sweeper {
         return frame;
     }
 
+    private JPanel getMainPanel() {
+        JPanel minePanel = getMinePanel();
+        JPanel lostPanel = getSingleTextPanel("<html>YOU<br>LOST");
+        JPanel wonPanel = getSingleTextPanel("<html>YOU<br>WON!!!");
+
+        mainPanel = new JPanel(new CardLayout());
+        mainPanel.add(minePanel);
+        mainPanel.add(lostPanel, "lost");
+        mainPanel.add(wonPanel, "won");
+
+        return mainPanel;
+    }
+
     private JPanel getMinePanel() {
         JPanel minePanel = new JPanel();
         GridLayout layout = new GridLayout(0, columns);
+        layout.setHgap(-4);
+        layout.setVgap(-4);
         minePanel.setLayout(layout);
+        minePanel.setBackground(Color.LIGHT_GRAY);
         for (int row = 0; row < rows; row++) {
             for (int col = 0; col < columns; col++) {
                 minePanel.add(getButtonAt(row, col));
@@ -101,12 +137,24 @@ public class Sweeper {
         return minePanel;
     }
 
+    private JPanel getSingleTextPanel(String labelText) {
+        JPanel lostPanel = new JPanel(new BorderLayout());
+        JLabel lostLabel = new JLabel(labelText);
+        lostLabel.setFont(lostLabel.getFont().deriveFont(50.0f));
+        lostLabel.setHorizontalAlignment(JLabel.CENTER);
+        lostLabel.setForeground(Color.red);
+        lostPanel.add(lostLabel, BorderLayout.CENTER);
+        return lostPanel;
+    }
+
     private JComponent getButtonAt(final int row, final int col) {
-        final JToggleButton jButton = new JToggleButton();
-        jButton.setPreferredSize(new Dimension(20, 20));
+        final JToggleButton  jButton = new JToggleButton();
+        jButton.setPreferredSize(new Dimension(30, 30));
         SweeperController.FieldElement fieldElement = mineField.get(row, col);
         Integer minesInNeib = fieldElement.countMinesInNeighborhood().get();
         jButton.setMargin(new Insets(0, 0, 0, 0));
+        jButton.setBorderPainted(false);
+        jButton.setFocusPainted(false);
         final String text = fieldElement.mine.get() ? "<html><B>X" : minesInNeib == 0 ? " " : minesInNeib.toString();
 //        jButton.setText(                text        );
         mineField.get(row, col).uncovered().registerChangeListener(new ChangedPropertyListener<Boolean>() {
@@ -120,7 +168,7 @@ public class Sweeper {
                 EventQueue.invokeLater(new Runnable() {
                     @Override
                     public void run() {
-                        jButton.setEnabled(!newValue);
+                        jButton.setEnabled(!mineField.get(row, col).uncovered().get());
                         jButton.setText(text);
                     }
                 });
@@ -128,7 +176,7 @@ public class Sweeper {
 
             @Override
             public void finishNotifying() {
-                //To change body of implemented methods use File | Settings | File Templates.
+                //To change body of implemented methods use File | S    ettings | File Templates.
             }
         });
         jButton.addActionListener(new ActionListener() {
@@ -136,6 +184,7 @@ public class Sweeper {
             public void actionPerformed(ActionEvent e) {
                 System.out.println("Move on " + row + ", " + col);
                 sweeperController.moveOnFieldAt(row, col);
+                jButton.setSelected(false);
             }
         });
         return jButton;
