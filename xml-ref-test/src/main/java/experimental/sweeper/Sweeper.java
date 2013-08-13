@@ -125,8 +125,8 @@ public class Sweeper {
     private JPanel getMinePanel() {
         JPanel minePanel = new JPanel();
         GridLayout layout = new GridLayout(0, columns);
-        layout.setHgap(-4);
-        layout.setVgap(-4);
+        layout.setHgap(0);
+        layout.setVgap(0);
         minePanel.setLayout(layout);
         minePanel.setBackground(Color.LIGHT_GRAY);
         for (int row = 0; row < rows; row++) {
@@ -152,9 +152,17 @@ public class Sweeper {
         jButton.setPreferredSize(new Dimension(30, 30));
         SweeperController.FieldElement fieldElement = mineField.get(row, col);
         Integer minesInNeib = fieldElement.countMinesInNeighborhood().get();
-        jButton.setMargin(new Insets(0, 0, 0, 0));
+//de-spacing:
+        jButton.setBorderPainted(false);
+        jButton.setMargin(new Insets(0,0,0,0));
         jButton.setBorderPainted(false);
         jButton.setFocusPainted(false);
+        //other stuff I always do to my image-buttons:
+        jButton.setFocusPainted(false);
+        jButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
+
+
+
         final String text = fieldElement.mine.get() ? "<html><B>X" : minesInNeib == 0 ? " " : minesInNeib.toString();
 //        jButton.setText(                text        );
         mineField.get(row, col).uncovered().registerChangeListener(new ChangedPropertyListener<Boolean>() {
