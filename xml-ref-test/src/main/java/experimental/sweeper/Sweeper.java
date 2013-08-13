@@ -1,5 +1,9 @@
 package experimental.sweeper;
 
+import com.jhlabs.image.BlurFilter;
+import org.jdesktop.jxlayer.JXLayer;
+import org.jdesktop.jxlayer.plaf.effect.BufferedImageOpEffect;
+import org.jdesktop.jxlayer.plaf.ext.LockableUI;
 import pl.eurekin.experimental.ChangedPropertyListener;
 
 import javax.imageio.ImageIO;
@@ -19,6 +23,8 @@ public class Sweeper {
     private int rows;
     private int columns;
     private JPanel mainPanel;
+    private JXLayer<JComponent> mainPanelLayer;
+    private LockableUI blurUI;
 
     public Sweeper(int rows, int columns) {
         this.rows = rows;
@@ -35,7 +41,8 @@ public class Sweeper {
             public void propertyChanged(Boolean oldValue, Boolean newValue) {
                 if(newValue) {
                     System.out.println("YOU LOST!!!");
-                    ((CardLayout) mainPanel.getLayout()).show(mainPanel, "lost");
+//                    ((CardLayout) mainPanel.getLayout()).show(mainPanel, "lost");
+                    blurUI.setLocked(true);
                 }
             }
 
@@ -53,8 +60,8 @@ public class Sweeper {
             public void propertyChanged(Boolean oldValue, Boolean newValue) {
                 if(newValue==true) {
                     System.out.println("YOU WON!!!");
-                    ((CardLayout) mainPanel.getLayout()).show(mainPanel, "won");
-
+//                    ((CardLayout) mainPanel.getLayout()).show(mainPanel, "won");
+                    blurUI.setLocked(true);
                 }
             }
 
@@ -114,8 +121,13 @@ public class Sweeper {
         JPanel lostPanel = getSingleTextPanel("<html>YOU<br>LOST");
         JPanel wonPanel = getSingleTextPanel("<html>YOU<br>WON!!!");
 
+        mainPanelLayer = new JXLayer<JComponent>(minePanel);
+
+        blurUI = new LockableUI(new BufferedImageOpEffect(new BlurFilter()));
+        mainPanelLayer.setUI(blurUI);
+
         mainPanel = new JPanel(new CardLayout());
-        mainPanel.add(minePanel);
+        mainPanel.add(mainPanelLayer);
         mainPanel.add(lostPanel, "lost");
         mainPanel.add(wonPanel, "won");
 
