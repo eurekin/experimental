@@ -98,8 +98,20 @@ public class SweeperController {
         private StatefulObservable<Integer> neighboringMineCount;
         private FieldElement.Updater updaterCallback;
         private List<FieldElement> neighboringElements;
-        private AnyTrue atLeastOneNeighbourIsUncoveredAndWithoutMines;
-        private boolean imBeingMovedOn;
+        private OverridableState atLeastOneNeighbourIsUncoveredAndWithoutMines;
+
+        public void overrideOn() {
+            atLeastOneNeighbourIsUncoveredAndWithoutMines.forceToReturn(false);
+        }
+
+        public void overrideOff() {
+            atLeastOneNeighbourIsUncoveredAndWithoutMines.returnToNormal();
+        }
+
+        public void reset() {
+            visited.set(false);
+
+        }
 
         public FieldElement() {
             neighboringMineCount = new StatefulObservable<Integer>(0);
@@ -123,7 +135,7 @@ public class SweeperController {
                         new AndState(neighbour.uncovered, neighbour.zeroMinesInNeighbourhood)
 
                 );
-            atLeastOneNeighbourIsUncoveredAndWithoutMines = new AnyTrue(neighbourStates);
+            atLeastOneNeighbourIsUncoveredAndWithoutMines = new OverridableState(new AnyTrue(neighbourStates));
             atLeastOneNeighbourIsUncoveredAndWithoutMines.registerChangeListener(new ChangedPropertyListener<Boolean>() {
                 @Override
                 public void beginNotifying() {
@@ -154,7 +166,7 @@ public class SweeperController {
             zeroMinesInNeighbourhood.set(zeroMinesHere);
         }
 
-        public ObservableState visited() {
+        public SimpleState visited() {
             return visited;
         }
 
@@ -164,6 +176,47 @@ public class SweeperController {
 
         public Observable<Integer> countMinesInNeighborhood() {
             return neighboringMineCount;
+        }
+
+        public String debugText() {
+            return "<html>" +
+                    "neighboringMineCount = " + neighboringMineCount.get() + "<br>" +
+                    "zeroMinesInNeighbourhood = " + zeroMinesInNeighbourhood.get() + "<br>" +
+                    "uncovered = " + uncovered.get() + "<br>" +
+                    "visited = " + visited().get() + "<br>"
+
+                    ;
+        }
+
+        private static class OverridableState extends DerivedState {
+            private final ObservableState base;
+            private boolean valueOverridden = false;
+            private boolean valueToReturnInCaseOfOverride = false;
+
+
+            public OverridableState(ObservableState observableState) {
+                super(observableState);
+                valueOverridden = false;
+                valueToReturnInCaseOfOverride = false;
+                base = observableState;
+            }
+
+            public void forceToReturn(boolean value) {
+                valueOverridden = true;
+                valueToReturnInCaseOfOverride = value;
+                super.update(false);
+            }
+
+            public void returnToNormal() {
+                valueOverridden = false;
+                super.update(false);
+            }
+
+
+            @Override
+            protected Boolean value(Observable<Boolean>... baseStates) {
+                return valueOverridden ? valueToReturnInCaseOfOverride : baseStates[0].get();
+            }
         }
 
         private class Updater implements ChangedPropertyListener<Boolean> {
