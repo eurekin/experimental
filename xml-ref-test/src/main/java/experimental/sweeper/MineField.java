@@ -40,6 +40,24 @@ public class MineField {
             eachElement.initiateStateWhichDependsOnNeighbourhood();
     }
 
+    public void putRandomMines(int count) {
+        for (int i = 0; i < count; i++) {
+            get(
+                    (int) (Math.random() * rows),
+                    (int) (Math.random() * cols)
+            ).mine.set(true);
+        }
+    }
+
+    public void restart(int mines) {
+        for (FieldElement fe : allFields()) fe.overrideOn();
+        for (FieldElement fe : allFields()) fe.reset();
+        for (FieldElement fe : allFields()) fe.mine.set(false);
+        putRandomMines(mines);
+        for (FieldElement fe : allFields()) fe.overrideOff();
+
+    }
+
     public static int clampToRange(int minimum, int value, int maximum) {
         return min(max(minimum, value), maximum);
     }

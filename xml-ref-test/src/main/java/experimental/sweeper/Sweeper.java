@@ -3,13 +3,11 @@ package experimental.sweeper;
 import com.jhlabs.image.BlurFilter;
 import org.jdesktop.jxlayer.JXLayer;
 import org.jdesktop.jxlayer.plaf.effect.BufferedImageOpEffect;
-import org.jdesktop.jxlayer.plaf.effect.LayerEffect;
 import org.jdesktop.jxlayer.plaf.ext.LockableUI;
 import pl.eurekin.experimental.ChangedPropertyListener;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
-import javax.swing.border.BevelBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -24,6 +22,7 @@ public class Sweeper {
 
     private final MineField mineField;
     private final SweeperController sweeperController;
+    private final int mineCount = 80;
     private int rows;
     private int columns;
     private JPanel mainPanel;
@@ -45,52 +44,36 @@ public class Sweeper {
         sweeperController = new SweeperController(mineField);
         restartButton = new JButton("RESTART");
         restartButton.setFont(new Font("Dialog", Font.PLAIN, 50));
-        int i = 10;
-        int s = 40;
-        restartButton.setMargin(new Insets(i,s,i,s));
+        restartButton.setMargin(new Insets(10, 40, 10, 40));
         restartButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                restart();
+                mineField.restart(mineCount);
             }
         });
-        sweeperController.isLost().registerChangeListener(new ChangedPropertyListener<Boolean>() {
-            @Override
-            public void beginNotifying() {
-            }
+        final ChangedPropertyListener<Boolean> lockingListener = new
 
-            @Override
-            public void propertyChanged(Boolean oldValue, Boolean newValue) {
-                if (newValue) {
-                    System.out.println("YOU LOST!!!");
-                    lock(true);
-                }
-            }
+                ChangedPropertyListener<Boolean>() {
+                    @Override
+                    public void beginNotifying() {
+                    }
 
-            @Override
-            public void finishNotifying() {
-            }
-        });
-        sweeperController.isWon().registerChangeListener(new ChangedPropertyListener<Boolean>() {
-            @Override
-            public void beginNotifying() {
+                    @Override
+                    public void propertyChanged(Boolean oldValue, Boolean newValue) {
+                        if (newValue) {
+                            System.out.println("YOU LOST!!!");
+                            lock(true);
+                        }
+                    }
 
-            }
+                    @Override
+                    public void finishNotifying() {
+                    }
+                };
+        sweeperController.isLost().registerChangeListener(lockingListener);
+        sweeperController.isWon().registerChangeListener(lockingListener);
 
-            @Override
-            public void propertyChanged(Boolean oldValue, Boolean newValue) {
-                if (newValue == true) {
-                    System.out.println("YOU WON!!!");
-                    lock(true);
-                }
-            }
-
-            @Override
-            public void finishNotifying() {
-            }
-        });
-
-        putRandomMines(rows, columns);
+        mineField.putRandomMines(mineCount);
     }
 
     public static void main(String... args) throws ClassNotFoundException, UnsupportedLookAndFeelException, InstantiationException, IllegalAccessException {
@@ -99,33 +82,12 @@ public class Sweeper {
         sweeper.run();
     }
 
-    private void restart() {
-        for (FieldElement fe : mineField.allFields()) fe.overrideOn();
-        for (FieldElement fe : mineField.allFields()) fe.reset();
-        for (FieldElement fe : mineField.allFields()) fe.mine.set(false);
-        putRandomMines(rows, columns);
-        for (FieldElement fe : mineField.allFields()) fe.overrideOff();
-
-        lock(false);
-    }
-
     private void lock(boolean lock) {
         reactWhenButtonNeedsAnUpdate.propertyChanged(null, null);
         blurUI.setLocked(lock);
     }
 
-    private void putRandomMines(int rows, int columns) {
-        for (int i = 0; i < 80; i++) {
-            mineField.get(
-                    (int) (Math.random() * rows),
-                    (int) (Math.random() * columns)
-            ).mine.set(true);
-        }
-    }
-
-    private void run() throws ClassNotFoundException, UnsupportedLookAndFeelException, InstantiationException, IllegalAccessException {
-
-
+    private void run() {
         EventQueue.invokeLater(new Runnable() {
             @Override
             public void run() {
@@ -239,15 +201,12 @@ public class Sweeper {
                 boolean lost = sweeperController.isLost().get();
                 boolean mine = fieldElement.mine.get();
 
-                final String text = !uncovered && !finished ? " " :
-                        mine ? "<html><B>X" :
-                                minesInNeighborhood == 0 || (finished && !uncovered) ? " " :
-                                        "" + minesInNeighborhood;
+                String text =
+                        textForMineButton(minesInNeighborhood, uncovered, finished, mine);
 
 
-                String outcomeText = won ? winText :
-                        lost ? lostText :
-                                finished ? finishedText : inProgressText;
+                String outcomeText =
+                        textForFinalOutcome(finished, won, lost);
 
                 outcomeLabel.setText(outcomeText);
                 jButton.setToolTipText(fieldElement.debugText());
@@ -275,48 +234,17 @@ public class Sweeper {
         return jButton;
     }
 
-    /**
-     * Subclass of the {@link LockableUI} which shows a button
-     * that allows to unlock the {@link JXLayer} when it is locked
-     */
-    public static class EnhancedLockableUI extends LockableUI {
-        private JButton unlockButton = new JButton("Unlock");
-        private JPanel somePanel;
-
-        public EnhancedLockableUI(JPanel somePanel, LayerEffect... layerEffects) {
-            super(layerEffects);
-            this.somePanel = somePanel;
-            somePanel.setVisible(false);
-        }
-
-        @Override
-        @SuppressWarnings("unchecked")
-        public void installUI(JComponent c) {
-            super.installUI(c);
-            JXLayer<JComponent> l = (JXLayer<JComponent>) c;
-            l.getGlassPane().setLayout(new BorderLayout());
-            l.getGlassPane().add(aComponentToShowOnUI(), BorderLayout.CENTER);
-            aComponentToShowOnUI().setCursor(Cursor.getDefaultCursor());
-        }
-
-        private JComponent aComponentToShowOnUI() {
-            return somePanel ;
-        }
-
-        @Override
-        @SuppressWarnings("unchecked")
-        public void uninstallUI(JComponent c) {
-            super.uninstallUI(c);
-            JXLayer<JComponent> l = (JXLayer<JComponent>) c;
-            l.getGlassPane().setLayout(new FlowLayout());
-            l.getGlassPane().remove(aComponentToShowOnUI());
-            aComponentToShowOnUI().setCursor(Cursor.getDefaultCursor());
-        }
-
-        public void setLocked(boolean isLocked) {
-            super.setLocked(isLocked);
-            aComponentToShowOnUI().setVisible(isLocked);
-
-        }
+    private String textForFinalOutcome(boolean finished, boolean won, boolean lost) {
+        return won ? winText :
+                lost ? lostText :
+                        finished ? finishedText : inProgressText;
     }
+
+    private String textForMineButton(int minesInNeighborhood, boolean uncovered, boolean finished, boolean mine) {
+        return !uncovered && !finished ? " " :
+                mine ? "<html><B>X" :
+                        minesInNeighborhood == 0 || (finished && !uncovered) ? " " :
+                                "" + minesInNeighborhood;
+    }
+
 }
