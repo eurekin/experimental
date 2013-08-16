@@ -27,7 +27,7 @@ import static pl.eurekin.experimental.fluent.CustomObservables.*;
 public class LineDefinitionEditorView {
 
     private JTable table1;
-    private JPanel panel1;
+    public JPanel panel1;
     private JButton newButton;
     private JButton deleteButton;
     private JButton growButton;

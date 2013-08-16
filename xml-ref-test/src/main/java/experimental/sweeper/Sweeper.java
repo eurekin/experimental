@@ -11,6 +11,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 
 import static experimental.sweeper.SweeperController.FieldElement;
@@ -18,7 +19,7 @@ import static experimental.sweeper.SweeperController.FieldElement;
 /**
  * @author greg.matoga@gmail.com
  */
-public class Sweeper {
+    public class Sweeper {
 
     private final MineField mineField;
     private final SweeperController sweeperController;
@@ -35,6 +36,7 @@ public class Sweeper {
     private String winText = "<html> YOU WIN!";
     private String lostText = "<html> YOU LOST";
     private String finishedText = "...finished!";
+    private JFrame frame;
 
     public Sweeper(int rows, int columns) {
         this.rows = rows;
@@ -49,14 +51,12 @@ public class Sweeper {
             @Override
             public void actionPerformed(ActionEvent e) {
                 mineField.restart(mineCount);
+                lock(false);
             }
         });
-        final ChangedPropertyListener<Boolean> lockingListener = new
-
-                ChangedPropertyListener<Boolean>() {
-                    @Override
-                    public void beginNotifying() {
-                    }
+        final ChangedPropertyListener<Boolean> lockingListener = new ChangedPropertyListener<Boolean>() {
+                    @Override public void beginNotifying() {}
+                    @Override public void finishNotifying() {}
 
                     @Override
                     public void propertyChanged(Boolean oldValue, Boolean newValue) {
@@ -66,9 +66,6 @@ public class Sweeper {
                         }
                     }
 
-                    @Override
-                    public void finishNotifying() {
-                    }
                 };
         sweeperController.isLost().registerChangeListener(lockingListener);
         sweeperController.isWon().registerChangeListener(lockingListener);
@@ -91,13 +88,13 @@ public class Sweeper {
         EventQueue.invokeLater(new Runnable() {
             @Override
             public void run() {
-                JFrame frame = constructMainFrame();
+                frame = constructMainFrame();
                 frame.setVisible(true);
             }
         });
     }
 
-    private JFrame constructMainFrame() {
+    public JFrame constructMainFrame() {
         JFrame frame = new JFrame("MineSweeper");
         JPanel mines = getMainPanel();
         frame.setContentPane(mines);
@@ -106,13 +103,17 @@ public class Sweeper {
         frame.setResizable(false);
         frame.setLocationRelativeTo(null);
         try {
-            frame.setIconImage(ImageIO.read(this.getClass().getResourceAsStream("/minesweeper.png")));
+            frame.setIconImage(getImageIcon());
         } catch (IOException e) {
         }
         return frame;
     }
 
-    private JPanel getMainPanel() {
+    public BufferedImage getImageIcon() throws IOException {
+        return ImageIO.read(this.getClass().getResourceAsStream("/minesweeper.png"));
+    }
+
+    public JPanel getMainPanel() {
         JPanel minePanel = getMinePanel();
         JPanel outcomePanel = getControlPanel("<html>YOU<br>LOST");
 
@@ -247,4 +248,11 @@ public class Sweeper {
                                 "" + minesInNeighborhood;
     }
 
+    public Icon getIcon() {
+        try {
+            return new ImageIcon(getImageIcon());
+        } catch (IOException e) {
+            return UIManager.getIcon("OptionPane.errorIcon");
+        }
+    }
 }

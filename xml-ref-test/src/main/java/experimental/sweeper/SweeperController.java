@@ -134,9 +134,7 @@ public class SweeperController {
             List<Observable<Boolean>> neighbourStates = new ArrayList<Observable<Boolean>>();
             for (FieldElement neighbour : neighboringElements)
                 neighbourStates.add(
-                        new AndState(neighbour.uncovered, neighbour.zeroMinesInNeighbourhood)
-
-                );
+                        new AndState(neighbour.uncovered, neighbour.zeroMinesInNeighbourhood));
             atLeastOneNeighbourIsUncoveredAndWithoutMines = new OverridableState(new AnyTrue(neighbourStates));
             atLeastOneNeighbourIsUncoveredAndWithoutMines.registerChangeListener(new ChangedPropertyListener<Boolean>() {
                 @Override
