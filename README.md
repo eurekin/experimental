@@ -18,6 +18,8 @@ You can try running the MineSweeper example using Java WebStart - click on the i
 
 [![JNLP run](http://www.fileinfo.com/images/icons/files/128/jnlp-1858.png)](https://dl-web.dropbox.com/spa/5e9kbyw5dxyp93u/experimental/public/app.jnlp)
 
+![Minesweeper Example](http://i.imgur.com/MhCDOOI.png?1 "Minesweeper")
+
 Example code
 ============
 
