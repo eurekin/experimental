@@ -3,8 +3,10 @@ package experimental;
 import experimental.sweeper.Sweeper;
 import pl.eurekin.editor.LineDefinitionEditorView;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
+import java.io.IOException;
 
 import static javax.swing.WindowConstants.DISPOSE_ON_CLOSE;
 
@@ -73,6 +75,11 @@ public class ShowOffApplication {
 
     private JFrame constructMainFrame() {
         frame = new JFrame("Experimental show-off");
+        try {
+            frame.setIconImage(ImageIO.read(this.getClass().getResource("/ico_lab.png")));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         frame.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         frame.pack();
         return  frame;
