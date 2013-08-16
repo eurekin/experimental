@@ -15,6 +15,7 @@
     <name>Experimental</name>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <mainClass>experimental.ShowOffApplication</mainClass>
     </properties>
 
     <repositories>
@@ -239,7 +240,7 @@
 
                                 <!-- used to automatically identify the jar containing the main class. -->
                                 <!-- this is perhaps going to change -->
-                                <mainClass>experimental.sweeper.Sweeper</mainClass>
+                                <mainClass>${mainClass}</mainClass>
                                 <!--jnlpCodebase-->
 
                             </jnlp>
@@ -313,7 +314,7 @@
                     <archive>
                         <manifest>
                             <addClasspath>true</addClasspath>
-                            <mainClass>experimental.sweeper.Sweeper</mainClass>
+                            <mainClass>${mainClass}</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
@@ -403,7 +404,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>experimental.sweeper.Sweeper</mainClass>
+                            <mainClass>${mainClass}</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>
