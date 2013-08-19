@@ -19,7 +19,7 @@ import static experimental.sweeper.SweeperController.FieldElement;
 /**
  * @author greg.matoga@gmail.com
  */
-    public class Sweeper {
+public class Sweeper {
 
     private final MineField mineField;
     private final SweeperController sweeperController;
@@ -54,9 +54,16 @@ import static experimental.sweeper.SweeperController.FieldElement;
                 lock(false);
             }
         });
-        final ChangedPropertyListener<Boolean> lockingListener = new ChangedPropertyListener<Boolean>() {
-                    @Override public void beginNotifying() {}
-                    @Override public void finishNotifying() {}
+        final ChangedPropertyListener<Boolean> lockingListener = new
+
+                ChangedPropertyListener<Boolean>() {
+                    @Override
+                    public void beginNotifying() {
+                    }
+
+                    @Override
+                    public void finishNotifying() {
+                    }
 
                     @Override
                     public void propertyChanged(Boolean oldValue, Boolean newValue) {
@@ -170,7 +177,6 @@ import static experimental.sweeper.SweeperController.FieldElement;
         verticalFlowPanel.add(restartButton);
 
         panel.add(verticalFlowPanel);
-
         return panel;
     }
 
@@ -227,12 +233,42 @@ import static experimental.sweeper.SweeperController.FieldElement;
             public void actionPerformed(ActionEvent e) {
                 System.out.println("Move on " + row + ", " + col);
                 sweeperController.moveOnFieldAt(row, col);
-                jButton.setSelected(false);
+
+                Runnable runnable = new Runnable() {
+                    public void run() {
+                        jButton.setSelected(false);
+                    }
+                };
+                batchUpdate(runnable);
             }
         });
 
 
         return jButton;
+    }
+
+    private void batchUpdate(final Runnable runnable2) {
+        final Component focusOwner = KeyboardFocusManager.getCurrentKeyboardFocusManager().getFocusOwner();
+        mainPanel.setVisible(false);
+
+        final Runnable runnable = new Runnable() {
+            public void run() {
+                runnable2.run();
+            }
+        };
+        try {
+            new Thread() {
+                @Override
+                public void run() {
+                    SwingUtilities.invokeLater(runnable);
+
+                }
+            }.start();
+        } finally {
+            mainPanel.setVisible(true);
+            mainPanel.invalidate();
+            focusOwner.requestFocus();
+        }
     }
 
     private String textForFinalOutcome(boolean finished, boolean won, boolean lost) {
