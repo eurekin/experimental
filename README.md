@@ -1,4 +1,4 @@
-experimental [![Build Status](https://travis-ci.org/eurekin/experimental.png?branch=master)](https://travis-ci.org/eurekin/experimental) [![Coverage Status](https://coveralls.io/repos/eurekin/experimental/badge.png?branch=minesweeper_uncovering_problems)](https://coveralls.io/r/eurekin/experimental?branch=minesweeper_uncovering_problems)
+experimental [![Build Status](https://travis-ci.org/eurekin/experimental.png?branch=master)](https://travis-ci.org/eurekin/experimental) [![Coverage Status](https://coveralls.io/repos/eurekin/experimental/badge.png?branch=master)](https://coveralls.io/r/eurekin/experimental?branch=master)
 ============
 
 
