@@ -189,6 +189,7 @@ public class Sweeper {
         jButton.setBorderPainted(false);
         jButton.setFocusPainted(false);
         jButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        jButton.setDoubleBuffered(true);
 
 
         reactWhenButtonNeedsAnUpdate = new ChangedPropertyListener<Object>() {

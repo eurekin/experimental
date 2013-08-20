@@ -1,5 +1,6 @@
 package experimental;
 
+import experimental.chess.Board;
 import experimental.sweeper.Sweeper;
 import pl.eurekin.editor.LineDefinitionEditorView;
 
@@ -61,12 +62,30 @@ public class ShowOffApplication {
     private void addAllRegisteredShowOffViewsToJTabbedPane() {
         final LineDefinitionEditorView lineDefinitionEditorView = new LineDefinitionEditorView();
         lineDefinitionEditorView.initialize();
-        tabbedPane.addTab("Table", lineDefinitionEditorView.panel1);
+        Icon icon1 = null;
+        try {
+            icon1 = new ImageIcon(ImageIO.read(this.getClass().getResourceAsStream("/table.png")));
+        } catch (IOException e) {
+
+        }
+        tabbedPane.addTab("Table", icon1, lineDefinitionEditorView.panel1);
 
         Sweeper sweeper = new Sweeper(20, 40);
         final JPanel sweeperFrame = sweeper.getMainPanel();
         Icon sweeperIcon = sweeper.getIcon();
         tabbedPane.addTab("MineSweeper", sweeperIcon,sweeperFrame);
+
+
+        final JPanel construct = new Board().construct();
+        final JPanel outerPanel = new JPanel(new GridBagLayout());
+        outerPanel.add(construct);
+        Icon icon = null;
+        try {
+            icon = new ImageIcon(ImageIO.read(this.getClass().getResourceAsStream("/chess.png")));
+        } catch (IOException e) {
+
+        }
+        tabbedPane.addTab("Chess",icon, outerPanel);
     }
 
     private void showMainFrame() {
