@@ -68,7 +68,7 @@ public class Board {
 
 
     public void setBorder(Color color, JComponent piece) {
-        final Border border = BorderFactory.createLineBorder(color, 10);
+        final Border border = BorderFactory.createLineBorder(color, 3);
         piece.setBorder(border);
     }
 
