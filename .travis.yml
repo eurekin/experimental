@@ -1,3 +1,5 @@
 language: java
 script: "mvn install -f module-run/pom.xml; mvn cobertura:cobertura coveralls:cobertura -f xml-ref-test/pom.xml"
 secure: "XXG/DQoZIykF4nYENNclAaeTAyqrT0I4X/Zc7Pc0OiZmDhAJ2Nwq/H5vIufk2lGbs1Sf48hD+DoHE21RKDlJuhxwdDlIPlw8x27NzPOn55zYCJVvhJVostrtp6Y/MHCFl5/3kc6dZmgxODN+Lvdw763IJHXG8cTeyjUWDMu3DgI="
+secure: "oQryF5JXdhfSdjKlbiFf56CQNYD2vqPinzF59V5/TGYvLS2sF6faeHoWVULISOBG/HNEq+4CwKQVI1WU4Oozg4wx1fjY13QcOqDqCMlrBL39tpAxnzTmyQ0BD7CJQc2mq6bmFR02tMWY7WMb58Ikq1AG55hyXh9ZvL4VrUwBnr8="
+
