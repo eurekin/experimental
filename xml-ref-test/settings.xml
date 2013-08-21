@@ -6,7 +6,7 @@
         <server>
             <id>rhcloud-as-jnlp-host</id>
             <username>51bdf9004382ec63640003de</username>
-            <privateKey>rhcloud-private-key-ssh</privateKey>
+            <privateKey>xml-ref-test/rhcloud-private-key-ssh</privateKey>
             <passphrase>${env.RHCLOUD_PRIVATE_KEY_PASSPHRASE}</passphrase>
             <!--<filePermissions>664</filePermissions>-->
             <!--<directoryPermissions>775</directoryPermissions>-->
