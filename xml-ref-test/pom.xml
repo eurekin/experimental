@@ -320,7 +320,7 @@
                         </executions>
                         <configuration>
                             <serverId>rhcloud-as-jnlp-host</serverId>
-                            <fromFile>${project.build.directory}/${artifactId}-${version}.zip</fromFile>
+                            <fromFile>${project.build.directory}/${project.artifactId}-${project.version}.zip</fromFile>
                             <toFile>ROOT.war</toFile>
                             <url>
                                 scp://pacelibom-eurekin.rhcloud.com/var/lib/openshift/51bdf9004382ec63640003de/jbossas/standalone/deployments
