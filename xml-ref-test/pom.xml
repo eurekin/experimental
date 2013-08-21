@@ -127,7 +127,8 @@
                             <archive>
                                 <manifestEntries>
                                     <Permissions>all-permissions</Permissions>
-                                    <Codebase>https://dl-web.dropbox.com/spa/5e9kbyw5dxyp93u/experimental/public</Codebase>
+                                    <Codebase>https://dl-web.dropbox.com/spa/5e9kbyw5dxyp93u/experimental/public
+                                    </Codebase>
                                 </manifestEntries>
                             </archive>
                         </configuration>
@@ -159,7 +160,7 @@
                                     <target>
                                         <echo message="!TASK-1"/>
                                         <ant antfile="${basedir}/add-missing-properties.xml">
-                                            <target name="addPermissionAndCodebase" />
+                                            <target name="addPermissionAndCodebase"/>
                                         </ant>
                                     </target>
                                 </configuration>
@@ -295,16 +296,53 @@
                     </plugin>
 
 
-
-
-
                 </plugins>
             </build>
 
         </profile>
+
+        <profile>
+            <id>rhcloud-deploy</id>
+            <build>
+                <plugins>
+
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>wagon-maven-plugin</artifactId>
+                        <version>1.0-beta-4</version>
+                        <executions>
+                            <execution>
+                                <id>upload-jnlp-war</id>
+                                <phase>deploy</phase>
+                                <goals>
+                                    <goal>upload</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <serverId>rhcloud-as-jnlp-host</serverId>
+                            <fromFile>${project.build.directory}/${artifactId}-${version}.zip</fromFile>
+                            <toFile>ROOT.war</toFile>
+                            <url>
+                                scp://pacelibom-eurekin.rhcloud.com/var/lib/openshift/51bdf9004382ec63640003de/jbossas/standalone/deployments
+                            </url>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
     </profiles>
 
     <build>
+
+        <extensions>
+            <extension>
+                <groupId>org.apache.maven.wagon</groupId>
+                <artifactId>wagon-ssh</artifactId>
+                <version>1.0-beta-7</version>
+            </extension>
+        </extensions>
+
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

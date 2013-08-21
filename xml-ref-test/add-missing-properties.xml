@@ -65,7 +65,7 @@
         <jar file="${jarFile}" update="true">
             <manifest>
                 <attribute name="Permissions" value="all-permissions"/>
-                <attribute name="Codebase" value="https://dl-web.dropbox.com/spa/5e9kbyw5dxyp93u/experimental/public"/>
+                <attribute name="Codebase" value="*"/>
             </manifest>
         </jar>
     </target>
