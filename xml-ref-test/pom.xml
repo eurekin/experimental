@@ -127,8 +127,7 @@
                             <archive>
                                 <manifestEntries>
                                     <Permissions>all-permissions</Permissions>
-                                    <Codebase>https://dl-web.dropbox.com/spa/5e9kbyw5dxyp93u/experimental/public
-                                    </Codebase>
+                                    <Codebase>*</Codebase>
                                 </manifestEntries>
                             </archive>
                         </configuration>
