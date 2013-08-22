@@ -21,17 +21,21 @@ public class ShowOffApplication {
     private JTabbedPane tabbedPane;
 
     public static void main(String... args) throws Exception {
+        if (System.getProperty("os.name").equalsIgnoreCase("Windows 7"))
+            new NativeExtensions().install();
         UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        new ShowOffApplication().showGUI();
+        new ShowOffApplication().safelyShowGUIfromAnyThread();
     }
 
-    private void showGUI() {
-        EventQueue.invokeLater(new Runnable() {
+    private void safelyShowGUIfromAnyThread() {
+        final Runnable showGUIRunnable = new Runnable() {
             @Override
             public void run() {
                 initiateAndShowOnEDT();
             }
-        });
+        };
+        if (SwingUtilities.isEventDispatchThread()) showGUIRunnable.run();
+        else EventQueue.invokeLater(showGUIRunnable);
     }
 
     private void initiateAndShowOnEDT() {
@@ -73,7 +77,7 @@ public class ShowOffApplication {
         Sweeper sweeper = new Sweeper(20, 40);
         final JPanel sweeperFrame = sweeper.getMainPanel();
         Icon sweeperIcon = sweeper.getIcon();
-        tabbedPane.addTab("MineSweeper", sweeperIcon,sweeperFrame);
+        tabbedPane.addTab("MineSweeper", sweeperIcon, sweeperFrame);
 
 
         final JPanel construct = new Board().construct();
@@ -85,7 +89,7 @@ public class ShowOffApplication {
         } catch (IOException e) {
 
         }
-        tabbedPane.addTab("Chess",icon, outerPanel);
+        tabbedPane.addTab("Chess", icon, outerPanel);
     }
 
     private void showMainFrame() {
@@ -101,6 +105,6 @@ public class ShowOffApplication {
         }
         frame.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         frame.pack();
-        return  frame;
+        return frame;
     }
 }
