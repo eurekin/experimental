@@ -153,14 +153,15 @@ public class JNAtest {
         System.out.println("Property Count = " + pbr2.getValue() + " variant: " + propVarByReference.vt);
         System.out.println("Window id = " + windowID + " Text: " + Native.toString(windowText2));
 
-        final String propertyValueToBeSet = "Test.HostedApp2";
+        final String propertyValueToBeSet = "Test.Experimental";
         setStringPropertyOnGUID(propertyStore, propertyValueToBeSet, 5, AppUserModelID);
 
         // relaunch command
         final WString commandLine = Kernel32b.INSTANCE.GetCommandLineW();
         // String commandLineJNLP = "C:\\Windows\\System32\\javaws.exe -localfile -J-Djnlp.application.href=http://pacelibom-eurekin.rhcloud.com/app.jnlp \"C:\\Users\\gmatoga\\AppData\\LocalLow\\Sun\\Java\\Deployment\\cache\\6.0\\36\\d38cde4-69ef18af";
+        String commandLineWithURL = "javaws http://pacelibom-eurekin.rhcloud.com/app.jnlp";
         System.out.println(commandLine.toString().replaceAll("\\s", "\n"));
-        setStringPropertyOnGUID(propertyStore, commandLine.toString(), 2, "{9F4C2855-9F79-4B39-A8D0-E1D42DE1D5F3}");
+        setStringPropertyOnGUID(propertyStore, commandLineWithURL, 2, "{9F4C2855-9F79-4B39-A8D0-E1D42DE1D5F3}");
 
         // 9F4C2855-9F79-4B39-A8D0-E1D42DE1D5F3
         setStringPropertyOnGUID(propertyStore, "Experimental", 4, "{9F4C2855-9F79-4B39-A8D0-E1D42DE1D5F3}");
