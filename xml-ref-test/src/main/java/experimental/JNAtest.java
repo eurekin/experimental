@@ -1,21 +1,13 @@
 package experimental;
 
-import com.sun.deploy.net.DownloadEngine;
-import com.sun.deploy.trace.Trace;
-import com.sun.javaws.jnl.LaunchDesc;
 import com.sun.jna.*;
 import com.sun.jna.platform.win32.*;
 import com.sun.jna.ptr.IntByReference;
 import com.sun.jna.ptr.PointerByReference;
 import com.sun.jna.win32.StdCallLibrary;
 
-import javax.jnlp.IntegrationService;
-import javax.jnlp.ServiceManager;
-import javax.jnlp.UnavailableServiceException;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
-import java.io.File;
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -23,23 +15,15 @@ import java.util.List;
  * @author gmatoga
  */
 public class JNAtest {
-    public interface IUnknown {
-        int QueryInterface(
-                Guid.GUID riid,
-                PointerByReference ppvObject);
-        int AddRef();
-        int Release();
-
-    }
-
-    public interface IPropertyStore {
-        int Commit();
-        int GetAt();
-        int GetCount(IntByReference cProps);
-        int GetValue(PROPERTYKEY.ByReference propkey, PROPVARIANT.ByReference propvar);
-        int SetValue(PROPERTYKEY.ByReference propkey, PROPVARIANT.ByReference propvar);
-    }
-
+    /**
+     * Common error codes
+     * http://msdn.microsoft.com/en-us/library/windows/desktop/aa378137(v=vs.85).aspx
+     * <p/>
+     * One or more arguments are not valid
+     * <p/>
+     * ? 8007007a
+     */
+    public static final int E_INVALIDARG = 0x80070057;
 
     public static void main(String[] args) {
         final Kernel32b kernel32 = Kernel32b.INSTANCE;
@@ -56,7 +40,6 @@ public class JNAtest {
         }));
         frame.setVisible(true);
         tryReallyHardToSetWindowsTaskbarProperties(frame);
-
 
 
 //        final IntByReference cProps = new IntByReference();
@@ -137,6 +120,7 @@ public class JNAtest {
                 Function f = Function.getFunction(vTable2[6], Function.ALT_CONVENTION);
                 return f.invokeInt(new Object[]{interfacePointer, propkey, propvar});
             }
+
             @Override
             public int Commit() {
                 Function f = Function.getFunction(vTable2[7], Function.ALT_CONVENTION);
@@ -157,7 +141,7 @@ public class JNAtest {
 
 
         final PROPERTYKEY.ByReference propKeybyReference = new PROPERTYKEY.ByReference();
-        final String AppUserModelID  = "{9F4C2855-9F79-4B39-A8D0-E1D42DE1D5F3}";
+        final String AppUserModelID = "{9F4C2855-9F79-4B39-A8D0-E1D42DE1D5F3}";
         propKeybyReference.fmtid = Ole32Util.getGUIDFromString(AppUserModelID);
         propKeybyReference.pid = 5;
         final PROPVARIANT.ByReference propVarByReference = new PROPVARIANT.ByReference();
@@ -176,10 +160,10 @@ public class JNAtest {
         final WString commandLine = Kernel32b.INSTANCE.GetCommandLineW();
         // String commandLineJNLP = "C:\\Windows\\System32\\javaws.exe -localfile -J-Djnlp.application.href=http://pacelibom-eurekin.rhcloud.com/app.jnlp \"C:\\Users\\gmatoga\\AppData\\LocalLow\\Sun\\Java\\Deployment\\cache\\6.0\\36\\d38cde4-69ef18af";
         System.out.println(commandLine.toString().replaceAll("\\s", "\n"));
-        setStringPropertyOnGUID(propertyStore,  commandLine.toString(), 2, "{9F4C2855-9F79-4B39-A8D0-E1D42DE1D5F3}");
+        setStringPropertyOnGUID(propertyStore, commandLine.toString(), 2, "{9F4C2855-9F79-4B39-A8D0-E1D42DE1D5F3}");
 
         // 9F4C2855-9F79-4B39-A8D0-E1D42DE1D5F3
-        setStringPropertyOnGUID(propertyStore, "Experimental",4, "{9F4C2855-9F79-4B39-A8D0-E1D42DE1D5F3}");
+        setStringPropertyOnGUID(propertyStore, "Experimental", 4, "{9F4C2855-9F79-4B39-A8D0-E1D42DE1D5F3}");
 
 
     }
@@ -202,30 +186,41 @@ public class JNAtest {
         tryReallyHardToSetWindowsTaskbarProperties(frame);
     }
 
-    /**
-     * Common error codes
-     * http://msdn.microsoft.com/en-us/library/windows/desktop/aa378137(v=vs.85).aspx
-     *
-     * One or more arguments are not valid
-     *
-     * ? 8007007a
-     */
-public static final int E_INVALIDARG = 0x80070057;
+    public interface IUnknown {
+        int QueryInterface(
+                Guid.GUID riid,
+                PointerByReference ppvObject);
 
-    public interface  Shell32 extends StdCallLibrary {
+        int AddRef();
+
+        int Release();
+
+    }
+
+    public interface IPropertyStore {
+        int Commit();
+
+        int GetAt();
+
+        int GetCount(IntByReference cProps);
+
+        int GetValue(PROPERTYKEY.ByReference propkey, PROPVARIANT.ByReference propvar);
+
+        int SetValue(PROPERTYKEY.ByReference propkey, PROPVARIANT.ByReference propvar);
+    }
+
+    public interface Shell32 extends StdCallLibrary {
         Shell32 INSTANCE = (Shell32) Native.loadLibrary("shell32", Shell32.class);
 
         WinNT.HRESULT SHGetPropertyStoreForWindow(Pointer hWnd, Guid.GUID guid, PointerByReference ppv);
     }
 
 
-
-    public interface  Kernel32b extends Kernel32 {
+    public interface Kernel32b extends Kernel32 {
         Kernel32b INSTANCE = (Kernel32b) Native.loadLibrary("kernel32", Kernel32b.class);
 
         WString GetCommandLineW();
     }
-
 
 
     // Equivalent JNA mappings
@@ -235,6 +230,7 @@ public static final int E_INVALIDARG = 0x80070057;
         boolean EnumWindows(WNDENUMPROC lpEnumFunc, Pointer arg);
 
         int GetWindowTextA(Pointer hWnd, byte[] lpString, int nMaxCount);
+
         int GetWindowThreadProcessId(Pointer hWnd, IntByReference lpDword);
 
         interface WNDENUMPROC extends StdCallCallback {
@@ -242,7 +238,7 @@ public static final int E_INVALIDARG = 0x80070057;
         }
     }
 
-    public interface Ole32 extends  StdCallLibrary {
+    public interface Ole32 extends StdCallLibrary {
         Ole32 INSTANCE = (Ole32) Native.loadLibrary("ole32", Ole32.class);
     }
 
@@ -253,14 +249,16 @@ public static final int E_INVALIDARG = 0x80070057;
 //        } PROPERTYKEY;
 
     public static class PROPERTYKEY extends Structure {
+        public Guid.GUID fmtid;
+        public int pid;
+
         @Override
         protected List getFieldOrder() {
             return Arrays.asList(new String[]{"fmtid", "pid"});
         }
 
-        public static class ByReference extends PROPERTYKEY implements Structure.ByReference {}
-        public Guid.GUID fmtid;
-        public int pid;
+        public static class ByReference extends PROPERTYKEY implements Structure.ByReference {
+        }
     }
 
 //        typedef struct PROPVARIANT {
@@ -277,17 +275,19 @@ public static final int E_INVALIDARG = 0x80070057;
     // VT TYPES http://msdn.microsoft.com/en-us/library/aa380072(v=vs.85).aspx
 
     public static class PROPVARIANT extends Structure {
-        @Override
-        protected List getFieldOrder() {
-            return Arrays.asList(new String[]{"vt", "r1","r2","r3","val"});
-        }
-
-        public static class ByReference extends PROPVARIANT implements Structure.ByReference {}
         public int vt;
         public byte r1;
         public byte r2;
         public byte r3;
         public WString val;
+
+        @Override
+        protected List getFieldOrder() {
+            return Arrays.asList(new String[]{"vt", "r1", "r2", "r3", "val"});
+        }
+
+        public static class ByReference extends PROPVARIANT implements Structure.ByReference {
+        }
     }
 }
 
