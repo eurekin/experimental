@@ -21,8 +21,8 @@ public class ShowOffApplication {
     private JTabbedPane tabbedPane;
 
     public static void main(String... args) throws Exception {
-        if (System.getProperty("os.name").equalsIgnoreCase("Windows 7"))
-            new NativeExtensions().install();
+        //if (System.getProperty("os.name").equalsIgnoreCase("Windows 7"))
+        //    new NativeExtensions().install();
         UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         new ShowOffApplication().safelyShowGUIfromAnyThread();
     }
