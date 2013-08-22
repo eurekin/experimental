@@ -1,13 +1,21 @@
 package experimental;
 
+import com.sun.deploy.net.DownloadEngine;
+import com.sun.deploy.trace.Trace;
+import com.sun.javaws.jnl.LaunchDesc;
 import com.sun.jna.*;
 import com.sun.jna.platform.win32.*;
 import com.sun.jna.ptr.IntByReference;
 import com.sun.jna.ptr.PointerByReference;
 import com.sun.jna.win32.StdCallLibrary;
 
+import javax.jnlp.IntegrationService;
+import javax.jnlp.ServiceManager;
+import javax.jnlp.UnavailableServiceException;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
+import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -167,6 +175,7 @@ public class JNAtest {
         // relaunch command
         final WString commandLine = Kernel32b.INSTANCE.GetCommandLineW();
         // String commandLineJNLP = "C:\\Windows\\System32\\javaws.exe -localfile -J-Djnlp.application.href=http://pacelibom-eurekin.rhcloud.com/app.jnlp \"C:\\Users\\gmatoga\\AppData\\LocalLow\\Sun\\Java\\Deployment\\cache\\6.0\\36\\d38cde4-69ef18af";
+        System.out.println(commandLine.toString().replaceAll("\\s", "\n"));
         setStringPropertyOnGUID(propertyStore,  commandLine.toString(), 2, "{9F4C2855-9F79-4B39-A8D0-E1D42DE1D5F3}");
 
         // 9F4C2855-9F79-4B39-A8D0-E1D42DE1D5F3

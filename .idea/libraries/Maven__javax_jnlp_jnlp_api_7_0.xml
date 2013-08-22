@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="Maven: javax.jnlp:jnlp-api:7.0">
+    <CLASSES>
+      <root url="jar://$APPLICATION_HOME_DIR$/jre/jre/lib/javaws.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://C:/Program Files/Java/jdk1.7.0_25/src.zip!/" />
+    </SOURCES>
+  </library>
+</component>
