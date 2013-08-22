@@ -5,6 +5,7 @@
       <w>jdbc</w>
       <w>jnlp</w>
       <w>overridable</w>
+      <w>propertykey</w>
     </words>
   </dictionary>
 </component>

@@ -21,10 +21,17 @@ public class ShowOffApplication {
     private JTabbedPane tabbedPane;
 
     public static void main(String... args) throws Exception {
-        //if (System.getProperty("os.name").equalsIgnoreCase("Windows 7"))
-        //    new NativeExtensions().install();
+
         UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        new ShowOffApplication().safelyShowGUIfromAnyThread();
+        final ShowOffApplication showOffApplication = new ShowOffApplication();
+        showOffApplication.safelyShowGUIfromAnyThread();
+
+        if (System.getProperty("os.name").equalsIgnoreCase("Windows 7")) try {
+            JNAtest.tryReallyHardToSetWindowsTaskbarProperties(showOffApplication.frame);
+        } catch (Exception e) {
+            System.err.println("Exception prevented IPropertyStorage configuration. Continuing despite error.");
+            e.printStackTrace();
+        }
     }
 
     private void safelyShowGUIfromAnyThread() {
@@ -35,7 +42,11 @@ public class ShowOffApplication {
             }
         };
         if (SwingUtilities.isEventDispatchThread()) showGUIRunnable.run();
-        else EventQueue.invokeLater(showGUIRunnable);
+        else try {
+            EventQueue.invokeAndWait(showGUIRunnable);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void initiateAndShowOnEDT() {

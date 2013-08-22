@@ -11,8 +11,8 @@ import com.sun.jna.ptr.PointerByReference;
  */
 public class NativeExtensions {
     public static void setCurrentProcessExplicitAppUserModelID(final String appID) {
-        if (SetCurrentProcessExplicitAppUserModelID(new WString(appID)).longValue() != 0)
-            throw new RuntimeException("unable to set current process explicit AppUserModelID to: " + appID);
+        //if (SetCurrentProcessExplicitAppUserModelID(new WString(appID)).longValue() != 0)
+        //    throw new RuntimeException("unable to set current process explicit AppUserModelID to: " + appID);
         System.out.println(getCurrentProcessExplicitAppUserModelID());
     }
 
@@ -36,11 +36,16 @@ public class NativeExtensions {
         }
         return "N/A";
     }
+    static {
+        Native.register("shell32");
+        setCurrentProcessExplicitAppUserModelID("CompanyName.ProductName");
+
+    }
+
+
     private static native NativeLong GetCurrentProcessExplicitAppUserModelID(PointerByReference appID);
 
     private static native NativeLong SetCurrentProcessExplicitAppUserModelID(WString appID);
     public void install() {
-        Native.register("shell32");
-        setCurrentProcessExplicitAppUserModelID("CompanyName.ProductName");
     }
 }
