@@ -30,7 +30,7 @@
     </repositories>
 
     <dependencies>
-        <!--JNLP
+       <!--JNLP
 
   Need it to get the Pin To Taskbar functionality working
   -->
@@ -362,7 +362,15 @@
     </profiles>
 
     <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
 
+
+        <!--Used to deploy ROOT.war to the OpenShift Cloud-->
         <extensions>
             <extension>
                 <groupId>org.apache.maven.wagon</groupId>

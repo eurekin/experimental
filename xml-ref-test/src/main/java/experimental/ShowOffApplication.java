@@ -1,6 +1,7 @@
 package experimental;
 
 import experimental.chess.Board;
+import experimental.info.InfoPanel;
 import experimental.sweeper.Sweeper;
 import pl.eurekin.editor.LineDefinitionEditorView;
 
@@ -50,6 +51,7 @@ public class ShowOffApplication {
     }
 
     private void initiateAndShowOnEDT() {
+
         constructMainFrame();
         addMainPanel();
         showMainFrame();
@@ -101,6 +103,11 @@ public class ShowOffApplication {
 
         }
         tabbedPane.addTab("Chess", icon, outerPanel);
+
+        final JPanel panel = new InfoPanel().getPanel();
+        tabbedPane.addTab("About", panel);
+
+
     }
 
     private void showMainFrame() {
