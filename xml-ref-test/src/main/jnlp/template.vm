@@ -31,7 +31,11 @@
     <resources>
         <j2se version="$j2seVersion"/>
         $dependencies
-##        $extensions
+    ##        $extensions
     </resources>
     <application-desc main-class="$mainClass"/>
+
+    #if($backgroundUpdateAllowed)
+        <update check='background'/>
+    #end
 </jnlp>

@@ -17,6 +17,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <mainClass>experimental.ShowOffApplication</mainClass>
         <jna.version>4.0.0</jna.version>
+        <backgroundUpdateAllowed>true</backgroundUpdateAllowed>
     </properties>
 
     <repositories>
