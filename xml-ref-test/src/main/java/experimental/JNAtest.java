@@ -158,10 +158,43 @@ public class JNAtest {
 
         // relaunch command
         final WString commandLine = Kernel32b.INSTANCE.GetCommandLineW();
-        // String commandLineJNLP = "C:\\Windows\\System32\\javaws.exe -localfile -J-Djnlp.application.href=http://pacelibom-eurekin.rhcloud.com/app.jnlp \"C:\\Users\\gmatoga\\AppData\\LocalLow\\Sun\\Java\\Deployment\\cache\\6.0\\36\\d38cde4-69ef18af";
+        // String commandLineJNLP = "C:\\Windows\\System32\\javaws.exe
+        // -localfile -J-Djnlp.application.href=http://pacelibom-eurekin.rhcloud.com/app.jnlp
+        // \"C:\\Users\\gmatoga\\AppData\\LocalLow\\Sun\\Java\\Deployment\\cache\\6.0\\36\\d38cde4-69ef18af";
         String commandLineWithURL = "javaws http://pacelibom-eurekin.rhcloud.com/app.jnlp";
+
+        // Manual shortcut creation.
+        //
+        // Need to automatically set 3 parts. Two of them present little or no problem.
+        // The biggest issue is with the cached JNLP file, which lives in a WebStart cache
+        // and has it's name mangled.
+
+        // 1. Part. quite OK
+        //
+        // Reference to a JavaWS executable. Not so easy on 64 bit OS's with 32 Java installed.
+        // Needs a good heuristic. The system properties doesn't hold exact pointer, but the
+        // following might suffice (if javaws is in the same directory as javaw).
+        //
+        // need some version of it: jnlpx.jvm=C:\\Program Files\\Java\\jre7\\bin\\javaw.exe
+        String binaryExecutablePath = System.getProperty("jnlpx.jvm").replace("javaw", "javaws");
+
+        // 2. Part. OK
+        //
+        // This can be set automatically - providing we know the codebase and final descriptor
+        // file name. All that is or can be derived from build and deploy settings.
+        String options = "-localfile -J-Djnlp.application.href=http://pacelibom-eurekin.rhcloud.com/app.jnlp";
+
+        // 3. Part. Not ok.
+        //
+        // One board post suggested using private WebStart API to derive the mangled name.
+        // Might work, though upon the first try it seemed the implementation was changed.
+        // JRE 6 -> 7 might have changed the "getCachedURL" method.
+        //
+        // As for now - hardcoded the remote URL.
+        String descriptorURL = "\"http://pacelibom-eurekin.rhcloud.com/app.jnlp\"";
+        String finalCommandLine = binaryExecutablePath + " " + options + " "+ descriptorURL;
         System.out.println(commandLine.toString().replaceAll("\\s", "\n"));
-        setStringPropertyOnGUID(propertyStore, commandLineWithURL, 2, "{9F4C2855-9F79-4B39-A8D0-E1D42DE1D5F3}");
+        setStringPropertyOnGUID(propertyStore, finalCommandLine, 2, "{9F4C2855-9F79-4B39-A8D0-E1D42DE1D5F3}");
 
         // 9F4C2855-9F79-4B39-A8D0-E1D42DE1D5F3
         setStringPropertyOnGUID(propertyStore, "Experimental", 4, "{9F4C2855-9F79-4B39-A8D0-E1D42DE1D5F3}");
