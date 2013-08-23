@@ -28,8 +28,20 @@
 
     </repositories>
 
-
     <dependencies>
+        <!--JNLP
+
+  Need it to get the Pin To Taskbar functionality working
+  -->
+        <dependency>
+            <groupId>javax.jnlp</groupId>
+            <artifactId>jnlp-api</artifactId>
+            <version>7.0</version>
+            <scope>system</scope>
+            <systemPath>${java.home}/lib/javaws.jar</systemPath>
+        </dependency>
+
+
         <dependency>
             <groupId>com.jhlabs</groupId>
             <artifactId>filters</artifactId>
@@ -74,16 +86,16 @@
 
         <!--JNA-->
 
-            <dependency>
-                <groupId>net.java.dev.jna</groupId>
-                <artifactId>jna</artifactId>
-                <version>${jna.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>net.java.dev.jna</groupId>
-                <artifactId>jna-platform</artifactId>
-                <version>${jna.version}</version>
-            </dependency>
+        <dependency>
+            <groupId>net.java.dev.jna</groupId>
+            <artifactId>jna</artifactId>
+            <version>${jna.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>net.java.dev.jna</groupId>
+            <artifactId>jna-platform</artifactId>
+            <version>${jna.version}</version>
+        </dependency>
 
     </dependencies>
 

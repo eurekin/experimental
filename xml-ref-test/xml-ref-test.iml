@@ -28,6 +28,7 @@
         <SOURCES />
       </library>
     </orderEntry>
+    <orderEntry type="library" name="Maven: javax.jnlp:jnlp-api:7.0" level="project" />
     <orderEntry type="library" name="Maven: com.jhlabs:filters:2.0.235" level="project" />
     <orderEntry type="library" name="Maven: org.swinglabs:jxlayer:3.0.4" level="project" />
     <orderEntry type="library" name="Maven: org.eclipse.persistence:org.eclipse.persistence.moxy:2.5.0" level="project" />

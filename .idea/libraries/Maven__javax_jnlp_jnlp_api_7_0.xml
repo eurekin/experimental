@@ -6,6 +6,7 @@
     <JAVADOC />
     <SOURCES>
       <root url="jar://C:/Program Files/Java/jdk1.7.0_25/src.zip!/" />
+      <root url="file://$USER_HOME$/AppData/Local/Temp/intellijad" />
     </SOURCES>
   </library>
 </component>
