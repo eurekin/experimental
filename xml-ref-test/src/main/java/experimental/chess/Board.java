@@ -42,8 +42,8 @@ public class Board {
 
     private JComponent boardPiece(boolean darkField, boolean whitePlayer, int row, int column) {
         final JComponent piece = boardPiece(row, column);
-        Color fieldColor = darkField ? Color.darkGray : Color.lightGray;
-        Color pieceColor = whitePlayer ? Color.white : Color.black;
+        Color fieldColor = darkField ? Color.gray : Color.lightGray;
+        Color pieceColor = whitePlayer ? Color.white : Color.darkGray;
         piece.setForeground(pieceColor);
         piece.setBackground(fieldColor);
         setBorder(fieldColor, piece);
@@ -86,27 +86,17 @@ public class Board {
     }
 
     public JPanel construct() {
-
         JPanel board = new JPanel(new GridLayout(8, 0, 0, 0));
-        for (int i = 0; i < 8; i++) {
-            for (int j = 0; j < 8; j++) {
+        for (int i = 0; i < 8; i++)
+            for (int j = 0; j < 8; j++)
                 board.add(pieceAt(i, j));
-            }
-        }
         return board;
     }
 
     public PieceType initialPieceSetup(int row, int column) {
         if (row > 1 && row < 6) return NONE;
-
-        if (row > 3) {
-            row = 8 - row;
-        }
-
-        if (row == 1) {
-            return PAWN;
-        }
-
+        if (row > 3) row = 7 - row;
+        if (row == 1) return PAWN;
         return firstRow[column];
     }
 
