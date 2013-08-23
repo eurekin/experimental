@@ -360,7 +360,7 @@ public class JNAtest {
     }
 
 
-    // Snippet from great answer: http://stackoverflow.com/a/586917/309259
+    // Snippet from the great answer: http://stackoverflow.com/a/586917/309259
 
     public static String getKnownFolderLocation(int nFolder) {
         if (com.sun.jna.Platform.isWindows()) {
