@@ -255,6 +255,7 @@
                                 <!-- used to automatically identify the jar containing the main class. -->
                                 <!-- this is perhaps going to change -->
                                 <mainClass>${mainClass}</mainClass>
+                                <offlineAllowed>true</offlineAllowed>
                                 <!--jnlpCodebase-->
 
                             </jnlp>
@@ -304,6 +305,7 @@
                             <!--<canUnsign>true</canUnsign>-->
                             <!--<unsignAlreadySignedJars>true</unsignAlreadySignedJars>-->
                             <!--install>false</install--> <!-- not yet supported -->
+
                             <verbose>true</verbose>
                         </configuration>
                     </plugin>
