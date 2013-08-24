@@ -7,6 +7,7 @@ import pl.eurekin.editor.LineDefinitionEditorView;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.io.IOException;
 
@@ -24,6 +25,13 @@ public class ShowOffApplication {
     public static void main(String... args) throws Exception {
 
         UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        UIManager.getDefaults().put("TabbedPane.contentBorderInsets", new Insets(-2, 1, 1, 1));
+//        UIManager.getDefaults().put("TabbedPane.selectedTabPadInsets", new Insets(-2,1,1,1));
+//        UIManager.getDefaults().put("TabbedPane.contentBorderInsets", new Insets(10,10,10,10));
+        UIManager.getDefaults().remove("TabbedPane.contentAreaColor");
+//        UIManager.getDefaults().put("TabbedPane.contentAreaColor", Color.YELLOW);
+
+
         final ShowOffApplication showOffApplication = new ShowOffApplication();
         showOffApplication.safelyShowGUIfromAnyThread();
 
@@ -33,6 +41,7 @@ public class ShowOffApplication {
             System.err.println("Exception prevented IPropertyStorage configuration. Continuing despite error.");
             e.printStackTrace();
         }
+
     }
 
     private void safelyShowGUIfromAnyThread() {
@@ -73,6 +82,8 @@ public class ShowOffApplication {
 
     private void constructTabbedFrame() {
         tabbedPane = new JTabbedPane();
+        tabbedPane.setBorder(new EmptyBorder(10, 10, 10, 10));
+
         addAllRegisteredShowOffViewsToJTabbedPane();
     }
 
