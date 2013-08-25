@@ -4,6 +4,8 @@
       <w>csidl</w>
       <w>derivator</w>
       <w>djnlp</w>
+      <w>gmatoga</w>
+      <w>guireloader</w>
       <w>hwnd</w>
       <w>javaws</w>
       <w>jdbc</w>
@@ -11,6 +13,7 @@
       <w>localfile</w>
       <w>overridable</w>
       <w>propertykey</w>
+      <w>reloader</w>
       <w>syste</w>
     </words>
   </dictionary>
