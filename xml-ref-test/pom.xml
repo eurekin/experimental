@@ -18,6 +18,9 @@
         <mainClass>experimental.ShowOffApplication</mainClass>
         <jna.version>4.0.0</jna.version>
         <backgroundUpdateAllowed>true</backgroundUpdateAllowed>
+
+        <timestamp>${maven.build.timestamp}</timestamp>
+        <maven.build.timestamp.format>yyyy-MM-dd HH:mm</maven.build.timestamp.format>
     </properties>
 
     <repositories>
@@ -30,10 +33,10 @@
     </repositories>
 
     <dependencies>
-       <!--JNLP
+        <!--JNLP
 
-  Need it to get the Pin To Taskbar functionality working
-  -->
+   Need it to get the Pin To Taskbar functionality working
+   -->
         <dependency>
             <groupId>javax.jnlp</groupId>
             <artifactId>jnlp-api</artifactId>
