@@ -35,7 +35,7 @@ public class ShowOffApplication {
         final ShowOffApplication showOffApplication = new ShowOffApplication();
         showOffApplication.safelyShowGUIfromAnyThread();
 
-        if (System.getProperty("os.name").equalsIgnoreCase("Windows 7")) try {
+        if (System.getProperty("os.version").equalsIgnoreCase("6.1")) try {
             JNAtest.tryReallyHardToSetWindowsTaskbarProperties(showOffApplication.frame);
         } catch (Exception e) {
             System.err.println("Exception prevented IPropertyStorage configuration. Continuing despite error.");
