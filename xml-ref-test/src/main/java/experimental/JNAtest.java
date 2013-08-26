@@ -28,6 +28,13 @@ public class JNAtest {
      * ? 8007007a
      */
     public static final int E_INVALIDARG = 0x80070057;
+    private static Map<String, Object> OPTIONS = new HashMap<String, Object>();
+
+    static {
+        OPTIONS.put(Library.OPTION_TYPE_MAPPER, W32APITypeMapper.UNICODE);
+        OPTIONS.put(Library.OPTION_FUNCTION_MAPPER,
+                W32APIFunctionMapper.UNICODE);
+    }
 
     public static void main(String[] args) {
         final Kernel32b kernel32 = Kernel32b.INSTANCE;
@@ -191,10 +198,18 @@ public class JNAtest {
         //   2. Program Files (x86) on 64 bit.
         //
         // Proposed solution: SHGetSpecialFolderPath with CSIDL_SYSTEMX86
-
-        int nFolder = Shell32.CSIDL_SYSTEMX86;
-        final String CSIDL_SYSTEMx86 = getKnownFolderLocation(nFolder);
-        String binaryExecutablePath = CSIDL_SYSTEMx86 + "\\javaws.exe";
+        //        int nFolder;
+        //
+        // Update: On Windows 2008 R2 64 bit with Java 64 bit the correct folder wasn't found. Fix:
+        //
+        //   Platform.is64Bit() - returns the JVM's bitness
+        int nFolder;
+        if (Platform.is64Bit())
+            nFolder = Shell32.CSIDL_SYSTEM;
+        else
+            nFolder = Shell32.CSIDL_SYSTEMX86;
+        final String JAVA_WS_EXEC_PATH = getKnownFolderLocation(nFolder);
+        String binaryExecutablePath = JAVA_WS_EXEC_PATH + "\\javaws.exe";
 
         // 2. Part. OK
         //
@@ -212,9 +227,9 @@ public class JNAtest {
         String descriptorURL = "\"http://pacelibom-eurekin.rhcloud.com/app.jnlp\"";
         final JNLPHackToGetShortcutPath jnlpHackToGetShortcutPath = new JNLPHackToGetShortcutPath();
         final String hackedJNLPPath = jnlpHackToGetShortcutPath.getPath(ShowOffApplication.class);
-        if(hackedJNLPPath!=null) descriptorURL = "\"" + hackedJNLPPath + "\"";
+        if (hackedJNLPPath != null) descriptorURL = "\"" + hackedJNLPPath + "\"";
 
-        String finalCommandLine = binaryExecutablePath + " " + options + " "+ descriptorURL;
+        String finalCommandLine = binaryExecutablePath + " " + options + " " + descriptorURL;
 
         System.out.println(commandLine.toString().replaceAll("\\s", "\n"));
         setStringPropertyOnGUID(propertyStore, finalCommandLine, 2, "{9F4C2855-9F79-4B39-A8D0-E1D42DE1D5F3}");
@@ -243,130 +258,6 @@ public class JNAtest {
         tryReallyHardToSetWindowsTaskbarProperties(frame);
     }
 
-    public interface IUnknown {
-        int QueryInterface(
-                Guid.GUID riid,
-                PointerByReference ppvObject);
-
-        int AddRef();
-
-        int Release();
-
-    }
-
-    public interface IPropertyStore {
-        int Commit();
-
-        int GetAt();
-
-        int GetCount(IntByReference cProps);
-
-        int GetValue(PROPERTYKEY.ByReference propkey, PROPVARIANT.ByReference propvar);
-
-        int SetValue(PROPERTYKEY.ByReference propkey, PROPVARIANT.ByReference propvar);
-    }
-
-    public interface Shell32 extends StdCallLibrary {
-        Shell32 INSTANCE = (Shell32) Native.loadLibrary("shell32", Shell32.class, OPTIONS);
-
-        WinNT.HRESULT SHGetPropertyStoreForWindow(Pointer hWnd, Guid.GUID guid, PointerByReference ppv);
-
-        public static final int MAX_PATH = 260;
-        public static final int CSIDL_LOCAL_APPDATA = 0x001c;
-        public static final int CSIDL_SYSTEMX86 = 0x0029;
-        public static final int SHGFP_TYPE_CURRENT = 0;
-        public static final int SHGFP_TYPE_DEFAULT = 1;
-        public static final int S_OK = 0;
-
-
-        /**
-         * see http://msdn.microsoft.com/en-us/library/bb762181(VS.85).aspx
-         *
-         * HRESULT SHGetFolderPath( HWND hwndOwner, int nFolder, HANDLE hToken,
-         * DWORD dwFlags, LPTSTR pszPath);
-         */
-        public int SHGetFolderPath(HWND hwndOwner, int nFolder, HANDLE hToken,
-                                   int dwFlags, char[] pszPath);
-    }
-
-
-    public interface Kernel32b extends Kernel32 {
-        Kernel32b INSTANCE = (Kernel32b) Native.loadLibrary("kernel32", Kernel32b.class);
-
-        WString GetCommandLineW();
-    }
-
-
-    // Equivalent JNA mappings
-    public interface User32 extends StdCallLibrary {
-        User32 INSTANCE = (User32) Native.loadLibrary("user32", User32.class);
-
-        boolean EnumWindows(WNDENUMPROC lpEnumFunc, Pointer arg);
-
-        int GetWindowTextA(Pointer hWnd, byte[] lpString, int nMaxCount);
-
-        int GetWindowThreadProcessId(Pointer hWnd, IntByReference lpDword);
-
-        interface WNDENUMPROC extends StdCallCallback {
-            boolean callback(Pointer hWnd, Pointer arg);
-        }
-    }
-
-    public interface Ole32 extends StdCallLibrary {
-        Ole32 INSTANCE = (Ole32) Native.loadLibrary("ole32", Ole32.class);
-    }
-
-
-//        typedef struct {
-//            GUID  fmtid;
-//            DWORD pid;
-//        } PROPERTYKEY;
-
-    public static class PROPERTYKEY extends Structure {
-        public Guid.GUID fmtid;
-        public int pid;
-
-        @Override
-        protected List getFieldOrder() {
-            return Arrays.asList(new String[]{"fmtid", "pid"});
-        }
-
-        public static class ByReference extends PROPERTYKEY implements Structure.ByReference {
-        }
-    }
-
-//        typedef struct PROPVARIANT {
-//            VARTYPE vt;
-//            WORD    wReserved1;
-//            WORD    wReserved2;
-//            WORD    wReserved3;
-//            union {
-//                LPSTR             pszVal;
-//                LPWSTR            pwszVal;
-//            };
-//        } PROPVARIANT
-
-    // VT TYPES http://msdn.microsoft.com/en-us/library/aa380072(v=vs.85).aspx
-
-    public static class PROPVARIANT extends Structure {
-        public int vt;
-        public byte r1;
-        public byte r2;
-        public byte r3;
-        public WString val;
-
-        @Override
-        protected List getFieldOrder() {
-            return Arrays.asList(new String[]{"vt", "r1", "r2", "r3", "val"});
-        }
-
-        public static class ByReference extends PROPVARIANT implements Structure.ByReference {
-        }
-    }
-
-
-    // Snippet from the great answer: http://stackoverflow.com/a/586917/309259
-
     public static String getKnownFolderLocation(int nFolder) {
         if (com.sun.jna.Platform.isWindows()) {
             HWND hwndOwner = null;
@@ -384,14 +275,130 @@ public class JNAtest {
                 System.err.println("Error: " + hResult);
             }
         }
-                return "";
+        return "";
     }
 
-    private static Map<String, Object> OPTIONS = new HashMap<String, Object>();
-    static {
-        OPTIONS.put(Library.OPTION_TYPE_MAPPER, W32APITypeMapper.UNICODE);
-        OPTIONS.put(Library.OPTION_FUNCTION_MAPPER,
-                W32APIFunctionMapper.UNICODE);
+
+    public interface IUnknown {
+        int QueryInterface(
+                Guid.GUID riid,
+                PointerByReference ppvObject);
+
+        int AddRef();
+
+        int Release();
+
+    }
+
+
+    public interface IPropertyStore {
+        int Commit();
+
+        int GetAt();
+
+        int GetCount(IntByReference cProps);
+
+        int GetValue(PROPERTYKEY.ByReference propkey, PROPVARIANT.ByReference propvar);
+
+        int SetValue(PROPERTYKEY.ByReference propkey, PROPVARIANT.ByReference propvar);
+    }
+
+    public interface Shell32 extends StdCallLibrary {
+        Shell32 INSTANCE = (Shell32) Native.loadLibrary("shell32", Shell32.class, OPTIONS);
+        public static final int MAX_PATH = 260;
+        public static final int CSIDL_LOCAL_APPDATA = 0x001c;
+        public static final int CSIDL_SYSTEMX86 = 0x0029;
+        public static final int CSIDL_SYSTEM =  0x0025;
+        public static final int SHGFP_TYPE_CURRENT = 0;
+        public static final int SHGFP_TYPE_DEFAULT = 1;
+        public static final int S_OK = 0;
+
+        WinNT.HRESULT SHGetPropertyStoreForWindow(Pointer hWnd, Guid.GUID guid, PointerByReference ppv);
+
+        /**
+         * see http://msdn.microsoft.com/en-us/library/bb762181(VS.85).aspx
+         * <p/>
+         * HRESULT SHGetFolderPath( HWND hwndOwner, int nFolder, HANDLE hToken,
+         * DWORD dwFlags, LPTSTR pszPath);
+         */
+        public int SHGetFolderPath(HWND hwndOwner, int nFolder, HANDLE hToken,
+                                   int dwFlags, char[] pszPath);
+    }
+
+
+//        typedef struct {
+//            GUID  fmtid;
+//            DWORD pid;
+//        } PROPERTYKEY;
+
+    public interface Kernel32b extends Kernel32 {
+        Kernel32b INSTANCE = (Kernel32b) Native.loadLibrary("kernel32", Kernel32b.class);
+
+        WString GetCommandLineW();
+    }
+
+//        typedef struct PROPVARIANT {
+//            VARTYPE vt;
+//            WORD    wReserved1;
+//            WORD    wReserved2;
+//            WORD    wReserved3;
+//            union {
+//                LPSTR             pszVal;
+//                LPWSTR            pwszVal;
+//            };
+//        } PROPVARIANT
+
+    // VT TYPES http://msdn.microsoft.com/en-us/library/aa380072(v=vs.85).aspx
+
+    // Equivalent JNA mappings
+    public interface User32 extends StdCallLibrary {
+        User32 INSTANCE = (User32) Native.loadLibrary("user32", User32.class);
+
+        boolean EnumWindows(WNDENUMPROC lpEnumFunc, Pointer arg);
+
+        int GetWindowTextA(Pointer hWnd, byte[] lpString, int nMaxCount);
+
+        int GetWindowThreadProcessId(Pointer hWnd, IntByReference lpDword);
+
+        interface WNDENUMPROC extends StdCallCallback {
+            boolean callback(Pointer hWnd, Pointer arg);
+        }
+    }
+
+
+    // Snippet from the great answer: http://stackoverflow.com/a/586917/309259
+
+    public interface Ole32 extends StdCallLibrary {
+        Ole32 INSTANCE = (Ole32) Native.loadLibrary("ole32", Ole32.class);
+    }
+
+    public static class PROPERTYKEY extends Structure {
+        public Guid.GUID fmtid;
+        public int pid;
+
+        @Override
+        protected List getFieldOrder() {
+            return Arrays.asList(new String[]{"fmtid", "pid"});
+        }
+
+        public static class ByReference extends PROPERTYKEY implements Structure.ByReference {
+        }
+    }
+
+    public static class PROPVARIANT extends Structure {
+        public int vt;
+        public byte r1;
+        public byte r2;
+        public byte r3;
+        public WString val;
+
+        @Override
+        protected List getFieldOrder() {
+            return Arrays.asList(new String[]{"vt", "r1", "r2", "r3", "val"});
+        }
+
+        public static class ByReference extends PROPVARIANT implements Structure.ByReference {
+        }
     }
 
     static class HANDLE extends PointerType implements NativeMapped {
