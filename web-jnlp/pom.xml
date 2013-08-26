@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>pl.eurekin.experiments</groupId>
+    <artifactId>web-jnlp</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <packaging>war</packaging>
+
+    <organization>
+        <name>Experimental</name>
+    </organization>
+    <name>Experimental-jnlp</name>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <mainClass>experimental.ShowOffApplication</mainClass>
+        <backgroundUpdateAllowed>true</backgroundUpdateAllowed>
+
+        <keystore.alias>EmbeddedTomcatWebstart</keystore.alias>
+        <keystore.file>${basedir}/keystore</keystore.file>
+        <keystore.password>password</keystore.password>
+    </properties>
+
+    <dependencies>
+        <!-- JNLP Download Servlet -->
+        <dependency>
+            <groupId>org.codehaus.mojo.webstart</groupId>
+            <artifactId>webstart-jnlp-servlet</artifactId>
+            <version>1.0-6.0.02_ea_b02.2</version>
+        </dependency>
+
+        <dependency>
+            <groupId>pl.eurekin.xml.fun</groupId>
+            <artifactId>xml-ref-test</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+
+
+    </dependencies>
+
+    <profiles>
+        <profile>
+            <id>rhcloud-deploy</id>
+            <build>
+                <plugins>
+
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>wagon-maven-plugin</artifactId>
+                        <version>1.0-beta-4</version>
+                        <executions>
+                            <execution>
+                                <id>upload-jnlp-war</id>
+                                <phase>deploy</phase>
+                                <goals>
+                                    <goal>upload</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <serverId>rhcloud-as-jnlp-host</serverId>
+                            <fromFile>${project.build.directory}/${project.build.finalName}.war</fromFile>
+                            <toFile>ROOT.war</toFile>
+                            <url>
+                                scp://pacelibom-eurekin.rhcloud.com/var/lib/openshift/51bdf9004382ec63640003de/jbossas/standalone/deployments
+                            </url>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
+
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-war-plugin</artifactId>
+                <groupId>org.apache.maven.plugins</groupId>
+                <version>2.3</version>
+            </plugin>
+            <plugin>
+                <groupId>org.mortbay.jetty</groupId>
+                <artifactId>jetty-maven-plugin</artifactId>
+                <version>8.0.1.v20110908</version>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>webstart-maven-plugin</artifactId>
+                <version>1.0-beta-3</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>jnlp-download-servlet</goal>
+                        </goals>
+                        <phase>package</phase>
+                    </execution>
+                </executions>
+                <configuration>
+                    <outputDirectoryName>webstart</outputDirectoryName>
+
+                    <!-- The path where the libraries are stored within the jnlp structure. not required. by default the libraries are within the working directory -->
+                    <libPath>lib</libPath>
+                    <outputJarVersions>true</outputJarVersions>
+                    <!-- [optional] transitive dependencies filter - if omitted, all transitive dependencies are included -->
+                    <dependencies>
+                        <!-- Note that only groupId and artifactId must be specified here. because of a limitation of the Include/ExcludesArtifactFilter -->
+                        <!--
+                        <includes>
+                            <include>commons-logging:commons-logging</include>
+                            <include>commons-cli:commons-cli</include>
+                        </includes>
+                        -->
+                        <!--
+                        <excludes>
+                            <exclude></exclude>
+                        <excludes>
+                        -->
+                    </dependencies>
+
+                    <!--
+                    <resourcesDirectory>${project.basedir}/src/main/jnlp/resources</resourcesDirectory>
+                    -->
+                    <!-- default value -->
+
+                    <!-- JNLP generation -->
+                    <jnlp>
+                        <!-- default values -->
+                        <!--inputTemplateResourcePath>${project.basedir}</inputTemplateResourcePath-->
+                        <!--inputTemplate>src/main/jnlp/template.vm</inputTemplate--> <!-- relative to inputTemplateResourcePath -->
+                        <outputFile>app.jnlp</outputFile>
+                        <!-- defaults to launch.jnlp -->
+
+                        <!-- used to automatically identify the jar containing the main class. -->
+                        <!-- this is perhaps going to change -->
+                        <mainClass>${mainClass}</mainClass>
+                        <offlineAllowed>true</offlineAllowed>
+                        <!--jnlpCodebase-->
+
+                    </jnlp>
+
+
+                    <!--
+
+                    WAR
+
+                    Part only for the jnlp-download-servlet goal
+
+                    -->
+
+                    <jnlpFiles>
+                        <jnlpFile>
+                            <templateFilename>template.vm</templateFilename>
+                            <outputFilename>app.jnlp</outputFilename>
+
+                            <jarResources>
+                                <jarResource>
+                                    <groupId>pl.eurekin.xml.fun</groupId>
+                                    <artifactId>xml-ref-test</artifactId>
+                                    <version>1.0-SNAPSHOT</version>
+                                    <mainClass>${mainClass}</mainClass>
+                                </jarResource>
+                            </jarResources>
+                        </jnlpFile>
+                    </jnlpFiles>
+
+
+                    <!-- SIGNING -->
+                    <!-- defining this will automatically sign the jar and its dependencies, if necessary -->
+                    <sign>
+                        <keystore>${keystore.file}</keystore>
+                        <keypass>${keystore.password}</keypass>
+                        <!-- we need to override passwords easily from the command line. ${keypass} -->
+                        <storepass>${keystore.password}</storepass>
+                        <!-- ${storepass} -->
+                        <!--storetype>fillme</storetype-->
+                        <alias>${keystore.alias}</alias>
+
+                        <!--validity>fillme</validity-->
+
+                        <!-- only required for generating the keystore -->
+                        <dnameCn>EmbeddedTomcatWebstart</dnameCn>
+                        <dnameOu>Organisation Unit</dnameOu>
+                        <dnameO>Organisation</dnameO>
+                        <dnameL>Location</dnameL>
+                        <dnameSt>State</dnameSt>
+                        <dnameC>Country</dnameC>
+
+
+                        <!-- KEYSTORE MANAGEMENT -->
+                        <keystoreConfig>
+                            <delete>false</delete>
+                            <!-- delete the keystore -->
+                            <gen>false</gen>
+                            <!-- optional shortcut to generate the store. -->
+                        </keystoreConfig>
+                    </sign>
+
+                    <!-- BUILDING PROCESS -->
+
+                    <pack200>true</pack200>
+                    <gzip>true</gzip>
+                    <!-- default force when pack200 false, true when pack200 selected ?? -->
+
+                    <!-- causes a version attribute to be output in each jar resource element, optional, default is false -->
+                    <outputJarVersions>false</outputJarVersions>
+                    <canUnsign>true</canUnsign>
+                    <unsignAlreadySignedJars>true</unsignAlreadySignedJars>
+                </configuration>
+            </plugin>
+        </plugins>
+
+        <extensions>
+            <extension>
+                <groupId>org.apache.maven.wagon</groupId>
+                <artifactId>wagon-ssh</artifactId>
+                <version>1.0-beta-7</version>
+            </extension>
+        </extensions>
+
+    </build>
+</project>

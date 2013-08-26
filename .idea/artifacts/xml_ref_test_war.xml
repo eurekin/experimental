@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="war" name="xml-ref-test:war">
+    <output-path>$PROJECT_DIR$/xml-ref-test/target</output-path>
+    <root id="archive" name="xml-ref-test-1.0-SNAPSHOT.war">
+      <element id="artifact" artifact-name="xml-ref-test:war exploded" />
+    </root>
+  </artifact>
+</component>

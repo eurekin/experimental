@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="war" name="web-jnlp:war">
+    <output-path>$PROJECT_DIR$/web-jnlp/target</output-path>
+    <root id="archive" name="web-jnlp-1.0-SNAPSHOT.war">
+      <element id="artifact" artifact-name="web-jnlp:war exploded" />
+    </root>
+  </artifact>
+</component>

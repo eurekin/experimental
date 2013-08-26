@@ -3,6 +3,10 @@
   <component name="EntryPointsManager">
     <entry_points version="2.0" />
   </component>
+  <component name="FrameworkDetectionExcludesConfiguration">
+    <file type="web" url="file://$PROJECT_DIR$/web-jnlp" />
+    <file type="web" url="file://$PROJECT_DIR$/xml-ref-test" />
+  </component>
   <component name="IdProvider" IDEtalkID="F0E48B34A983AB5B6C95BE6B8388ED30" />
   <component name="MavenProjectsManager">
     <option name="originalFiles">
@@ -12,6 +16,7 @@
         <option value="$PROJECT_DIR$/annotation-processor-experiment/pom.xml" />
         <option value="$PROJECT_DIR$/jpa-basics-2/pom.xml" />
         <option value="$PROJECT_DIR$/module-run/pom.xml" />
+        <option value="$PROJECT_DIR$/web-jnlp/pom.xml" />
       </list>
     </option>
   </component>

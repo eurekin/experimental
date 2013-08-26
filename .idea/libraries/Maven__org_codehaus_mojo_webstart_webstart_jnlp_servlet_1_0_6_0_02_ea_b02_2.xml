@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: org.codehaus.mojo.webstart:webstart-jnlp-servlet:1.0-6.0.02_ea_b02.2">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/codehaus/mojo/webstart/webstart-jnlp-servlet/1.0-6.0.02_ea_b02.2/webstart-jnlp-servlet-1.0-6.0.02_ea_b02.2.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/org/codehaus/mojo/webstart/webstart-jnlp-servlet/1.0-6.0.02_ea_b02.2/webstart-jnlp-servlet-1.0-6.0.02_ea_b02.2-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/codehaus/mojo/webstart/webstart-jnlp-servlet/1.0-6.0.02_ea_b02.2/webstart-jnlp-servlet-1.0-6.0.02_ea_b02.2-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
