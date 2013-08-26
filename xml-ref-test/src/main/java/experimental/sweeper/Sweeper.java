@@ -130,7 +130,7 @@ public class Sweeper {
         mainPanelLayer.setUI(blurUI);
 
         mainPanel = new JPanel(new CardLayout());
-        mainPanel.add(mainPanelLayer);
+        mainPanel.add(mainPanelLayer, "main");
         mainPanel.add(new JPanel(), "lost");
         mainPanel.add(new JPanel(), "won");
 
