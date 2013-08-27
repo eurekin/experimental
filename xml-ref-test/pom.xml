@@ -101,14 +101,6 @@
             <version>${jna.version}</version>
         </dependency>
 
-        <!-- JNLP Download Servlet -->
-        <dependency>
-            <groupId>org.codehaus.mojo.webstart</groupId>
-            <artifactId>webstart-jnlp-servlet</artifactId>
-            <version>1.0-6.0.02_ea_b02.2</version>
-        </dependency>
-
-
     </dependencies>
 
     <profiles>
@@ -233,7 +225,7 @@
                         <executions>
                             <execution>
                                 <goals>
-                                    <goal>jnlp-download-servlet</goal>
+                                    <goal>jnlp-inline</goal>
                                 </goals>
                                 <phase>package</phase>
                             </execution>
