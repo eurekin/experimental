@@ -1,20 +1,56 @@
 <component name="ProjectDictionaryState">
   <dictionary name="gmatoga">
     <words>
+      <w>appdata</w>
+      <w>aspx</w>
+      <w>bitness</w>
       <w>csidl</w>
       <w>derivator</w>
       <w>djnlp</w>
+      <w>dword</w>
+      <w>eurekin</w>
+      <w>fillme</w>
+      <w>fmtid</w>
       <w>gmatoga</w>
+      <w>guid</w>
       <w>guireloader</w>
+      <w>hresult</w>
       <w>hwnd</w>
+      <w>invalidarg</w>
+      <w>javaw</w>
       <w>javaws</w>
+      <w>jbossas</w>
       <w>jdbc</w>
       <w>jnlp</w>
+      <w>jnlpx</w>
+      <w>jvm's</w>
+      <w>keypass</w>
+      <w>keystore</w>
       <w>localfile</w>
+      <w>lpstr</w>
+      <w>lptstr</w>
+      <w>lpwstr</w>
+      <w>openshift</w>
       <w>overridable</w>
+      <w>println</w>
       <w>propertykey</w>
+      <w>propkey</w>
+      <w>propvar</w>
+      <w>propvariant</w>
+      <w>pwsz</w>
       <w>reloader</w>
+      <w>riid</w>
+      <w>shgfp</w>
+      <w>stackoverflow</w>
+      <w>storepass</w>
+      <w>storetype</w>
+      <w>struct</w>
       <w>syste</w>
+      <w>systemx</w>
+      <w>taskbar</w>
+      <w>vartype</w>
+      <w>webapp</w>
+      <w>wndenumproc</w>
     </words>
   </dictionary>
 </component>

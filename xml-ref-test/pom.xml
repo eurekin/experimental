@@ -32,14 +32,25 @@
             <name>OSS Sonatype Staging</name>
             <url>https://oss.sonatype.org/content/groups/staging</url>
         </repository>
-
+        <repository>
+            <id>java.net-m2</id>
+            <name>java.net - Maven 2</name>
+            <url>https://repository.jboss.org/nexus/content/repositories/java.net-m2</url>
+        </repository>
+        <repository>
+            <id>java.net</id>
+            <name>java.net</name>
+            <url>http://download.java.net/maven/2</url>
+        </repository>
     </repositories>
 
     <dependencies>
         <!--JNLP
 
-   Need it to get the Pin To Taskbar functionality working
-   -->
+           Need it to get the Pin To Taskbar functionality working
+           Windows shortcut needs to contain reference the jar inside
+           of the JNLP Cache
+           -->
         <dependency>
             <groupId>javax.jnlp</groupId>
             <artifactId>jnlp-api</artifactId>
@@ -47,7 +58,6 @@
             <scope>system</scope>
             <systemPath>${java.home}/lib/javaws.jar</systemPath>
         </dependency>
-
 
         <dependency>
             <groupId>com.jhlabs</groupId>
@@ -478,6 +488,7 @@
                     <!-- aggregated reports for multi-module projects -->
                     <aggregate>true</aggregate>
 
+                    <check/>
                 </configuration>
             </plugin>
 
@@ -493,6 +504,8 @@
                     </execution>
                 </executions>
                 <configuration>
+                    <verbose>true</verbose>
+                    <failOnError>false</failOnError>
                     <fork>true</fork>
                     <debug>true</debug>
                     <failOnError>true</failOnError>

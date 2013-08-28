@@ -18,7 +18,7 @@ import java.util.Map;
 /**
  * @author gmatoga
  */
-public class JNAtest {
+public class JNATest {
     /**
      * Common error codes
      * http://msdn.microsoft.com/en-us/library/windows/desktop/aa378137(v=vs.85).aspx
@@ -46,7 +46,7 @@ public class JNAtest {
         frame.add(new JButton(new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                dorun(frame);
+                doRun(frame);
             }
         }));
         frame.setVisible(true);
@@ -69,7 +69,6 @@ public class JNAtest {
         user32.GetWindowTextA(windowPointer, windowText2, 512);
 
         final Shell32 shell32 = Shell32.INSTANCE;
-        final Ole32 ole32 = Ole32.INSTANCE;
         final String IID_IPropertyStoreString = "{886d8eeb-8cf2-4446-8d02-cdba1dbdcf99}";
         final Guid.GUID IID_IPropertyStore = Ole32Util.getGUIDFromString(IID_IPropertyStoreString);
         PointerByReference pp = new PointerByReference();
@@ -151,14 +150,14 @@ public class JNAtest {
         propertyStore.GetCount(pbr2);
 
 
-        final PROPERTYKEY.ByReference propKeybyReference = new PROPERTYKEY.ByReference();
+        final PROPERTYKEY.ByReference propKeyByReference = new PROPERTYKEY.ByReference();
         final String AppUserModelID = "{9F4C2855-9F79-4B39-A8D0-E1D42DE1D5F3}";
-        propKeybyReference.fmtid = Ole32Util.getGUIDFromString(AppUserModelID);
-        propKeybyReference.pid = 5;
+        propKeyByReference.fmtid = Ole32Util.getGUIDFromString(AppUserModelID);
+        propKeyByReference.pid = 5;
         final PROPVARIANT.ByReference propVarByReference = new PROPVARIANT.ByReference();
         //propVarByReference.val = Pointer.NULL;
         propVarByReference.vt = Variant.VT_LPWSTR;
-        int result = propertyStore.GetValue(propKeybyReference, propVarByReference);
+        int result = propertyStore.GetValue(propKeyByReference, propVarByReference);
         System.out.println("ValueOfAppUserModelId: " + propVarByReference + " result of get value: " + result);
 
         System.out.println("Property Count = " + pbr2.getValue() + " variant: " + propVarByReference.vt);
@@ -172,7 +171,7 @@ public class JNAtest {
         // String commandLineJNLP = "C:\\Windows\\System32\\javaws.exe
         // -localfile -J-Djnlp.application.href=http://pacelibom-eurekin.rhcloud.com/app.jnlp
         // \"C:\\Users\\gmatoga\\AppData\\LocalLow\\Sun\\Java\\Deployment\\cache\\6.0\\36\\d38cde4-69ef18af";
-        String commandLineWithURL = "javaws http://pacelibom-eurekin.rhcloud.com/app.jnlp";
+        // String commandLineWithURL = "javaws http://pacelibom-eurekin.rhcloud.com/app.jnlp";
 
         // Manual shortcut creation.
         //
@@ -242,19 +241,18 @@ public class JNAtest {
 
     private static void setStringPropertyOnGUID(IPropertyStore propertyStore, String propertyValueToBeSet, int pid, String appUserModelID) {
         int result;
-        final PROPERTYKEY.ByReference propKeybyReference2 = new PROPERTYKEY.ByReference();
-        propKeybyReference2.fmtid = Ole32Util.getGUIDFromString(appUserModelID);
-        propKeybyReference2.pid = pid;
+        final PROPERTYKEY.ByReference propKeyByReference2 = new PROPERTYKEY.ByReference();
+        propKeyByReference2.fmtid = Ole32Util.getGUIDFromString(appUserModelID);
+        propKeyByReference2.pid = pid;
         final PROPVARIANT.ByReference propVarByReference2 = new PROPVARIANT.ByReference();
-        final WString test = new WString(propertyValueToBeSet);
-        propVarByReference2.val = test;
+        propVarByReference2.val = new WString(propertyValueToBeSet);
         propVarByReference2.vt = Variant.VT_LPWSTR;
         System.out.println("argument: " + propVarByReference2);
-        result = propertyStore.SetValue(propKeybyReference2, propVarByReference2);
+        result = propertyStore.SetValue(propKeyByReference2, propVarByReference2);
         System.out.println("set value result: " + Integer.toHexString(result));
     }
 
-    private static void dorun(JFrame frame) {
+    private static void doRun(JFrame frame) {
         tryReallyHardToSetWindowsTaskbarProperties(frame);
     }
 
@@ -306,7 +304,7 @@ public class JNAtest {
     public interface Shell32 extends StdCallLibrary {
         Shell32 INSTANCE = (Shell32) Native.loadLibrary("shell32", Shell32.class, OPTIONS);
         public static final int MAX_PATH = 260;
-        public static final int CSIDL_LOCAL_APPDATA = 0x001c;
+        // public static final int CSIDL_LOCAL_APPDATA = 0x001c;
         public static final int CSIDL_SYSTEMX86 = 0x0029;
         public static final int CSIDL_SYSTEM =  0x0025;
         public static final int SHGFP_TYPE_CURRENT = 0;
@@ -337,16 +335,16 @@ public class JNAtest {
         WString GetCommandLineW();
     }
 
-//        typedef struct PROPVARIANT {
-//            VARTYPE vt;
-//            WORD    wReserved1;
-//            WORD    wReserved2;
-//            WORD    wReserved3;
-//            union {
-//                LPSTR             pszVal;
-//                LPWSTR            pwszVal;
-//            };
-//        } PROPVARIANT
+    //        typedef struct PROPVARIANT {
+    //            VARTYPE vt;
+    //            WORD    wReserved1;
+    //            WORD    wReserved2;
+    //            WORD    wReserved3;
+    //            union {
+    //                LPSTR             pszVal;
+    //                LPWSTR            pwszVal;
+    //            };
+    //        } PROPVARIANT
 
     // VT TYPES http://msdn.microsoft.com/en-us/library/aa380072(v=vs.85).aspx
 
@@ -354,15 +352,15 @@ public class JNAtest {
     public interface User32 extends StdCallLibrary {
         User32 INSTANCE = (User32) Native.loadLibrary("user32", User32.class);
 
-        boolean EnumWindows(WNDENUMPROC lpEnumFunc, Pointer arg);
+        // boolean EnumWindows(WNDENUMPROC lpEnumFunc, Pointer arg);
 
         int GetWindowTextA(Pointer hWnd, byte[] lpString, int nMaxCount);
 
-        int GetWindowThreadProcessId(Pointer hWnd, IntByReference lpDword);
+        // int GetWindowThreadProcessId(Pointer hWnd, IntByReference lpDword);
 
-        interface WNDENUMPROC extends StdCallCallback {
-            boolean callback(Pointer hWnd, Pointer arg);
-        }
+//        interface WNDENUMPROC extends StdCallCallback {
+//            boolean callback(Pointer hWnd, Pointer arg);
+//        }
     }
 
 
@@ -378,13 +376,14 @@ public class JNAtest {
 
         @Override
         protected List getFieldOrder() {
-            return Arrays.asList(new String[]{"fmtid", "pid"});
+            return Arrays.asList("fmtid", "pid");
         }
 
         public static class ByReference extends PROPERTYKEY implements Structure.ByReference {
         }
     }
 
+    @SuppressWarnings("UnusedDeclaration") // the r1, r2 and r3 are necessary to properly align the struct
     public static class PROPVARIANT extends Structure {
         public int vt;
         public byte r1;
@@ -394,7 +393,7 @@ public class JNAtest {
 
         @Override
         protected List getFieldOrder() {
-            return Arrays.asList(new String[]{"vt", "r1", "r2", "r3", "val"});
+            return Arrays.asList("vt", "r1", "r2", "r3", "val");
         }
 
         public static class ByReference extends PROPVARIANT implements Structure.ByReference {
