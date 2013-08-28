@@ -121,11 +121,11 @@ public class InfoPanel {
     private Map<String, String> loadAndProcessProperties(Properties prop, InputStream in) throws IOException {
         loadProperties(prop, in);
         Map<String, String> filteredProperties = filterProperties(prop);
-        addDynamicValues(prop);
+        addDynamicValues(filteredProperties);
         return filteredProperties;
     }
 
-    private void addDynamicValues(Properties prop) {
+    private void addDynamicValues(Map<String, String> prop) {
         String value;
         String label = "getUpdateAvailableResources";
         try {
@@ -136,7 +136,7 @@ public class InfoPanel {
             // - resource is downloaded from a directory on http://foo.bar.com:8080
             // - version is 2. [0-9]+
             // - resource type is JAR
-            String codebase = prop.getProperty("maven.jnlpCodebase");
+            String codebase = prop.get("maven.jnlpCodebase");
             System.out.println("maven.jnlpCodebase from properties is" + codebase);
             ResourceSpec spec = new ResourceSpec(codebase, ".*", DownloadService2.ALL);
             ResourceSpec[] results = service.getUpdateAvailableResources(spec);
