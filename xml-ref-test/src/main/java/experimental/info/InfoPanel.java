@@ -138,7 +138,7 @@ public class InfoPanel {
             // - resource type is JAR
             String codebase = prop.getProperty("maven.jnlpCodebase");
             System.out.println("maven.jnlpCodebase from properties is" + codebase);
-            ResourceSpec spec = new ResourceSpec(codebase, "*", DownloadService2.ALL);
+            ResourceSpec spec = new ResourceSpec(codebase, ".*", DownloadService2.ALL);
             ResourceSpec[] results = service.getUpdateAvailableResources(spec);
             value = Arrays.toString(results);
         } catch (Exception e) {
