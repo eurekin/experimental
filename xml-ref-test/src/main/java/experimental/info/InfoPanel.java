@@ -1,12 +1,17 @@
 package experimental.info;
 
+import javax.jnlp.DownloadService2;
+import javax.jnlp.ServiceManager;
 import javax.swing.*;
 import java.awt.*;
+import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
 
+import static javax.jnlp.DownloadService2.ResourceSpec;
 import static javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED;
 import static javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED;
 import static javax.swing.WindowConstants.DISPOSE_ON_CLOSE;
@@ -18,7 +23,7 @@ public class InfoPanel {
 
     public static final String PREFIX = "${env";
 
-    public static void main(String... args) throws Exception{
+    public static void main(String... args) throws Exception {
 
         UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         final JFrame frame = new JFrame("Properties");
@@ -39,7 +44,7 @@ public class InfoPanel {
         JPanel innerPanel = new JPanel(layout);
         panel.setBackground(Color.white);
         innerPanel.setBackground(Color.white);
-        innerPanel.setBorder(BorderFactory.createLineBorder(Color.white,5));
+        innerPanel.setBorder(BorderFactory.createLineBorder(Color.white, 5));
         int i = 0;
 
         c.fill = GridBagConstraints.HORIZONTAL;
@@ -68,15 +73,7 @@ public class InfoPanel {
         InputStream in = InfoPanel.class.getResourceAsStream("/about.properties");
         try {
 
-            prop.load(in);
-            in.close();
-            Map<String, String> filteredProperties = new LinkedHashMap<String, String>();
-            for (Map.Entry entry : prop.entrySet()) {
-                final String val = entry.getValue().toString();
-                final String key = entry.getKey().toString();
-                String value = !val.startsWith(PREFIX) ? val : null;
-                filteredProperties.put(key, value);
-            }
+            Map<String, String> filteredProperties = loadAndProcessProperties(prop, in);
 
             for (Map.Entry<String, String> entry : filteredProperties.entrySet()) {
                 final JLabel keyLabel = new JLabel(entry.getKey() + ":");
@@ -118,5 +115,51 @@ public class InfoPanel {
             e.printStackTrace();
         }
         return panel;
+    }
+
+    private Map<String, String> loadAndProcessProperties(Properties prop, InputStream in) throws IOException {
+        loadProperties(prop, in);
+        Map<String, String> filteredProperties = filterProperties(prop);
+        addDynamicValues(prop);
+        return filteredProperties;
+    }
+
+    private void addDynamicValues(Properties prop) {
+        String value = "uninitialized";
+        String label = "getUpdateAvailableResources";
+        try {
+            DownloadService2 service = (DownloadService2)
+                    ServiceManager.lookup("javax.jnlp.DownloadService2");
+
+            // create a new instance of ResourceSpec. In this example:
+            // - resource is downloaded from a directory on http://foo.bar.com:8080
+            // - version is 2. [0-9]+
+            // - resource type is JAR
+            String codebase = prop.getProperty("maven.jnlpCodebase");
+            System.out.println("maven.jnlpCodebase from properties is" + codebase);
+            ResourceSpec spec = new ResourceSpec(codebase, "*", service.ALL);
+            ResourceSpec[] results = service.getUpdateAvailableResources(spec);
+            value = Arrays.toString(results);
+        } catch (Exception e) {
+            e.printStackTrace();
+            value = "Exception: " + e.getMessage();
+        }
+        prop.put(label, value);
+    }
+
+    private Map<String, String> filterProperties(Properties prop) {
+        Map<String, String> filteredProperties = new LinkedHashMap<String, String>();
+        for (Map.Entry entry : prop.entrySet()) {
+            final String val = entry.getValue().toString();
+            final String key = entry.getKey().toString();
+            String value = !val.startsWith(PREFIX) ? val : null;
+            filteredProperties.put(key, value);
+        }
+        return filteredProperties;
+    }
+
+    private void loadProperties(Properties prop, InputStream in) throws IOException {
+        prop.load(in);
+        in.close();
     }
 }

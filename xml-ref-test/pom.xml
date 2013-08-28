@@ -21,6 +21,9 @@
 
         <timestamp>${maven.build.timestamp}</timestamp>
         <maven.build.timestamp.format>yyyy.MM.dd HH:mm:ss z</maven.build.timestamp.format>
+        <jnlpCodebase>http://pacelibom-eurekin.rhcloud.com</jnlpCodebase>
+        <maven-jar-plugin.Permissions>all-permissions</maven-jar-plugin.Permissions>
+        <maven-jar-plugin.Codebase>*</maven-jar-plugin.Codebase>
     </properties>
 
     <repositories>
@@ -156,8 +159,8 @@
                         <configuration>
                             <archive>
                                 <manifestEntries>
-                                    <Permissions>all-permissions</Permissions>
-                                    <Codebase>*</Codebase>
+                                    <Permissions>${maven-jar-plugin.Permissions}</Permissions>
+                                    <Codebase>${maven-jar-plugin.Codebase}</Codebase>
                                 </manifestEntries>
                             </archive>
                         </configuration>
