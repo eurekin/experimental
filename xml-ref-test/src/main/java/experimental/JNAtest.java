@@ -18,7 +18,7 @@ import java.util.Map;
 /**
  * @author gmatoga
  */
-public class JNATest {
+public class JNAtest {
     /**
      * Common error codes
      * http://msdn.microsoft.com/en-us/library/windows/desktop/aa378137(v=vs.85).aspx
