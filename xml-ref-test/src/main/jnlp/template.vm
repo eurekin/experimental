@@ -4,8 +4,8 @@
         spec="$jnlpspec"
 ##        codebase="$jnlpCodebase"
 ##        href="$outputFile">
-        codebase="$jnlpCodebase"
-        href="app.jnlp">
+        codebase="http://pacelibom-eurekin.rhcloud.com"
+        href="$outputFile">
     <information>
         #if($project.Name)
             <title>$project.Name</title>

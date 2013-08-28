@@ -8,6 +8,7 @@
     <artifactId>xml-ref-test</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
+    <url>http://pacelibom-eurekin.rhcloud.com</url>
 
     <organization>
         <name>Experimental</name>
@@ -238,7 +239,6 @@
                             </execution>
                         </executions>
                         <configuration>
-                            <outputDirectoryName>webstart</outputDirectoryName>
                             <!--outputDirectory></outputDirectory--> <!-- not required?? -->
 
                             <!-- Set to true to exclude all transitive dependencies. Default is false. -->
@@ -284,32 +284,6 @@
 
                             </jnlp>
 
-
-                            <!--
-
-                            WAR
-
-                            Part only for the jnlp-download-servlet goal
-
-                            -->
-
-                            <jnlpFiles>
-                                <jnlpFile>
-                                    <templateFilename>template.vm</templateFilename>
-                                    <outputFilename>app.jnlp</outputFilename>
-
-                                    <jarResources>
-                                        <jarResource>
-                                            <groupId>${project.groupId}</groupId>
-                                            <artifactId>${project.artifactId}</artifactId>
-                                            <version>${project.version}</version>
-                                            <!--<classifier>[some optional classifier]</classifier>-->
-                                            <!-- A mainClass element must be specified on one, and only one, jarResource per jnlpFile -->
-                                            <mainClass>${mainClass}</mainClass>
-                                        </jarResource>
-                                    </jarResources>
-                                </jnlpFile>
-                            </jnlpFiles>
 
 
                             <!-- SIGNING -->
@@ -418,15 +392,6 @@
         </extensions>
 
         <plugins>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-war-plugin</artifactId>
-                <version>2.3</version>
-                <configuration>
-                    <webXml>../web-jnlp/src/main/webapp/WEB-INF/web.xml</webXml>
-                </configuration>
-            </plugin>
 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
