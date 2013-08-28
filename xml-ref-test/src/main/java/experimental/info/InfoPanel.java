@@ -1,5 +1,6 @@
 package experimental.info;
 
+import javax.jnlp.DownloadService;
 import javax.jnlp.DownloadService2;
 import javax.jnlp.ServiceManager;
 import javax.swing.*;
@@ -128,8 +129,8 @@ public class InfoPanel {
         String value;
         String label = "getUpdateAvailableResources";
         try {
-            DownloadService2 service = (DownloadService2)
-                    ServiceManager.lookup("javax.jnlp.DownloadService2");
+            DownloadService2 service =
+                    (DownloadService2) ServiceManager.lookup("javax.jnlp.DownloadService2");
 
             // create a new instance of ResourceSpec. In this example:
             // - resource is downloaded from a directory on http://foo.bar.com:8080

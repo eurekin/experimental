@@ -15,6 +15,34 @@
     <build>
 
         <plugins>
+
+            <!--JNLP
+
+            Need it to get the Pin To Taskbar functionality working
+            Windows shortcut needs to contain reference the jar inside
+            of the JNLP Cache
+
+            In this project, because it is executed before xml-ref-test :) HACK
+            -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-install-plugin</artifactId>
+                <version>2.3.1</version>
+                <executions>
+                    <execution>
+                        <goals><goal>install-file</goal></goals>
+                        <phase>validate</phase>
+                    </execution>
+                </executions>
+                <configuration>
+                    <groupId>javax.jnlp</groupId>
+                    <artifactId>jnlp-api</artifactId>
+                    <version>7.0</version>
+                    <packaging>jar</packaging>
+                    <file>${java.home}/lib/javaws.jar</file>
+                </configuration>
+            </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-resources-plugin</artifactId>

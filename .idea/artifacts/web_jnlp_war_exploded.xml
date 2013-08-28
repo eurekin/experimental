@@ -12,6 +12,7 @@
           <element id="archive" name="xml-ref-test-1.0-SNAPSHOT.jar">
             <element id="module-output" name="xml-ref-test" />
           </element>
+          <element id="library" level="project" name="Maven: javax.jnlp:jnlp-api:7.0" />
           <element id="library" level="project" name="Maven: com.jhlabs:filters:2.0.235" />
           <element id="library" level="project" name="Maven: org.swinglabs:jxlayer:3.0.4" />
           <element id="library" level="project" name="Maven: org.eclipse.persistence:org.eclipse.persistence.moxy:2.5.0" />
