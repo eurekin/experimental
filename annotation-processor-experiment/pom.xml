@@ -15,7 +15,25 @@
     <build>
 
         <plugins>
-
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>wagon-maven-plugin</artifactId>
+                <version>1.0-beta-3</version>
+                <executions>
+                    <execution>
+                        <id>download-swing-laf</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>download-single</goal>
+                        </goals>
+                        <configuration>
+                            <url>https://beautyeye.googlecode.com</url>
+                            <fromFile>svn/trunk/beautyeye_lnf/dist/beautyeye_lnf.jar</fromFile>
+                            <toDir>${project.build.directory}/remote-jars</toDir>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
             <!--JNLP
 
             Need it to get the Pin To Taskbar functionality working
@@ -30,19 +48,39 @@
                 <version>2.3.1</version>
                 <executions>
                     <execution>
-                        <goals><goal>install-file</goal></goals>
+                        <id>install-jnlp</id>
+                        <goals>
+                            <goal>install-file</goal>
+                        </goals>
                         <phase>validate</phase>
+                        <configuration>
+                            <groupId>javax.jnlp</groupId>
+                            <artifactId>jnlp-api</artifactId>
+                            <version>7.0</version>
+                            <packaging>jar</packaging>
+                            <file>${java.home}/lib/javaws.jar</file>
+                        </configuration>
                     </execution>
-                </executions>
-                <configuration>
-                    <groupId>javax.jnlp</groupId>
-                    <artifactId>jnlp-api</artifactId>
-                    <version>7.0</version>
-                    <packaging>jar</packaging>
-                    <file>${java.home}/lib/javaws.jar</file>
-                </configuration>
-            </plugin>
 
+                    <execution>
+                        <id>install-laf</id>
+                        <goals>
+                            <goal>install-file</goal>
+                        </goals>
+                        <phase>validate</phase>
+                        <configuration>
+                            <groupId>swing.laf</groupId>
+                            <artifactId>beauty-eye</artifactId>
+                            <version>3.5</version>
+                            <packaging>jar</packaging>
+                            <file>${project.build.directory}/remote-jars/beautyeye_lnf.jar</file>
+                        </configuration>
+                    </execution>
+
+                </executions>
+
+
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-resources-plugin</artifactId>
@@ -53,18 +91,18 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.0</version>
                 <configuration>
-					<compilerId>eclipse</compilerId>
+                    <compilerId>eclipse</compilerId>
                     <source>1.6</source>
                     <target>1.6</target>
                     <proc>none</proc>
                 </configuration>
-				   <dependencies>
-					  <dependency>
-						 <groupId>org.codehaus.plexus</groupId>
-						 <artifactId>plexus-compiler-eclipse</artifactId>
-						 <version>2.2</version>
-					  </dependency>
-				   </dependencies>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.codehaus.plexus</groupId>
+                        <artifactId>plexus-compiler-eclipse</artifactId>
+                        <version>2.2</version>
+                    </dependency>
+                </dependencies>
             </plugin>
         </plugins>
     </build>

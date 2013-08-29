@@ -108,6 +108,13 @@
             <version>${jna.version}</version>
         </dependency>
 
+        <!-- BeautyEye look and feel -->
+        <dependency>
+            <groupId>swing.laf</groupId>
+            <artifactId>beauty-eye</artifactId>
+            <version>3.5</version>
+        </dependency>
+
 
     </dependencies>
 
@@ -283,7 +290,6 @@
                                 <!--jnlpCodebase-->
 
                             </jnlp>
-
 
 
                             <!-- SIGNING -->

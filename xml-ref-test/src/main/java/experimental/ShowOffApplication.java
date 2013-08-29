@@ -3,6 +3,7 @@ package experimental;
 import experimental.chess.Board;
 import experimental.info.InfoPanel;
 import experimental.sweeper.Sweeper;
+import org.jb2011.lnf.beautyeye.BeautyEyeLNFHelper;
 import pl.eurekin.editor.LineDefinitionEditorView;
 
 import javax.imageio.ImageIO;
@@ -24,7 +25,10 @@ public class ShowOffApplication {
 
     public static void main(String... args) throws Exception {
 
-        UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+//        UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        BeautyEyeLNFHelper.launchBeautyEyeLNF();
+        UIManager.put("RootPane.setupButtonVisible", false);
+
         UIManager.getDefaults().put("TabbedPane.contentBorderInsets", new Insets(-2, 1, 1, 1));
 //        UIManager.getDefaults().put("TabbedPane.selectedTabPadInsets", new Insets(-2,1,1,1));
 //        UIManager.getDefaults().put("TabbedPane.contentBorderInsets", new Insets(10,10,10,10));
@@ -83,6 +87,7 @@ public class ShowOffApplication {
     private void constructTabbedFrame() {
         tabbedPane = new JTabbedPane();
         tabbedPane.setBorder(new EmptyBorder(10, 10, 10, 10));
+        tabbedPane.setOpaque(false);
 
         addAllRegisteredShowOffViewsToJTabbedPane();
     }

@@ -32,6 +32,7 @@
           <element id="library" level="project" name="Maven: com.intellij:forms_rt:7.0.3" />
           <element id="library" level="project" name="Maven: net.java.dev.jna:jna:4.0.0" />
           <element id="library" level="project" name="Maven: net.java.dev.jna:jna-platform:4.0.0" />
+          <element id="library" level="project" name="Maven: swing.laf:beauty-eye:3.5" />
         </element>
       </element>
     </root>

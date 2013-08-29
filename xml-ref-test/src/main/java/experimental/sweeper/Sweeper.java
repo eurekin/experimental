@@ -170,6 +170,7 @@ public class Sweeper {
         outcomeLabel.setForeground(Color.red);
 
         restartButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        restartButton.setOpaque(false);
 
 
         verticalFlowPanel.add(outcomeLabel);
