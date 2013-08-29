@@ -29,10 +29,10 @@ public class ShowOffApplication {
         BeautyEyeLNFHelper.launchBeautyEyeLNF();
         UIManager.put("RootPane.setupButtonVisible", false);
 
-        UIManager.getDefaults().put("TabbedPane.contentBorderInsets", new Insets(-2, 1, 1, 1));
+//        UIManager.getDefaults().put("TabbedPane.contentBorderInsets", new Insets(-2, 1, 1, 1));
 //        UIManager.getDefaults().put("TabbedPane.selectedTabPadInsets", new Insets(-2,1,1,1));
 //        UIManager.getDefaults().put("TabbedPane.contentBorderInsets", new Insets(10,10,10,10));
-        UIManager.getDefaults().remove("TabbedPane.contentAreaColor");
+//        UIManager.getDefaults().remove("TabbedPane.contentAreaColor");
 //        UIManager.getDefaults().put("TabbedPane.contentAreaColor", Color.YELLOW);
 
 
