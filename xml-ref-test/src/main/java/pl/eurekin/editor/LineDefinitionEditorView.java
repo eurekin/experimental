@@ -1,12 +1,20 @@
 package pl.eurekin.editor;
 
+import org.oxbow.swingbits.dialog.task.TaskDialogs;
 import pl.eurekin.experimental.*;
-import pl.eurekin.experimental.state.*;
-import pl.eurekin.experimental.swing.*;
+import pl.eurekin.experimental.state.Interpreter;
+import pl.eurekin.experimental.state.ObservableInterpreterAdapter;
+import pl.eurekin.experimental.state.ObservableState;
+import pl.eurekin.experimental.state.SimpleState;
+import pl.eurekin.experimental.swing.DelegateAction;
+import pl.eurekin.experimental.swing.SelectionModelAdapter;
+import pl.eurekin.experimental.swing.SequentialComposedRunnable;
+import pl.eurekin.experimental.swing.SingleTableItemSelectedState;
 import pl.eurekin.experimental.swing.selection.SelectionRestore;
 import pl.eurekin.experimental.swing.selection.SelectionStore;
 import pl.eurekin.experimental.viewmodel.ViewModel;
 import pl.eurekin.experimental.viewmodel.ViewModelFactory;
+import xmleditorkit.XMLEditorKit;
 
 import javax.swing.*;
 import java.awt.*;
@@ -14,9 +22,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
+import static javax.swing.WindowConstants.DISPOSE_ON_CLOSE;
 import static pl.eurekin.experimental.ExpressionBuilder.not;
 import static pl.eurekin.experimental.ExpressionBuilder.when;
 import static pl.eurekin.experimental.fluent.CustomObservables.*;
@@ -26,8 +34,8 @@ import static pl.eurekin.experimental.fluent.CustomObservables.*;
  */
 public class LineDefinitionEditorView {
 
-    private JTable table1;
     public JPanel panel1;
+    private JTable table1;
     private JButton newButton;
     private JButton deleteButton;
     private JButton growButton;
@@ -42,6 +50,8 @@ public class LineDefinitionEditorView {
     private ConstantLineWidthTextFileDefinition domainModelObject;
     private Runnable storeSelection;
     private Runnable restoreSelection;
+    private JDialog dialog;
+    private JEditorPane jEditorPane;
 
     public LineDefinitionEditorView() {
         newButton.addActionListener(new ActionListener() {
@@ -70,9 +80,9 @@ public class LineDefinitionEditorView {
         });
     }
 
-
     private void domainObjectChanged() {
         backingList.changed();
+        updateXMLOrShowError();
     }
 
     public void initialize() {
@@ -137,6 +147,7 @@ public class LineDefinitionEditorView {
             @Override
             public void run() {
                 backingList.changed();
+                updateXMLOrShowError();
             }
         };
         List<WeakReference<Field>> selectedFields = new ArrayList<WeakReference<Field>>();
@@ -148,7 +159,91 @@ public class LineDefinitionEditorView {
         growButton.addActionListener(selectionSafeAction(selectedObjectFromTable.growAction, refreshList));
         upButton.addActionListener(selectionSafeAction(selectedObjectFromTable.moveUpAction, refreshList));
         downButton.addActionListener(selectionSafeAction(selectedObjectFromTable.moveDownAction, refreshList));
+
+        saveButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                showXMLFrame();
+            }
+        });
+        loadButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                loadButtonAction();
+            }
+        });
         // prototype end
+    }
+String string = "Wi\\u0119cej szczeg\\u00f3 Ostrze\\u017cenie";
+    private void loadButtonAction() {
+        try {
+            JTextArea textArea = new JTextArea("");
+            JLabel label = new JLabel("");
+            textArea.setFont(label.getFont());
+            JScrollPane scrollArea = new JScrollPane(textArea);
+            scrollArea.setPreferredSize(new Dimension(600, 400));
+            Integer userChoice = JOptionPane.showConfirmDialog(
+                    null,
+                    new Object[]{"", scrollArea},
+                    "XML input dialog",
+                    JOptionPane.OK_CANCEL_OPTION,
+                    JOptionPane.QUESTION_MESSAGE);
+            String sReturn = textArea.getText();
+            if (userChoice == JOptionPane.OK_OPTION) {
+
+                ConstantLineWidthTextFileDefinition newDefinition = new ConstantLineWidthTextFileDefinition();
+                newDefinition.fromXml(sReturn);
+                backingList.clear();
+                backingList.addAll(newDefinition.fields);
+                updateXMLOrShowError();
+            }
+        } catch (Exception e) {
+            TaskDialogs.showException(e);
+        }
+    }
+
+    private void showXMLFrame() {
+        if (dialog != null) {
+            dialog.setVisible(true);
+            resetDialogLocation();
+            return;
+        }
+        dialog = new JDialog((Dialog) null, "XML View");
+        jEditorPane = new JEditorPane();
+        jEditorPane.setEditorKit(new XMLEditorKit());
+
+        updateXMLOrShowError();
+        jEditorPane.setEditable(false);
+
+        JComponent comp = new JScrollPane(jEditorPane);
+        dialog.add(comp);
+        resetDialogLocation();
+        dialog.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        dialog.setVisible(true);
+
+    }
+
+    private void resetDialogLocation() {
+        JFrame topLevelAncestor = (JFrame) this.panel1.getTopLevelAncestor();
+        Integer width = 400;
+        Integer height = topLevelAncestor.getHeight();
+        dialog.setSize(width, height);
+        dialog.setLocationRelativeTo(topLevelAncestor);
+        Point oldLocation = topLevelAncestor.getLocation();
+        oldLocation.translate(topLevelAncestor.getContentPane().getWidth(), 0);
+        dialog.setLocation(oldLocation);
+    }
+
+    private void updateXMLOrShowError() {
+        try {
+            if (jEditorPane != null) {
+                String xml = domainModelObject.toXml();
+                jEditorPane.setEditorKit(new XMLEditorKit());
+                jEditorPane.setText(xml);
+            }
+        } catch (Exception e) {
+            TaskDialogs.showException(e);
+        }
     }
 
     // todo this really belongs to either table model, selection model or both

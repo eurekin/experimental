@@ -21,19 +21,39 @@
                 <version>1.0-beta-3</version>
                 <executions>
                     <execution>
-                        <id>download-swing-laf</id>
+                        <id>download-xml-editor-kit</id>
                         <phase>validate</phase>
                         <goals>
                             <goal>download-single</goal>
                         </goals>
                         <configuration>
-                            <url>https://beautyeye.googlecode.com</url>
-                            <fromFile>svn/trunk/beautyeye_lnf/dist/beautyeye_lnf.jar</fromFile>
+                            <url>http://java-sl.com/download</url>
+                            <fromFile>xmleditorkit.jar</fromFile>
                             <toDir>${project.build.directory}/remote-jars</toDir>
                         </configuration>
                     </execution>
                 </executions>
             </plugin>
+
+            <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>wagon-maven-plugin</artifactId>
+            <version>1.0-beta-3</version>
+            <executions>
+                <execution>
+                    <id>download-swing-laf</id>
+                    <phase>validate</phase>
+                    <goals>
+                        <goal>download-single</goal>
+                    </goals>
+                    <configuration>
+                        <url>https://beautyeye.googlecode.com</url>
+                        <fromFile>svn/trunk/beautyeye_lnf/dist/beautyeye_lnf.jar</fromFile>
+                        <toDir>${project.build.directory}/remote-jars</toDir>
+                    </configuration>
+                </execution>
+            </executions>
+        </plugin>
             <!--JNLP
 
             Need it to get the Pin To Taskbar functionality working
@@ -74,6 +94,21 @@
                             <version>3.5</version>
                             <packaging>jar</packaging>
                             <file>${project.build.directory}/remote-jars/beautyeye_lnf.jar</file>
+                        </configuration>
+                    </execution>
+
+                    <execution>
+                        <id>install-xml-editor-kit</id>
+                        <goals>
+                            <goal>install-file</goal>
+                        </goals>
+                        <phase>validate</phase>
+                        <configuration>
+                            <groupId>swing.extras</groupId>
+                            <artifactId>xmleditorkit</artifactId>
+                            <version>1.0</version>
+                            <packaging>jar</packaging>
+                            <file>${project.build.directory}/remote-jars/xmleditorkit.jar</file>
                         </configuration>
                     </execution>
 

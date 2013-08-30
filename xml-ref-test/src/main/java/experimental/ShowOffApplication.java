@@ -27,7 +27,9 @@ public class ShowOffApplication {
 
 //        UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         BeautyEyeLNFHelper.launchBeautyEyeLNF();
+//        setupFonts();
         UIManager.put("RootPane.setupButtonVisible", false);
+        BeautyEyeLNFHelper.translucencyAtFrameInactive = false;
 
 //        UIManager.getDefaults().put("TabbedPane.contentBorderInsets", new Insets(-2, 1, 1, 1));
 //        UIManager.getDefaults().put("TabbedPane.selectedTabPadInsets", new Insets(-2,1,1,1));
@@ -46,6 +48,49 @@ public class ShowOffApplication {
             e.printStackTrace();
         }
 
+    }
+
+    private static void setupFonts() {
+        /**The key be related to font of UIManager's UI */
+        String[] DEFAULT_FONT  = new String[]{
+                "Table.font"
+                ,"TableHeader.font"
+                ,"CheckBox.font"
+                ,"Tree.font"
+                ,"Viewport.font"
+                ,"ProgressBar.font"
+                ,"RadioButtonMenuItem.font"
+                ,"ToolBar.font"
+                ,"ColorChooser.font"
+                ,"ToggleButton.font"
+                ,"Panel.font"
+                ,"TextArea.font"
+                ,"Menu.font"
+                ,"TableHeader.font"
+                // ,"TextField.font"
+                ,"OptionPane.font"
+                ,"MenuBar.font"
+                ,"Button.font"
+                ,"Label.font"
+                ,"PasswordField.font"
+                ,"ScrollPane.font"
+                ,"MenuItem.font"
+                ,"ToolTip.font"
+                ,"List.font"
+                ,"EditorPane.font"
+                ,"Table.font"
+                ,"TabbedPane.font"
+                ,"RadioButton.font"
+                ,"CheckBoxMenuItem.font"
+                ,"TextPane.font"
+                ,"PopupMenu.font"
+                ,"TitledBorder.font"
+                ,"ComboBox.font"
+        };
+
+        // Change default font.
+        for (int i = 0; i < DEFAULT_FONT.length; i++)
+            UIManager.put(DEFAULT_FONT[i],new Font("Segoe UI", Font.PLAIN,12));
     }
 
     private void safelyShowGUIfromAnyThread() {
@@ -139,6 +184,7 @@ public class ShowOffApplication {
         }
         frame.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         frame.pack();
+        frame.setLocationByPlatform(true);
         return frame;
     }
 }

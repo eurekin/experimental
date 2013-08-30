@@ -27,12 +27,7 @@
       <sourceFolder url="file://$MODULE_DIR$/src/main/resources" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/test/java" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/target/generated-sources/annotations" isTestSource="false" />
-      <excludeFolder url="file://$MODULE_DIR$/target/antrun" />
       <excludeFolder url="file://$MODULE_DIR$/target/classes" />
-      <excludeFolder url="file://$MODULE_DIR$/target/jnlp" />
-      <excludeFolder url="file://$MODULE_DIR$/target/maven-archiver" />
-      <excludeFolder url="file://$MODULE_DIR$/target/surefire" />
-      <excludeFolder url="file://$MODULE_DIR$/target/surefire-reports" />
       <excludeFolder url="file://$MODULE_DIR$/target/test-classes" />
     </content>
     <orderEntry type="inheritedJdk" />
@@ -47,6 +42,9 @@
       </library>
     </orderEntry>
     <orderEntry type="library" scope="PROVIDED" name="Jetty 8.1.8.v20121106" level="application_server_libraries" />
+    <orderEntry type="library" name="Maven: swing.extras:xmleditorkit:1.0" level="project" />
+    <orderEntry type="library" name="Maven: org.oxbow:swing-bits:1.0.0-SNAPSHOT" level="project" />
+    <orderEntry type="library" name="Maven: com.miglayout:miglayout:3.7.4" level="project" />
     <orderEntry type="library" name="Maven: javax.jnlp:jnlp-api:7.0" level="project" />
     <orderEntry type="library" name="Maven: com.jhlabs:filters:2.0.235" level="project" />
     <orderEntry type="library" name="Maven: org.swinglabs:jxlayer:3.0.4" level="project" />

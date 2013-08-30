@@ -43,9 +43,32 @@
             <name>java.net</name>
             <url>http://download.java.net/maven/2</url>
         </repository>
+        <repository>
+            <id>oxbow-repository</id>
+            <url>https://github.com/eugener/oxbow/raw/master/maven/repository</url>
+            <releases>
+                <enabled>true</enabled>
+                <checksumPolicy>ignore</checksumPolicy>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+                <checksumPolicy>ignore</checksumPolicy>
+            </snapshots>
+        </repository>
     </repositories>
 
     <dependencies>
+        <dependency>
+            <groupId>swing.extras</groupId>
+            <artifactId>xmleditorkit</artifactId>
+            <version>1.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.oxbow</groupId>
+            <artifactId>swing-bits</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+        </dependency>
 
         <dependency>
             <groupId>javax.jnlp</groupId>
@@ -379,6 +402,7 @@
         </profile>
     </profiles>
 
+
     <build>
         <resources>
             <resource>
@@ -398,7 +422,24 @@
         </extensions>
 
         <plugins>
-
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>native2ascii-maven-plugin</artifactId>
+                <version>1.0-beta-1</version>
+                <executions>
+                    <execution>
+                        <id>native2ascii-utf8-resources</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>native2ascii</goal>
+                        </goals>
+                        <configuration>
+                            <encoding>utf-8</encoding>
+                            <includes><include>*.properties</include></includes>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>

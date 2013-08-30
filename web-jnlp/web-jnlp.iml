@@ -30,6 +30,9 @@
     <orderEntry type="library" scope="PROVIDED" name="Jetty 8.1.8.v20121106" level="application_server_libraries" />
     <orderEntry type="library" name="Maven: org.codehaus.mojo.webstart:webstart-jnlp-servlet:1.0-6.0.02_ea_b02.2" level="project" />
     <orderEntry type="module" module-name="xml-ref-test" />
+    <orderEntry type="library" name="Maven: swing.extras:xmleditorkit:1.0" level="project" />
+    <orderEntry type="library" name="Maven: org.oxbow:swing-bits:1.0.0-SNAPSHOT" level="project" />
+    <orderEntry type="library" name="Maven: com.miglayout:miglayout:3.7.4" level="project" />
     <orderEntry type="library" name="Maven: javax.jnlp:jnlp-api:7.0" level="project" />
     <orderEntry type="library" name="Maven: com.jhlabs:filters:2.0.235" level="project" />
     <orderEntry type="library" name="Maven: org.swinglabs:jxlayer:3.0.4" level="project" />

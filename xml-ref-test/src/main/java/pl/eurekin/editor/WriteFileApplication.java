@@ -12,14 +12,15 @@ public class WriteFileApplication {
 
 
         public void start() throws JAXBException {
-            JAXBContext jaxbContext = JAXBContext.newInstance(ConstantLineWidthTextFileDefinition.class);
+            Class<ConstantLineWidthTextFileDefinition> clazz = ConstantLineWidthTextFileDefinition.class;
+            JAXBContext jaxbContext = JAXBContext.newInstance(clazz);
             Marshaller marshaller = getMarshaller(jaxbContext);
-            Unmarshaller unmarshaller = getUnmarshaller(jaxbContext);
 
 
             StringWriter sw = new StringWriter();
             marshaller.marshal(provideXMLContent(), sw);
 
+            Unmarshaller unmarshaller = getUnmarshaller(jaxbContext);
             String marshaled = sw.toString();
             System.out.println(marshaled);
 
