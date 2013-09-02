@@ -1,6 +1,7 @@
 package pl.eurekin.experimental.processor;
 
 import pl.eurekin.experimental.GenerateJavaBeanInterface;
+import pl.eurekin.experimental.ObservableListAdapter;
 
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.RoundEnvironment;
@@ -34,10 +35,46 @@ public class InterfaceGenerationAP extends AbstractProcessor {
     }
 
     @Override
+    public SourceVersion getSupportedSourceVersion() {
+        return SourceVersion.latestSupported();
+    }
+
+    @Override
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
         processingEnv.getMessager().printMessage(Diagnostic.Kind.WARNING, "processor invoked");
 
-        for (Element elem : roundEnv.getElementsAnnotatedWith(GenerateJavaBeanInterface.class)) {
+        // Phase 1. preprocess
+        //
+        // Gather all annotated elements, to know them in advance in the second phase.
+        // That will allow to upgrade the return types to their corresponding ViewModels,
+        // if they're also marked for Generation.
+        //
+        // For the example:
+        //
+        //      @GenerateJavaBeanInterface
+        //      class Base {
+        //         public Other attribute;
+        //      }
+        //
+        //      @GenerateJavaBeanInterface
+        //      class Other { ... }
+        //
+        //
+        // following ViewModel will be generated:
+        //
+        //     BaseViewModel {
+        //        // note the return type - it's a ViewModel
+        //        public OtherViewModel attribute;
+        //     }
+        List<Element> classElementsMarkedForProcessing = new ArrayList<Element>();
+        for (Element elementWithTheAnnotation : elementsToVisit(roundEnv)) {
+            classElementsMarkedForProcessing.add(elementWithTheAnnotation);
+        }
+
+        // Phase 2. the processing
+        //
+        // generate source files
+        for (Element elem : elementsToVisit(roundEnv)) {
             GenerateJavaBeanInterface complexity = elem.getAnnotation(GenerateJavaBeanInterface.class);
             Name simpleName = elem.getSimpleName();
             String message = "annotation found in " + simpleName
@@ -63,116 +100,41 @@ public class InterfaceGenerationAP extends AbstractProcessor {
                     jfo2 = processingEnv.getFiler().createSourceFile(generatedFactoryFQName);
 
                     String generatedClassName = classElement.getSimpleName() + classSuffix;
-                    BufferedWriter bw = new BufferedWriter(jfo.openWriter());
-                    BufferedWriter bw2 = new BufferedWriter(jfo2.openWriter());
+                    BufferedWriter viewModelSourceFile = new BufferedWriter(jfo.openWriter());
+                    BufferedWriter viewModelFactorySourceFile = new BufferedWriter(jfo2.openWriter());
+                    writeTopOfViewModelFileIntoBuffer(classElement, packageElement, baseClassName, generatedClassName, viewModelSourceFile);
 
-
-                    // top of the file
-                    bw.append("package ");
-                    bw.append(packageElement.getQualifiedName());
-                    bw.append(";");
-                    bw.newLine();
-                    bw.newLine();
-                    bw.newLine();
-                    bw.append("import pl.eurekin.experimental.Getter;\n" +
-                            "import pl.eurekin.experimental.Observable;\n" +
-                            "import pl.eurekin.experimental.Property;\n" +
-                            "import pl.eurekin.experimental.PropertyAccessor;\n" +
-                            "import pl.eurekin.experimental.SafePropertyListener;\n" +
-                            "import pl.eurekin.experimental.Setter;\n" +
-                            "import pl.eurekin.experimental.TemplateGetter;\n" +
-                            "import pl.eurekin.experimental.TemplateSetter;\n" +
-                            "import pl.eurekin.experimental.state.ObservableState;\n" +
-                            "import pl.eurekin.experimental.state.SimpleState;\n" +
-                            "import pl.eurekin.experimental.viewmodel.ViewModel;\n" +
-                            "\n" +
-                            "import java.util.concurrent.Callable;\n" +
-                            "\n" +
-                            "import static pl.eurekin.experimental.SafePropertyListener.ChangeListener;\n");
-                    bw.newLine();
-                    bw.append("public class " + generatedClassName + " implements ViewModel<" + classElement.getSimpleName() + "> {");
-                    bw.newLine();
-                    bw.newLine();
-                    bw.append("\n" +
-                            "    @Override\n" +
-                            "    public " + baseClassName + " base() {\n" +
-                            "        return base;\n" +
-                            "    }\n");
-                    bw.append("\n" +
-                            "    private SimpleState baseNotNullState = new SimpleState(false);\n" +
-                            "    @Override\n" +
-                            "    public ObservableState baseNotNullState() {\n" +
-                            "        return baseNotNullState;\n" +
-                            "    }\n");
-
-                    bw.append("\n" +
-                            "    public void fireAllPropertyChange() {\n" +
-                            "        for(Property p : allProperties())\n" +
-                            "            p.signalExternalUpdate();\n" +
-                            "    }\n");
-                    bw.append("\n" +
-                            "    @Override\n" +
-                            "    public void set(" + baseClassName + " newBase) {\n" +
-                            "        this.base = newBase;\n" +
-                            "        baseNotNullState.set(newBase != null);\n" +
-                            "        fireAllPropertyChange();\n" +
-                            "    }\n");
-
-                    // base object
-                    bw.append("\n" +
-                            "    public " + baseClassName + " base;\n" +
-                            "\n" +
-                            "    public " + generatedClassName + "(" + baseClassName + " base) {\n" +
-                            "        this.base = base;\n" +
-                            "    }\n");
-
-                    bw.newLine();
-                    bw.append("    public FieldViewModel(final Observable<" + baseClassName + "> base) {\n" +
-                            "        base.registerChangeListener(new SafePropertyListener<" + baseClassName + ">(new ChangeListener() {\n" +
-                            "                    @Override public void act() {set(base.get());}}));\n" +
-                            "    }\n");
 
                     List<String> propNameList = new ArrayList<String>();
 
                     // properties
                     for (Element element : classElement.getEnclosedElements()) {
                         if (debug) {
-                            bw.append("// found enclosed field element: " + element + "\n");
-                            bw.append("// it's kind: " + element.getKind() + "\n");
-                            bw.append("// it's class: " + element.getClass() + "\n");
-                            bw.append("// it's modifiers: " + element.getModifiers() + "\n");
-                            bw.append("// it's simple Name: " + element.getSimpleName() + "\n");
-                            bw.append("// it's typeMirror's toString: " + element.asType().toString() + "\n");
-                            bw.append("// it's typeMirror's class: " + element.asType().getClass() + "\n");
-                            bw.append("// it's typeMirror's kind: " + element.asType().getKind() + "\n");
-                            bw.append("// it's typeMirror's kind class: " + element.asType().getKind().getClass() + "\n");
+                            generateDebugInfoAboutPropertyIntoBuffer(viewModelSourceFile, element);
                         }
-                        Set<Modifier> modifiers = element.getModifiers();
-                        boolean isField = ElementKind.FIELD.equals(element.getKind());
-                        boolean isFinal = modifiers.contains(Modifier.FINAL);
-                        boolean isPrivate = modifiers.contains(Modifier.PRIVATE);
-                        boolean isStatic = modifiers.contains(Modifier.STATIC);
-                        boolean isClassOrInterfaceType = element.asType().getKind() == TypeKind.DECLARED;
+                        boolean qualifiesForPropertyGeneration = doesElementQualifyForPropertyGeneration(element);
 
-                        boolean qualifiesForPropertyGeneration = isField && isClassOrInterfaceType
-                                && !isFinal && !isPrivate && !isStatic;
-
-                        bw.append("\n");
+                        viewModelSourceFile.append("\n");
                         if (qualifiesForPropertyGeneration) {
                             String fieldName = element.getSimpleName().toString();
                             String propType = element.asType().toString();
                             String baseType = classElement.getQualifiedName().toString();
 
                             String staticFName = fieldName.toUpperCase() + "_PROPERTY";
-                            String staticPropertyString = generateStaticPropertyDescriptor(fieldName, propType, baseType, staticFName);
 
-                            bw.append(generatePropertyDeclarationString(propType, fieldName));
-                            bw.newLine();
-                            bw.append(staticPropertyString);
+                            writePropertyIntoBuffer(viewModelSourceFile, fieldName, propType);
+                            viewModelSourceFile.newLine();
+                            writeStaticPropertyIntoBuffer(viewModelSourceFile, fieldName, propType, baseType, staticFName);
+
                             propNameList.add(fieldName + "Property");
 
-                            bw.newLine();
-                            bw.newLine();
+                            viewModelSourceFile.newLine();
+                            viewModelSourceFile.newLine();
+
+                            // Can the property be promoted?
+                            if(classElementsMarkedForProcessing.contains(element));
+                                if(debug)
+                                    generateDebugInfoAboutReturnTypeUpgrade(viewModelSourceFile);
                         }
 
                         boolean isMethod = ElementKind.METHOD.equals(element.getKind());
@@ -197,7 +159,7 @@ public class InterfaceGenerationAP extends AbstractProcessor {
                                     "    public Runnable $$actionAction = new Runnable() {\n" +
                                             "        @Override public void run() { base.$$action(); }};";
 
-                            bw.append(actionTemplate
+                            viewModelSourceFile.append(actionTemplate
                                     .replaceAll(quote("$$action"), element.getSimpleName().toString()));
                         }
 
@@ -211,65 +173,42 @@ public class InterfaceGenerationAP extends AbstractProcessor {
                             final ExecutableType executableType = (ExecutableType) element.asType();
                             TypeMirror returnType = executableType.getReturnType();
                             if (debug) {
-                                bw.append("\n// executableType.getReturnType().class " + executableType.getReturnType().getClass());
-                                bw.append("\n// executableType.getReturnType().getKind() " + executableType.getReturnType().getKind());
-                                bw.append("\n// executableType.getReturnType().getKind().getClass() " + executableType.getReturnType().getKind().getClass());
-                                bw.append("\n// executableType.getReturnType().getKind() instanceof PrimitiveType " + Boolean.toString(returnType instanceof PrimitiveType));
+                                generateDebugInfoAboutCallableCandidateMethodIntoBuffer(viewModelSourceFile, executableType, returnType);
                             }
                             if (executableType.getReturnType() instanceof PrimitiveType) {
                                 PrimitiveType primitiveType = (PrimitiveType) executableType.getReturnType();
 
-                                TypeKind kind = executableType.getReturnType().getKind();
                                 Types typeUtils = processingEnv.getTypeUtils();
                                 if (debug)
-                                    bw.append("\n// executableType.getReturnType().getKind().getClass() box " + typeUtils.boxedClass(primitiveType));
+                                    generateDebugInfoAboutPrimitiveReturnTypeOfCallableMethodCandidateIntoBuffer(viewModelSourceFile, primitiveType, typeUtils);
                                 returnType = typeUtils.boxedClass(primitiveType).asType();
                             }
-                            bw.newLine();
+                            viewModelSourceFile.newLine();
                             if (debug)
-                                bw.append("// final returnType " + returnType);
-                            bw.newLine();
+                                generateDebugInfoAboutCallableReturnTypeIntoBuffer(viewModelSourceFile, returnType);
+
+                            viewModelSourceFile.newLine();
                             String callableTemplate = "    public Callable<$$returntype> $$executablename = new Callable<$$returntype>() {\n" +
                                     "        @Override public $$returntype call() throws Exception {return base.$$executablename();}};\n";
                             String callableTemplateAfterSubstitution = callableTemplate
                                     .replaceAll(Pattern.quote("$$returntype"), returnType.toString())
                                     .replaceAll(Pattern.quote("$$executablename"), element.getSimpleName().toString());
-                            bw.append(callableTemplateAfterSubstitution);
+                            viewModelSourceFile.append(callableTemplateAfterSubstitution);
                         }
                     }
 
                     String propertyArraySB = Arrays.toString(propNameList.toArray(new String[]{}));
                     String propertyArray = propertyArraySB.substring(1, propertyArraySB.length() - 1);
 
-                    bw.append("\n" +
-                            "    @Override\n" +
-                            "    public Property<?>[] allProperties() {\n" +
-                            "        return new Property<?>[]{" + propertyArray + "};\n" +
-                            "    }\n");
+                    generateAllPropertiesMethodIntoBuffer(viewModelSourceFile, propertyArray);
 
-                    bw.append("}");
-                    bw.close();
+                    viewModelSourceFile.append("}");
+                    viewModelSourceFile.close();
 
 
                     String vmName = classElement.getSimpleName() + "ViewModel";
-                    bw2.append("package pl.eurekin.editor;\n" +
-                            "\n" +
-                            "import pl.eurekin.experimental.Observable;\n" +
-                            "import pl.eurekin.experimental.viewmodel.ViewModelFactory;\n" +
-                            "\n" +
-                            "public class " + generatedClassName + "Factory implements ViewModelFactory<" + classElement.getSimpleName()
-                            + ", " + vmName + "> {\n" +
-                            "    @Override\n" +
-                            "    public " + vmName + " newValueModel(" + baseClassName + " base) {\n" +
-                            "        return new " + vmName + "(base);\n" +
-                            "    }\n" +
-                            "\n" +
-                            "    @Override\n" +
-                            "    public " + vmName + " newObservingValueModel(Observable<" + baseClassName + "> observableBase) {\n" +
-                            "        return new " + vmName + "(observableBase);\n" +
-                            "    }\n" +
-                            "}\n");
-                    bw2.close();
+                    generateViewModelFactoryIntoBuffer(classElement, packageElement, baseClassName, generatedClassName, viewModelFactorySourceFile, vmName);
+                    viewModelFactorySourceFile.close();
                 } catch (IOException e) {
                     processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR,
                             "ERROR during write of the file" + e.getMessage());
@@ -283,11 +222,118 @@ public class InterfaceGenerationAP extends AbstractProcessor {
         return true;
     }
 
+    private Set<? extends Element> elementsToVisit(RoundEnvironment roundEnv) {
+        return roundEnv.getElementsAnnotatedWith(GenerateJavaBeanInterface.class);
+    }
+
+    // Qualifiers
+
+    private boolean doesElementQualifyForPropertyGeneration(Element element) {
+        Set<Modifier> modifiers = element.getModifiers();
+        boolean isField = ElementKind.FIELD.equals(element.getKind());
+        boolean isFinal = modifiers.contains(Modifier.FINAL);
+        boolean isPrivate = modifiers.contains(Modifier.PRIVATE);
+        boolean isStatic = modifiers.contains(Modifier.STATIC);
+        boolean isClassOrInterfaceType = element.asType().getKind() == TypeKind.DECLARED;
+
+        return isField && isClassOrInterfaceType
+                && !isFinal && !isPrivate && !isStatic;
+    }
+
+    // ViewModel source
+
+    private void writeStaticPropertyIntoBuffer(BufferedWriter viewModelSourceFile, String fieldName, String propType, String baseType, String staticFName) throws IOException {
+        String staticPropertyString = generateStaticPropertyDescriptor(fieldName, propType, baseType, staticFName);
+        viewModelSourceFile.append(staticPropertyString);
+    }
+
+    private void writePropertyIntoBuffer(BufferedWriter viewModelSourceFile, String fieldName, String propType) throws IOException {
+        viewModelSourceFile.append(generatePropertyDeclarationString(propType, fieldName));
+    }
+
+    private void writeTopOfViewModelFileIntoBuffer(TypeElement classElement, PackageElement packageElement, Name baseClassName, String generatedClassName, BufferedWriter bw) throws IOException {
+        // top of the file
+        bw.append("package ");
+        bw.append(packageElement.getQualifiedName());
+        bw.append(";");
+        bw.newLine();
+        bw.newLine();
+        bw.newLine();
+        bw.append("import pl.eurekin.experimental.Getter;\n" +
+                "import pl.eurekin.experimental.Observable;\n" +
+                "import pl.eurekin.experimental.Property;\n" +
+                "import pl.eurekin.experimental.PropertyAccessor;\n" +
+                "import pl.eurekin.experimental.SafePropertyListener;\n" +
+                "import pl.eurekin.experimental.Setter;\n" +
+                "import pl.eurekin.experimental.TemplateGetter;\n" +
+                "import pl.eurekin.experimental.TemplateSetter;\n" +
+                "import pl.eurekin.experimental.state.ObservableState;\n" +
+                "import pl.eurekin.experimental.state.SimpleState;\n" +
+                "import pl.eurekin.experimental.viewmodel.ViewModel;\n" +
+                "\n" +
+                "import java.util.concurrent.Callable;\n" +
+                "\n" +
+                "import static pl.eurekin.experimental.SafePropertyListener.ChangeListener;\n");
+        bw.newLine();
+        bw.append("public class " + generatedClassName + " implements ViewModel<" + classElement.getSimpleName() + "> {");
+        bw.newLine();
+        bw.newLine();
+        bw.append("\n" +
+                "    @Override\n" +
+                "    public " + baseClassName + " base() {\n" +
+                "        return base;\n" +
+                "    }\n");
+        bw.append("\n" +
+                "    private SimpleState baseNotNullState = new SimpleState(false);\n" +
+                "    @Override\n" +
+                "    public ObservableState baseNotNullState() {\n" +
+                "        return baseNotNullState;\n" +
+                "    }\n");
+
+        bw.append("\n" +
+                "    public void fireAllPropertyChange() {\n" +
+                "        for(Property p : allProperties())\n" +
+                "            p.signalExternalUpdate();\n" +
+                "    }\n");
+        bw.append("\n" +
+                "    @Override\n" +
+                "    public void set(" + baseClassName + " newBase) {\n" +
+                "        this.base = newBase;\n" +
+                "        baseNotNullState.set(newBase != null);\n" +
+                "        fireAllPropertyChange();\n" +
+                "    }\n");
+
+        // base object
+        bw.append("\n" +
+                "    public " + baseClassName + " base;\n" +
+                "\n" +
+                "    public " + generatedClassName + "(" + baseClassName + " base) {\n" +
+                "        this.base = base;\n" +
+                "    }\n");
+
+        bw.newLine();
+
+        // constructor
+        bw.append("    public "+generatedClassName+"(final Observable<" + baseClassName + "> base) {\n" +
+                "        base.registerChangeListener(new SafePropertyListener<" + baseClassName + ">(new ChangeListener() {\n" +
+                "                    @Override public void act() {set(base.get());}}));\n" +
+                "    }\n");
+    }
+
+    private void generateAllPropertiesMethodIntoBuffer(BufferedWriter bw, String propertyArray) throws IOException {
+        bw.append("\n" +
+                "    @Override\n" +
+                "    public Property<?>[] allProperties() {\n" +
+                "        return new Property<?>[]{" + propertyArray + "};\n" +
+                "    }\n");
+    }
+
     private String generateStaticPropertyDescriptor(String fieldName, String propType, String baseType, String staticFName) {
         return "    public static PropertyAccessor<" + propType + ", " + baseType + "> " + staticFName + " = new PropertyAccessor<" + propType + ", " + baseType + ">(\n" +
                 "            new TemplateGetter<" + propType + ", " + baseType + ">() {@Override public " + propType + " get(" + baseType + " base) { if(base!=null) return base." + fieldName + "; else return null;}},\n" +
                 "            new TemplateSetter<" + propType + ", " + baseType + ">() {@Override public void set(" + baseType + " base, " + propType + " newValue) { if(base!=null) base." + fieldName + " = newValue; }});";
     }
+
 
     private String generatePropertyDeclarationString(String propType, String propName) {
         return "    public Property<" + propType + "> " + propName + "Property = new Property<" + propType + ">(\n" +
@@ -295,8 +341,62 @@ public class InterfaceGenerationAP extends AbstractProcessor {
                 "        new Setter<" + propType + ">() {@Override public void set(" + propType + " newValue) { if(base()!=null) base()." + propName + " = newValue; }});";
     }
 
-    @Override
-    public SourceVersion getSupportedSourceVersion() {
-        return SourceVersion.latestSupported();
+
+    // Source of the Factory
+
+    private void generateViewModelFactoryIntoBuffer(TypeElement classElement, PackageElement packageElement, Name baseClassName, String generatedClassName, BufferedWriter bw2, String vmName) throws IOException {
+        bw2.append("package ");
+        bw2.append(packageElement.getQualifiedName());
+        bw2.append(";");
+        bw2.append(
+                "\n" +
+                        "import pl.eurekin.experimental.Observable;\n" +
+                        "import pl.eurekin.experimental.viewmodel.ViewModelFactory;\n" +
+                        "\n" +
+                        "public class " + generatedClassName + "Factory implements ViewModelFactory<" + classElement.getSimpleName()
+                        + ", " + vmName + "> {\n" +
+                        "    @Override\n" +
+                        "    public " + vmName + " newValueModel(" + baseClassName + " base) {\n" +
+                        "        return new " + vmName + "(base);\n" +
+                        "    }\n" +
+                        "\n" +
+                        "    @Override\n" +
+                        "    public " + vmName + " newObservingValueModel(Observable<" + baseClassName + "> observableBase) {\n" +
+                        "        return new " + vmName + "(observableBase);\n" +
+                        "    }\n" +
+                        "}\n");
+    }
+
+    // DEBUG
+
+    private void generateDebugInfoAboutReturnTypeUpgrade(BufferedWriter viewModelSourceFile) throws IOException  {
+        viewModelSourceFile.append("\n// PROPERTY -> VIEWMODEL PROMOTION. Found property with a ViewModel as a return type!\n");
+    }
+
+    private void generateDebugInfoAboutPropertyIntoBuffer(BufferedWriter bw, Element element) throws IOException {
+        bw.append("\n// found enclosed field element: " + element);
+        bw.append("\n// it's kind: " + element.getKind());
+        bw.append("\n// it's class: " + element.getClass());
+        bw.append("\n// it's modifiers: " + element.getModifiers());
+        bw.append("\n// it's simple Name: " + element.getSimpleName());
+        bw.append("\n// it's typeMirror's toString: " + element.asType().toString());
+        bw.append("\n// it's typeMirror's class: " + element.asType().getClass());
+        bw.append("\n// it's typeMirror's kind: " + element.asType().getKind());
+        bw.append("\n// it's typeMirror's kind class: " + element.asType().getKind().getClass());
+    }
+
+    private void generateDebugInfoAboutCallableCandidateMethodIntoBuffer(BufferedWriter viewModelSourceFile, ExecutableType executableType, TypeMirror returnType) throws IOException {
+        viewModelSourceFile.append("\n// executableType.getReturnType().class " + executableType.getReturnType().getClass());
+        viewModelSourceFile.append("\n// executableType.getReturnType().getKind() " + executableType.getReturnType().getKind());
+        viewModelSourceFile.append("\n// executableType.getReturnType().getKind().getClass() " + executableType.getReturnType().getKind().getClass());
+        viewModelSourceFile.append("\n// executableType.getReturnType().getKind() instanceof PrimitiveType " + Boolean.toString(returnType instanceof PrimitiveType));
+    }
+
+    private void generateDebugInfoAboutCallableReturnTypeIntoBuffer(BufferedWriter viewModelSourceFile, TypeMirror returnType) throws IOException {
+        viewModelSourceFile.append("\n// final returnType " + returnType);
+    }
+
+    private void generateDebugInfoAboutPrimitiveReturnTypeOfCallableMethodCandidateIntoBuffer(BufferedWriter viewModelSourceFile, PrimitiveType primitiveType, Types typeUtils) throws IOException {
+        viewModelSourceFile.append("\n// executableType.getReturnType().getKind().getClass() box " + typeUtils.boxedClass(primitiveType));
     }
 }
