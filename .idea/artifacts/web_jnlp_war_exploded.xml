@@ -25,6 +25,8 @@
           <element id="archive" name="annotation-processor-experiment-1.0-SNAPSHOT.jar">
             <element id="module-output" name="annotation-processor-experiment" />
           </element>
+          <element id="library" level="project" name="Maven: junit:junit:4.9" />
+          <element id="library" level="project" name="Maven: org.hamcrest:hamcrest-core:1.1" />
           <element id="library" level="project" name="Maven: com.intellij:javac2:6.0.3" />
           <element id="library" level="project" name="Maven: asm:asm-commons:2.2.3" />
           <element id="library" level="project" name="Maven: asm:asm-tree:2.2.3" />
