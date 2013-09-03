@@ -10,6 +10,8 @@ public interface ViewModel<T> {
 
     T base();
 
+    Property<T> baseProperty();
+
     void set(T newBase);
 
     Property<?>[] allProperties();

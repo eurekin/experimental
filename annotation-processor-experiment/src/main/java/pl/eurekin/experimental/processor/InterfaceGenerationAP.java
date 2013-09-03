@@ -24,8 +24,6 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static java.util.regex.Pattern.quote;
-
 @SupportedAnnotationTypes("pl.eurekin.experimental.GenerateJavaBeanInterface")
 @SupportedSourceVersion(SourceVersion.RELEASE_6)
 public class InterfaceGenerationAP extends AbstractProcessor {
@@ -70,9 +68,11 @@ public class InterfaceGenerationAP extends AbstractProcessor {
         //        // note the return type - it's a ViewModel
         //        public OtherViewModel attribute;
         //     }
-        List<Element> classElementsMarkedForProcessing = new ArrayList<Element>();
+        List<String> classElementsMarkedForProcessing = new ArrayList<String>();
         for (Element elementWithTheAnnotation : elementsToVisit(roundEnv)) {
-            classElementsMarkedForProcessing.add(elementWithTheAnnotation);
+            if (elementWithTheAnnotation.getKind() == ElementKind.CLASS) {
+                classElementsMarkedForProcessing.add(((TypeElement)elementWithTheAnnotation).getQualifiedName().toString());
+            }
         }
 
         // Phase 2. the processing
@@ -136,9 +136,19 @@ public class InterfaceGenerationAP extends AbstractProcessor {
                             viewModelSourceFile.newLine();
 
                             // Property Promotion
-                            if(classElementsMarkedForProcessing.contains(element));
-                                if(debug)
+                            if(classElementsMarkedForProcessing.contains(element.asType().toString())) {
+                                if(debug) {
                                     generateDebugInfoAboutReturnTypeUpgrade(viewModelSourceFile);
+                                }
+                                String propTypeViewModel = propType + classSuffix;
+
+                                String substitutedPropViewModelTemplate = substituteTemplate("public $propTypeViewModel $fieldNameViewModel = new $propTypeViewModel($fieldNameProperty);\n",
+                                        "$propTypeViewModel", propTypeViewModel,
+                                        "$fieldName", fieldName
+                                );
+                                viewModelSourceFile.append(substitutedPropViewModelTemplate);
+                                viewModelSourceFile.newLine();
+                            }
                         }
 
                         boolean isMethod = ElementKind.METHOD.equals(element.getKind());
@@ -293,8 +303,22 @@ public class InterfaceGenerationAP extends AbstractProcessor {
             bw.newLine();
         }
         bw.newLine();
-        bw.append("public class " + generatedClassName + " implements ViewModel<" + classElement.getSimpleName() + "> {");
+        String baseClassSimpleName = classElement.getSimpleName().toString();
+        bw.append("public class " + generatedClassName + " implements ViewModel<" + baseClassSimpleName + "> {");
         bw.newLine();
+
+        String basePropertySupportTemplate =
+                "    private Property<$BaseClass> baseProperty = new Property<$BaseClass>(\n" +
+                "            new Getter<$BaseClass>(){@Override public $BaseClass get()    {return base();}},\n" +
+                "            new Setter<$BaseClass>(){@Override public void set($BaseClass val) {set(val);}});\n" +
+                "\n" +
+                "    @Override\n" +
+                "    public Property<$BaseClass> baseProperty() {\n" +
+                "        return baseProperty;\n" +
+                "    }";
+        String substitutedBasePropertySupportTemplate = substituteTemplate(basePropertySupportTemplate,
+                "$BaseClass", baseClassSimpleName);
+        bw.append(substitutedBasePropertySupportTemplate);
         bw.newLine();
         bw.append("\n" +
                 "    @Override\n" +

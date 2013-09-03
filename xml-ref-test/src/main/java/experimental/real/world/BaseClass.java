@@ -5,7 +5,7 @@ import pl.eurekin.experimental.GenerateJavaBeanInterface;
 /**
  * @author greg.matoga@gmail.com
  */
-@GenerateJavaBeanInterface()
+@GenerateJavaBeanInterface(debug = "true")
 public class BaseClass {
 
     public AttributeClass attribute;
