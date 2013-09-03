@@ -24,12 +24,16 @@ public class ShowOffApplication {
     private JTabbedPane tabbedPane;
 
     public static void main(String... args) throws Exception {
-
+// enable anti-aliased text:
+//        System.setProperty("awt.useSystemAAFontSettings","on");
+//        System.setProperty("swing.aatext", "true");
 //        UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        BeautyEyeLNFHelper.launchBeautyEyeLNF();
 //        setupFonts();
+        System.setProperty("awt.useSystemAAFontSettings", "lcd");
         UIManager.put("RootPane.setupButtonVisible", false);
+        BeautyEyeLNFHelper.frameBorderStyle =  BeautyEyeLNFHelper.FrameBorderStyle.osLookAndFeelDecorated;
         BeautyEyeLNFHelper.translucencyAtFrameInactive = false;
+        BeautyEyeLNFHelper.launchBeautyEyeLNF();
 
 //        UIManager.getDefaults().put("TabbedPane.contentBorderInsets", new Insets(-2, 1, 1, 1));
 //        UIManager.getDefaults().put("TabbedPane.selectedTabPadInsets", new Insets(-2,1,1,1));
@@ -121,6 +125,7 @@ public class ShowOffApplication {
         frame.setResizable(false);
         frame.pack();
         frame.setLocationRelativeTo(null);
+        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
     }
 
     private void constructMainPanel() {

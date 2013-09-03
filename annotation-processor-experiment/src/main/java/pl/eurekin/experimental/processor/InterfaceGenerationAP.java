@@ -93,7 +93,7 @@ public class InterfaceGenerationAP extends AbstractProcessor {
                     PackageElement packageElement =
                             (PackageElement) classElement.getEnclosingElement();
 
-                    JavaFileObject jfo = null, jfo2;
+                    JavaFileObject jfo, jfo2;
                     String classSuffix = "ViewModel";
                     String factorySuffix = "ViewModelFactory";
                     Name baseClassName = classElement.getQualifiedName();
@@ -135,7 +135,7 @@ public class InterfaceGenerationAP extends AbstractProcessor {
                             viewModelSourceFile.newLine();
                             viewModelSourceFile.newLine();
 
-                            // Can the property be promoted?
+                            // Property Promotion
                             if(classElementsMarkedForProcessing.contains(element));
                                 if(debug)
                                     generateDebugInfoAboutReturnTypeUpgrade(viewModelSourceFile);
@@ -157,14 +157,14 @@ public class InterfaceGenerationAP extends AbstractProcessor {
 
 
                         if (qualifiesForActionGeneration) {
-                            // final ExecutableType executableType = (ExecutableType) element.asType();
 
                             final String actionTemplate =
-                                    "    public Runnable $$actionAction = new Runnable() {\n" +
-                                            "        @Override public void run() { base.$$action(); }};";
+                                    "    public Runnable $actionAction = new Runnable() {\n" +
+                                    "        @Override public void run() { base.$action(); }};";
 
-                            viewModelSourceFile.append(actionTemplate
-                                    .replaceAll(quote("$$action"), element.getSimpleName().toString()));
+                            String substitutedTemplate =  substituteTemplate(actionTemplate,
+                                    "$action", element.getSimpleName().toString());
+                            viewModelSourceFile.append(substitutedTemplate);
                         }
 
 
@@ -192,16 +192,17 @@ public class InterfaceGenerationAP extends AbstractProcessor {
                                 generateDebugInfoAboutCallableReturnTypeIntoBuffer(viewModelSourceFile, returnType);
 
                             viewModelSourceFile.newLine();
-                            String callableTemplate = "    public Callable<$$returntype> $$executablename = new Callable<$$returntype>() {\n" +
-                                    "        @Override public $$returntype call() throws Exception {return base.$$executablename();}};\n";
-                            String callableTemplateAfterSubstitution = callableTemplate
-                                    .replaceAll(Pattern.quote("$$returntype"), returnType.toString())
-                                    .replaceAll(Pattern.quote("$$executablename"), element.getSimpleName().toString());
+                            String callableTemplate =
+                                    "    public Callable<$returnType> $executableName = new Callable<$returnType>() {\n" +
+                                    "        @Override public $returnType call() throws Exception {return base.$executableName();}};\n";
+                            String callableTemplateAfterSubstitution = substituteTemplate(callableTemplate,
+                                    "$returnType", returnType.toString(),
+                                    "$executableName", element.getSimpleName().toString());
                             viewModelSourceFile.append(callableTemplateAfterSubstitution);
                         }
                     }
 
-                    String propertyArraySB = Arrays.toString(propNameList.toArray(new String[]{}));
+                    String propertyArraySB = Arrays.toString(propNameList.toArray(new String[propNameList.size()]));
                     String propertyArray = propertyArraySB.substring(1, propertyArraySB.length() - 1);
 
                     generateAllPropertiesMethodIntoBuffer(viewModelSourceFile, propertyArray);
@@ -369,29 +370,46 @@ public class InterfaceGenerationAP extends AbstractProcessor {
 
     // Source of the Factory
 
+    private static final Class<?>[] viewModelFactoryImports = {
+            pl.eurekin.experimental.Observable.class
+            , pl.eurekin.experimental.viewmodel.ViewModelFactory.class
+
+    };
+
     private void generateViewModelFactoryIntoBuffer(TypeElement classElement, PackageElement packageElement,
                                                     Name baseClassName, String generatedClassName, BufferedWriter bw2,
                                                     String vmName) throws IOException {
         bw2.append("package ");
         bw2.append(packageElement.getQualifiedName());
         bw2.append(";");
-        bw2.append(
+        for (Class<?> classToImport : viewModelFactoryImports) {
+            bw2.append(declarationOfImport(classToImport));
+            bw2.newLine();
+        }
+        String classElementSimpleName = classElement.getSimpleName().toString();
+        String viewModelFactorySourceCodeTemplate = "\n" +
+                "import pl.eurekin.experimental.Observable;\n" +
+                "import pl.eurekin.experimental.viewmodel.ViewModelFactory;\n" +
                 "\n" +
-                        "import pl.eurekin.experimental.Observable;\n" +
-                        "import pl.eurekin.experimental.viewmodel.ViewModelFactory;\n" +
-                        "\n" +
-                        "public class " + generatedClassName + "Factory implements ViewModelFactory<" + classElement.getSimpleName()
-                        + ", " + vmName + "> {\n" +
-                        "    @Override\n" +
-                        "    public " + vmName + " newValueModel(" + baseClassName + " base) {\n" +
-                        "        return new " + vmName + "(base);\n" +
-                        "    }\n" +
-                        "\n" +
-                        "    @Override\n" +
-                        "    public " + vmName + " newObservingValueModel(Observable<" + baseClassName + "> observableBase) {\n" +
-                        "        return new " + vmName + "(observableBase);\n" +
-                        "    }\n" +
-                        "}\n");
+                "public class $generatedClassNameFactory implements ViewModelFactory<$classElementSimpleName, $vmName> {\n" +
+                "    @Override\n" +
+                "    public $vmName newValueModel($baseClassName base) {\n" +
+                "        return new $vmName(base);\n" +
+                "    }\n" +
+                "\n" +
+                "    @Override\n" +
+                "    public $vmName newObservingValueModel(Observable<$baseClassName> observableBase) {\n" +
+                "        return new $vmName(observableBase);\n" +
+                "    }\n" +
+                "}\n";
+        String substitutedViewModelFactorySourceCodeTemplate = substituteTemplate(viewModelFactorySourceCodeTemplate,
+                "$generatedClassName", generatedClassName,
+                "$classElementSimpleName", classElementSimpleName,
+                "$vmName", vmName,
+                "$baseClassName", baseClassName.toString()
+                );
+        bw2.append(
+                substitutedViewModelFactorySourceCodeTemplate);
     }
 
     // Utility Methods
@@ -401,7 +419,7 @@ public class InterfaceGenerationAP extends AbstractProcessor {
             throw new RuntimeException("Bad argument list length: " + variableNamesAndValues.length);
 
         String substituted = template, variableName, variableValue;
-        for (int i = 0; i < variableNamesAndValues.length / 2; i++) {
+        for (int i = 0; i < variableNamesAndValues.length; i+=2) {
             variableName = variableNamesAndValues[i];
             variableValue = variableNamesAndValues[i+1];
             substituted = substituted.replaceAll(
