@@ -1,7 +1,6 @@
 package pl.eurekin.experimental.processor;
 
 import pl.eurekin.experimental.GenerateJavaBeanInterface;
-import pl.eurekin.experimental.ObservableListAdapter;
 
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.RoundEnvironment;
@@ -22,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static java.util.regex.Pattern.quote;
@@ -29,6 +29,8 @@ import static java.util.regex.Pattern.quote;
 @SupportedAnnotationTypes("pl.eurekin.experimental.GenerateJavaBeanInterface")
 @SupportedSourceVersion(SourceVersion.RELEASE_6)
 public class InterfaceGenerationAP extends AbstractProcessor {
+
+
 
     public InterfaceGenerationAP() {
         super();
@@ -38,6 +40,8 @@ public class InterfaceGenerationAP extends AbstractProcessor {
     public SourceVersion getSupportedSourceVersion() {
         return SourceVersion.latestSupported();
     }
+
+    // Qualifiers
 
     @Override
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
@@ -226,7 +230,6 @@ public class InterfaceGenerationAP extends AbstractProcessor {
         return roundEnv.getElementsAnnotatedWith(GenerateJavaBeanInterface.class);
     }
 
-    // Qualifiers
 
     private boolean doesElementQualifyForPropertyGeneration(Element element) {
         Set<Modifier> modifiers = element.getModifiers();
@@ -240,8 +243,6 @@ public class InterfaceGenerationAP extends AbstractProcessor {
                 && !isFinal && !isPrivate && !isStatic;
     }
 
-    // ViewModel source
-
     private void writeStaticPropertyIntoBuffer(BufferedWriter viewModelSourceFile, String fieldName, String propType, String baseType, String staticFName) throws IOException {
         String staticPropertyString = generateStaticPropertyDescriptor(fieldName, propType, baseType, staticFName);
         viewModelSourceFile.append(staticPropertyString);
@@ -251,6 +252,28 @@ public class InterfaceGenerationAP extends AbstractProcessor {
         viewModelSourceFile.append(generatePropertyDeclarationString(propType, fieldName));
     }
 
+    // ViewModel source
+
+    private static final Class<?>[] viewModelImports = {
+            pl.eurekin.experimental.Observable.class
+            , pl.eurekin.experimental.Property.class
+            , pl.eurekin.experimental.PropertyAccessor.class
+            , pl.eurekin.experimental.SafePropertyListener.class
+            , pl.eurekin.experimental.Setter.class
+            , pl.eurekin.experimental.Getter.class
+            , pl.eurekin.experimental.TemplateGetter.class
+            , pl.eurekin.experimental.TemplateSetter.class
+            , pl.eurekin.experimental.state.ObservableState.class
+            , pl.eurekin.experimental.state.SimpleState.class
+            , pl.eurekin.experimental.viewmodel.ViewModel.class
+            , java.util.concurrent.Callable.class
+
+    };
+
+    private static final Class<?>[] viewModelStaticImports = {
+            pl.eurekin.experimental.SafePropertyListener.ChangeListener.class
+    };
+
     private void writeTopOfViewModelFileIntoBuffer(TypeElement classElement, PackageElement packageElement, Name baseClassName, String generatedClassName, BufferedWriter bw) throws IOException {
         // top of the file
         bw.append("package ");
@@ -259,21 +282,15 @@ public class InterfaceGenerationAP extends AbstractProcessor {
         bw.newLine();
         bw.newLine();
         bw.newLine();
-        bw.append("import pl.eurekin.experimental.Getter;\n" +
-                "import pl.eurekin.experimental.Observable;\n" +
-                "import pl.eurekin.experimental.Property;\n" +
-                "import pl.eurekin.experimental.PropertyAccessor;\n" +
-                "import pl.eurekin.experimental.SafePropertyListener;\n" +
-                "import pl.eurekin.experimental.Setter;\n" +
-                "import pl.eurekin.experimental.TemplateGetter;\n" +
-                "import pl.eurekin.experimental.TemplateSetter;\n" +
-                "import pl.eurekin.experimental.state.ObservableState;\n" +
-                "import pl.eurekin.experimental.state.SimpleState;\n" +
-                "import pl.eurekin.experimental.viewmodel.ViewModel;\n" +
-                "\n" +
-                "import java.util.concurrent.Callable;\n" +
-                "\n" +
-                "import static pl.eurekin.experimental.SafePropertyListener.ChangeListener;\n");
+
+        for (Class<?> classToImport : viewModelImports) {
+            bw.append(declarationOfImport(classToImport));
+            bw.newLine();
+        }
+        for (Class<?> classToImportStatically : viewModelStaticImports) {
+            bw.append(declarationOfStaticImport(classToImportStatically));
+            bw.newLine();
+        }
         bw.newLine();
         bw.append("public class " + generatedClassName + " implements ViewModel<" + classElement.getSimpleName() + "> {");
         bw.newLine();
@@ -320,6 +337,15 @@ public class InterfaceGenerationAP extends AbstractProcessor {
                 "    }\n");
     }
 
+    private CharSequence declarationOfImport(Class<?> clazz) {
+        return substituteTemplate("import $clazz;", "$clazz", clazz.getName());
+    }
+
+    private CharSequence declarationOfStaticImport(Class<?> clazz) {
+        return substituteTemplate("import static $clazz;", "$clazz", clazz.getCanonicalName());
+    }
+
+
     private void generateAllPropertiesMethodIntoBuffer(BufferedWriter bw, String propertyArray) throws IOException {
         bw.append("\n" +
                 "    @Override\n" +
@@ -334,7 +360,6 @@ public class InterfaceGenerationAP extends AbstractProcessor {
                 "            new TemplateSetter<" + propType + ", " + baseType + ">() {@Override public void set(" + baseType + " base, " + propType + " newValue) { if(base!=null) base." + fieldName + " = newValue; }});";
     }
 
-
     private String generatePropertyDeclarationString(String propType, String propName) {
         return "    public Property<" + propType + "> " + propName + "Property = new Property<" + propType + ">(\n" +
                 "        new Getter<" + propType + ">() {@Override public " + propType + " get() {  if(base()!=null) return base()." + propName + "; else return null;}},\n" +
@@ -344,7 +369,9 @@ public class InterfaceGenerationAP extends AbstractProcessor {
 
     // Source of the Factory
 
-    private void generateViewModelFactoryIntoBuffer(TypeElement classElement, PackageElement packageElement, Name baseClassName, String generatedClassName, BufferedWriter bw2, String vmName) throws IOException {
+    private void generateViewModelFactoryIntoBuffer(TypeElement classElement, PackageElement packageElement,
+                                                    Name baseClassName, String generatedClassName, BufferedWriter bw2,
+                                                    String vmName) throws IOException {
         bw2.append("package ");
         bw2.append(packageElement.getQualifiedName());
         bw2.append(";");
@@ -365,6 +392,23 @@ public class InterfaceGenerationAP extends AbstractProcessor {
                         "        return new " + vmName + "(observableBase);\n" +
                         "    }\n" +
                         "}\n");
+    }
+
+    // Utility Methods
+
+    private String substituteTemplate(String template, String ... variableNamesAndValues) {
+        if(variableNamesAndValues.length % 2 != 0)
+            throw new RuntimeException("Bad argument list length: " + variableNamesAndValues.length);
+
+        String substituted = template, variableName, variableValue;
+        for (int i = 0; i < variableNamesAndValues.length / 2; i++) {
+            variableName = variableNamesAndValues[i];
+            variableValue = variableNamesAndValues[i+1];
+            substituted = substituted.replaceAll(
+                    Pattern.quote(variableName),
+                    Matcher.quoteReplacement(variableValue));
+        }
+        return substituted;
     }
 
     // DEBUG

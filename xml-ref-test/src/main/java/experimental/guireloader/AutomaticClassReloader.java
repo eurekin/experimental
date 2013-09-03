@@ -37,6 +37,7 @@ public class AutomaticClassReloader<T> {
         new BufferedReader(new InputStreamReader(System.in)).readLine();
     }
 
+    @SuppressWarnings("unchecked")
     private void newVersionOfClassExist() {
         try {
             ReloadingClassLoader reloadingClassLoader = new ReloadingClassLoader(parentClassLoader, classNameStr);
