@@ -15,7 +15,7 @@ public class Property<T> implements Observable<T> {
 
     public void signalExternalUpdate() {
         // TODO A hack
-        set(get());
+        propertyChangeSupport.firePropertyChangeEvent(null, get());
     }
 
     public T get() {
@@ -47,6 +47,7 @@ public class Property<T> implements Observable<T> {
 
         public void setValue(T oldValue, T newValue) {
             setter.set(newValue);
+
             propertyChangeSupport.beginNotifying();
             propertyChangeSupport.firePropertyChangeEvent(oldValue, newValue);
             propertyChangeSupport.finishNotifying();

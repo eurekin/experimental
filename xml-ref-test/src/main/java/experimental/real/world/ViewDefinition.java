@@ -22,8 +22,24 @@ public class ViewDefinition {
         System.out.println("attributeClass: " + attributeClass);
         System.out.println("attributeClass.property: " + baseObjectViewModel.attributeProperty);
         System.out.println("attributeClass.property.val: " + baseObjectViewModel.attributeProperty.get());
-        System.out.println("attributeClass.base: " + baseObjectViewModel.attributeViewModel.base);
+        // somehow the following doesn't happen automatically
+        //baseObjectViewModel.attributeViewModel.set(baseObjectViewModel.attributeProperty.get());
+
+//        baseObjectViewModel.attributeProperty.signalExternalUpdate();
+//        AttributeClass oldval = baseObjectViewModel.attributeProperty.get();
+//        baseObjectViewModel.attributeProperty.set(new AttributeClass());
+//        baseObjectViewModel.attributeProperty.set(oldval);
+        System.out.println("attributeClass.base: " + baseObjectViewModel.attributeViewModel.base());
         System.out.println("attributeClass.age: " + baseObjectViewModel.attributeViewModel.ageProperty.get());
+        System.out.println("UPDATE: ");
+        baseObjectViewModel.attributeViewModel.ageProperty.set(11);
+        System.out.println("attributeClass.age: " + baseObjectViewModel.attributeViewModel.ageProperty.get());
+
+        AttributeClassViewModel savedProperty = baseObjectViewModel.attributeViewModel;
+        initDataModel();
+        baseObjectViewModel.set(baseObject);
+        System.out.println("ROOT REINITIALIZATION: ");
+        System.out.println("attributeClass.age: " + savedProperty.ageProperty.get());
     }
 
 

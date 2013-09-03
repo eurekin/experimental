@@ -270,6 +270,7 @@ public class InterfaceGenerationAP extends AbstractProcessor {
             , pl.eurekin.experimental.Property.class
             , pl.eurekin.experimental.PropertyAccessor.class
             , pl.eurekin.experimental.SafePropertyListener.class
+            , pl.eurekin.experimental.UnsafePropertyListener.class
             , pl.eurekin.experimental.Setter.class
             , pl.eurekin.experimental.Getter.class
             , pl.eurekin.experimental.TemplateGetter.class
@@ -350,15 +351,16 @@ public class InterfaceGenerationAP extends AbstractProcessor {
                 "    public " + baseClassName + " base;\n" +
                 "\n" +
                 "    public " + generatedClassName + "(" + baseClassName + " base) {\n" +
-                "        this.base = base;\n" +
+                "        set(base);\n" +
                 "    }\n");
 
         bw.newLine();
 
         // constructor
         bw.append("    public "+generatedClassName+"(final Observable<" + baseClassName + "> base) {\n" +
-                "        base.registerChangeListener(new SafePropertyListener<" + baseClassName + ">(new ChangeListener() {\n" +
+                "        base.registerChangeListener(new UnsafePropertyListener<" + baseClassName + ">(new ChangeListener() {\n" +
                 "                    @Override public void act() {set(base.get());}}));\n" +
+                "        set(base.get());\n" +
                 "    }\n");
     }
 
