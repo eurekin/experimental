@@ -82,7 +82,6 @@ public class LineDefinitionEditorView {
 
     private void domainObjectChanged() {
         backingList.changed();
-        updateXMLOrShowError();
     }
 
     public void initialize() {
@@ -146,8 +145,7 @@ public class LineDefinitionEditorView {
 
             @Override
             public void run() {
-                backingList.changed();
-                updateXMLOrShowError();
+                domainObjectChanged();
             }
         };
         List<WeakReference<Field>> selectedFields = new ArrayList<WeakReference<Field>>();
@@ -159,6 +157,14 @@ public class LineDefinitionEditorView {
         growButton.addActionListener(selectionSafeAction(selectedObjectFromTable.growAction, refreshList));
         upButton.addActionListener(selectionSafeAction(selectedObjectFromTable.moveUpAction, refreshList));
         downButton.addActionListener(selectionSafeAction(selectedObjectFromTable.moveDownAction, refreshList));
+
+        // name field => xml representation
+        selectedObjectFromTable.baseProperty().registerChangeListener(new UnsafePropertyListener<Field>(new SafePropertyListener.ChangeListener() {
+            @Override
+            public void act() {
+                updateXMLOrShowError();
+            }
+        }));
 
         saveButton.addActionListener(new ActionListener() {
             @Override
@@ -172,9 +178,15 @@ public class LineDefinitionEditorView {
                 loadButtonAction();
             }
         });
+        backingList.registerChangeListener(new UnsafePropertyListener<List<Field>>(new SafePropertyListener.ChangeListener() {
+            @Override
+            public void act() {
+                updateXMLOrShowError();
+            }
+        }));
         // prototype end
     }
-String string = "Wi\\u0119cej szczeg\\u00f3 Ostrze\\u017cenie";
+
     private void loadButtonAction() {
         try {
             JTextArea textArea = new JTextArea("");

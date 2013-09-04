@@ -346,22 +346,37 @@ public class InterfaceGenerationAP extends AbstractProcessor {
                 "        fireAllPropertyChange();\n" +
                 "    }\n");
 
-        // base object
+        // constructor 1
+        // direct base version
         bw.append("\n" +
                 "    public " + baseClassName + " base;\n" +
                 "\n" +
                 "    public " + generatedClassName + "(" + baseClassName + " base) {\n" +
                 "        set(base);\n" +
+                "        initPropertyToBaseBinding();\n" +
                 "    }\n");
 
         bw.newLine();
 
-        // constructor
+        // constructor 2
+        // observable base version
         bw.append("    public "+generatedClassName+"(final Observable<" + baseClassName + "> base) {\n" +
                 "        base.registerChangeListener(new UnsafePropertyListener<" + baseClassName + ">(new ChangeListener() {\n" +
                 "                    @Override public void act() {set(base.get());}}));\n" +
                 "        set(base.get());\n" +
+                "        initPropertyToBaseBinding();\n" +
                 "    }\n");
+
+        // property to base binding
+        String templateOfPropertyToBaseBindingSupport =
+                        "    private void initPropertyToBaseBinding() {\n" +
+                        "        for(Property p : allProperties())\n" +
+                        "            p.registerChangeListener(new UnsafePropertyListener(new ChangeListener() {\n" +
+                        "                @Override public void act() {baseProperty().signalExternalUpdate();}}));\n" +
+                        "    }\n";
+        String substitutedTemplateOfPropertyToBaseBindingSupport = substituteTemplate(templateOfPropertyToBaseBindingSupport);
+        bw.append(substitutedTemplateOfPropertyToBaseBindingSupport);
+        bw.newLine();
     }
 
     private CharSequence declarationOfImport(Class<?> clazz) {
