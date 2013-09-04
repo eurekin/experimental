@@ -200,18 +200,38 @@ public class LineDefinitionEditorView {
                     "XML input dialog",
                     JOptionPane.OK_CANCEL_OPTION,
                     JOptionPane.QUESTION_MESSAGE);
-            String sReturn = textArea.getText();
+            String userProvidedString = textArea.getText();
             if (userChoice == JOptionPane.OK_OPTION) {
 
-                ConstantLineWidthTextFileDefinition newDefinition = new ConstantLineWidthTextFileDefinition();
-                newDefinition.fromXml(sReturn);
-                backingList.clear();
-                backingList.addAll(newDefinition.fields);
-                updateXMLOrShowError();
+                loadObjectFromString(userProvidedString);
             }
         } catch (Exception e) {
             TaskDialogs.showException(e);
         }
+    }
+
+    private void loadObjectFromString(String userProvidedString) {
+        ConstantLineWidthTextFileDefinition newDefinition = new ConstantLineWidthTextFileDefinition();
+        newDefinition.fromXml(userProvidedString);
+        transplantFieldsFromForeignObject(newDefinition);
+        updateXMLOrShowError();
+    }
+
+    /**
+     * to merge the loaded instance with the one in memory
+     * it's necessary to call only the domain interface
+     * (which guarantees consistency). It's not a limitation
+     * of the framework.
+     *
+     * @param newDefinition
+     */
+    private void transplantFieldsFromForeignObject(ConstantLineWidthTextFileDefinition newDefinition) {
+
+        for (Field fieldToRemove : new ArrayList<Field>(domainModelObject.fields))
+            fieldToRemove.remove();
+
+        for (Field newField : newDefinition.fields)
+            domainModelObject.add(newField);
     }
 
     private void showXMLFrame() {
@@ -277,7 +297,7 @@ public class LineDefinitionEditorView {
     private <T, E extends ViewModel<T>, O extends Observable<T>> E standardViewModelConverterFor(
             ViewModelFactory<T, E> factory, final O base, final JavaBeanTableModel<?> toChange) {
 
-        final E viewModel = factory.newValueModel(base.get());
+        final E viewModel = factory.newObservingValueModel(base);
         final T initialBaseValue = viewModel.base();
 
 
@@ -292,6 +312,18 @@ public class LineDefinitionEditorView {
                                 }
                             }
                     ));
+
+        // alternatively (should work, but doesn't):
+//        viewModel.baseProperty().registerChangeListener(
+//                new UnsafePropertyListener<T>(new SafePropertyListener.ChangeListener() {
+//                    @Override
+//                    public void act() {
+//                        toChange.fireTableDataChanged();
+//                    }
+//                })
+//
+//        );
+//
 
 
         // Selected object => ViewModel ( => JTextArea.document )

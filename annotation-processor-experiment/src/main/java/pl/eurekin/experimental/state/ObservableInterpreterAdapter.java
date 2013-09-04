@@ -3,7 +3,6 @@ package pl.eurekin.experimental.state;
 import pl.eurekin.experimental.ChangedPropertyListener;
 import pl.eurekin.experimental.Observable;
 import pl.eurekin.experimental.StatefulPropertyChangeSupport;
-import pl.eurekin.experimental.StatelessPropertyChangeSupport;
 
 public class ObservableInterpreterAdapter<I, O>
         implements Observable<O> {

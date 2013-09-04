@@ -37,6 +37,8 @@ public class ConstantLineWidthTextFileDefinition {
 
     @SuppressWarnings("unused")
     void afterUnmarshal(Unmarshaller unmarshaller, Object parent) {
+        for(Field freshField : fields)
+            freshField.isContainedIn(this);
         recalculateIndices();
     }
 
@@ -66,10 +68,11 @@ public class ConstantLineWidthTextFileDefinition {
                 this.marshaller = jaxbContext.createMarshaller();
             Marshaller marshaller = this.marshaller;
             marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-
+            marshaller.setProperty(Marshaller.JAXB_ENCODING, "ASCII");
 
             StringWriter sw = new StringWriter();
             marshaller.marshal(this, sw);
+            marshaller.marshal(this, System.out);
 
             return sw.toString();
         } catch (JAXBException e) {
@@ -89,8 +92,10 @@ public class ConstantLineWidthTextFileDefinition {
 
             ConstantLineWidthTextFileDefinition newVal =
                     (ConstantLineWidthTextFileDefinition) unmarshaller.unmarshal(new StringReader(maybeXML));
-
-            this.fields = newVal.fields;
+            fields.clear();
+            for(Field newField : newVal.fields) {
+                add(newField);
+            }
 
         } catch (JAXBException e) {
             throw new CouldNotWriteXMLException(e);

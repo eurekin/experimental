@@ -21,13 +21,13 @@ public class StatelessPropertyChangeSupport<T> {
     }
 
     public void beginNotifying() {
-//
-//        for (ChangedPropertyListener<T> listener : listeners)
-//            listener.beginNotifying();
+
+        for (ChangedPropertyListener<T> listener : listeners)
+            listener.beginNotifying();
     }
 
     public void finishNotifying() {
-//        for (ChangedPropertyListener<T> listener : listeners)
-//            listener.finishNotifying();
+        for (ChangedPropertyListener<T> listener : listeners)
+            listener.finishNotifying();
     }
 }
