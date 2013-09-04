@@ -2,6 +2,7 @@ package pl.eurekin.experimental.state;
 
 import pl.eurekin.experimental.ChangedPropertyListener;
 import pl.eurekin.experimental.Observable;
+import pl.eurekin.experimental.StatefulPropertyChangeSupport;
 import pl.eurekin.experimental.StatelessPropertyChangeSupport;
 
 public class ObservableInterpreterAdapter<I, O>
@@ -9,12 +10,13 @@ public class ObservableInterpreterAdapter<I, O>
 
     private final Observable<I> observableInput;
     private final Interpreter<I, O> interpreter;
-    private final StatelessPropertyChangeSupport<O> changeSupport = new StatelessPropertyChangeSupport<O>();
+    private final StatefulPropertyChangeSupport<O> changeSupport;
 
     public ObservableInterpreterAdapter(Observable<I> observableInput, Interpreter<I, O> interpreter) {
         this.observableInput = observableInput;
         this.interpreter = interpreter;
         registerOnInput();
+        changeSupport = new StatefulPropertyChangeSupport<O>(interpreter.interpret(observableInput.get()));
     }
 
     private void registerOnInput() {
@@ -37,11 +39,11 @@ public class ObservableInterpreterAdapter<I, O>
     }
 
     private void onFinishNotifying() {
-        changeSupport.finishNotifying();
+        changeSupport.onFinishNotifying();
     }
 
     private void onBeginNotifying() {
-        changeSupport.beginNotifying();
+        changeSupport.onBeginNotifying();
     }
 
     private void update(I oldValue, I newValue) {
@@ -55,7 +57,7 @@ public class ObservableInterpreterAdapter<I, O>
     }
 
     protected void updateInterpreted(O oldValue, O newValue) {
-        changeSupport.firePropertyChangeEvent(oldValue, newValue);
+        changeSupport.firePropertyChangeEvent(newValue);
     }
 
     @Override

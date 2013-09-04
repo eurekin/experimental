@@ -1,6 +1,7 @@
 package pl.eurekin.experimental.swing;
 
 import pl.eurekin.experimental.SafePropertyListener;
+import pl.eurekin.experimental.UnsafePropertyListener;
 import pl.eurekin.experimental.state.ObservableState;
 
 import javax.swing.*;
@@ -13,7 +14,7 @@ public class ActivateButton {
         this.observableState = observableState;
         if (button.getAction() != null) throw new ActionOnButtonExistException();
         buttonToUpdate = button;
-        observableState.registerChangeListener(new SafePropertyListener<Boolean>(
+        observableState.registerChangeListener(new UnsafePropertyListener<Boolean>(
                 new SafePropertyListener.ChangeListener() {
                     @Override
                     public void act() {

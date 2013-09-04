@@ -41,15 +41,14 @@ public class JTextComponentBinder {
 
     private <T, E extends Observable<T>> void bindToWidget(E object) {
 
+        // TODO make it safe
         // This madness is to properly handle the data race scenario
-        object.registerChangeListener(
-                new SimpleChangedPropertyListener<T>(
-                        new AnythingHappenedListener() {
-                            @Override
-                            public void onPropertyChanged() {
-                                basePropertyChanged();
-                            }
-                        }));
+        object.registerChangeListener( new UnsafePropertyListener<T>(new SafePropertyListener.ChangeListener() {
+            @Override
+            public void act() {
+                basePropertyChanged();
+            }
+        }));
     }
 
 
@@ -109,13 +108,12 @@ public class JTextComponentBinder {
 
         // This madness is to properly handle the data race scenario
         property.registerChangeListener(
-                new SimpleChangedPropertyListener<String>(
-                        new AnythingHappenedListener() {
-                            @Override
-                            public void onPropertyChanged() {
-                                basePropertyChanged();
-                            }
-                        }));
+                new UnsafePropertyListener<String>(new SafePropertyListener.ChangeListener() {
+                    @Override
+                    public void act() {
+                        basePropertyChanged();
+                    }
+                }));
     }
 
     private void basePropertyChanged() {

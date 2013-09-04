@@ -1,6 +1,7 @@
 package pl.eurekin.experimental.fluent;
 
 import pl.eurekin.experimental.SafePropertyListener;
+import pl.eurekin.experimental.UnsafePropertyListener;
 import pl.eurekin.experimental.state.ObservableState;
 
 import javax.swing.text.JTextComponent;
@@ -15,7 +16,7 @@ public class FieldEnabler {
     public FieldEnabler(ObservableState state, JTextComponent textField1) {
         this.state = state;
         this.textField1 = textField1;
-        state.registerChangeListener(new SafePropertyListener<Boolean>(new SafePropertyListener.ChangeListener() {
+        state.registerChangeListener(new UnsafePropertyListener<Boolean>(new SafePropertyListener.ChangeListener() {
             @Override
             public void act() {
                 onAct();

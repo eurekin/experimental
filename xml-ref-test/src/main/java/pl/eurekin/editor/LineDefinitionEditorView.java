@@ -272,7 +272,7 @@ String string = "Wi\\u0119cej szczeg\\u00f3 Ostrze\\u017cenie";
         // TODO handle unchecked here
         for (Property observable : viewModel.allProperties())
             observable.registerChangeListener(
-                    new SafePropertyListener<Object>(
+                    new UnsafePropertyListener<Object>(
                             new SafePropertyListener.ChangeListener() {
                                 @Override
                                 public void act() {
@@ -283,7 +283,7 @@ String string = "Wi\\u0119cej szczeg\\u00f3 Ostrze\\u017cenie";
 
 
         // Selected object => ViewModel ( => JTextArea.document )
-        base.registerChangeListener(new SafePropertyListener<T>(new SafePropertyListener.ChangeListener() {
+        base.registerChangeListener(new UnsafePropertyListener<T>(new SafePropertyListener.ChangeListener() {
             @Override
             public void act() {
                 if (base.get() != null)

@@ -1,6 +1,7 @@
 package pl.eurekin.experimental.fluent;
 
 import pl.eurekin.experimental.SafePropertyListener;
+import pl.eurekin.experimental.UnsafePropertyListener;
 import pl.eurekin.experimental.state.AndState;
 import pl.eurekin.experimental.state.ObservableState;
 import pl.eurekin.experimental.state.OrState;
@@ -38,7 +39,7 @@ public class StateBuilder {
         final CardLayout layout = (CardLayout) cardPanel.getLayout();
 
         state.registerChangeListener(
-                new SafePropertyListener<Boolean>(new SafePropertyListener.ChangeListener() {
+                new UnsafePropertyListener<Boolean>(new SafePropertyListener.ChangeListener() {
                     @Override
                     public void act() {
                         if (state.get())
