@@ -26,7 +26,7 @@ public class SelectionModelAdapter implements Observable<Integer[]> {
         changeSupport = new StatefulPropertyChangeSupport<Integer[]>(selection());
     }
 
-    private void update() {
+    public void update() {
         changeSupport.onBeginNotifying();
         changeSupport.firePropertyChangeEvent(selection());
         changeSupport.onFinishNotifying();

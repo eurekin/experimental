@@ -1,6 +1,7 @@
 package experimental;
 
 import experimental.chess.Board;
+import experimental.console.MessageConsole;
 import experimental.info.InfoPanel;
 import experimental.sweeper.Sweeper;
 import org.jb2011.lnf.beautyeye.BeautyEyeLNFHelper;
@@ -9,6 +10,7 @@ import pl.eurekin.editor.LineDefinitionEditorView;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+import javax.swing.text.JTextComponent;
 import java.awt.*;
 import java.io.IOException;
 
@@ -22,6 +24,11 @@ public class ShowOffApplication {
     private JFrame frame;
     private JPanel mainPanel;
     private JTabbedPane tabbedPane;
+    private final static MessageConsole mc = new MessageConsole();
+    static {
+        mc.redirectOut();
+        mc.redirectErr(Color.RED, null);
+    }
 
     public static void main(String... args) throws Exception {
 // enable anti-aliased text:
@@ -174,6 +181,21 @@ public class ShowOffApplication {
         tabbedPane.addTab("About", panel);
 
 
+        // Console tab
+        JPanel somePanel = new JPanel(new BorderLayout());
+        JTextPane textComponent = new JTextPane();
+        textComponent.setBorder(null);
+        textComponent.setFont(new Font("Courier New", Font.PLAIN, 11));
+
+
+        mc.setMessageLines(2000);
+        JScrollPane scrollPane = new JScrollPane( ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED );
+        scrollPane.setViewportView(textComponent);
+        scrollPane.setPreferredSize(new Dimension(100, 100));
+        mc.setTextComponent(textComponent);
+
+        somePanel.add(scrollPane);
+        tabbedPane.addTab("Console", somePanel);
     }
 
     private void showMainFrame() {
