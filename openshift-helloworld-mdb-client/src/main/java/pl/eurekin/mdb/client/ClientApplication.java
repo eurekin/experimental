@@ -49,7 +49,7 @@ public class ClientApplication {
         //        <connector name = "remoting-connector" socket - binding = "remoting" / >
         //        </subsystem >
         // <<
-        env.put("jboss.naming.client.jms.context", true);
+        env.put("jboss.naming.client.jms.context", Boolean.TRUE);
         final Context context = new InitialContext(env);
 
 //        final Hashtable<String, String> jndiProperties = new Hashtable<String, String>();
