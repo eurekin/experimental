@@ -12,6 +12,7 @@
     <modules>
         <module>../annotation-processor-experiment</module>
         <module>../xml-ref-test</module>
+        <module>../openshift-helloworld-mdb-client</module>
     </modules>
 
     <build>
