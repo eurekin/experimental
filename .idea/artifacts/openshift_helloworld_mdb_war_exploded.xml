@@ -1,0 +1,13 @@
+<component name="ArtifactManager">
+  <artifact type="exploded-war" name="openshift-helloworld-mdb:war exploded">
+    <output-path>$PROJECT_DIR$/openshift-helloworld-mdb/target/jboss-as-helloworld-mdb</output-path>
+    <root id="root">
+      <element id="javaee-facet-resources" facet="openshift-helloworld-mdb/web/Web" />
+      <element id="directory" name="WEB-INF">
+        <element id="directory" name="classes">
+          <element id="module-output" name="openshift-helloworld-mdb" />
+        </element>
+      </element>
+    </root>
+  </artifact>
+</component>

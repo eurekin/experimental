@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>openshift-helloworld-mdb-client</groupId>
+    <artifactId>openshift-helloworld-mdb-client</artifactId>
+    <version>1.0-SNAPSHOT</version>
+
+    <properties>
+        <version.org.jboss.as>7.1.1.Final</version.org.jboss.as>
+    </properties>
+
+    <dependencies>
+        <!-- remote version -->
+        <dependency>
+            <groupId>org.jboss.as</groupId>
+            <artifactId>jboss-as-jms-client-bom</artifactId>
+            <version>${version.org.jboss.as}</version>
+            <type>pom</type>
+        </dependency>
+
+        <!-- local version, used to be sure it's compatible with the installed server -->
+        <!--
+        <dependency>
+            <groupId>org.JBOSS.as</groupId>
+            <artifactId>jboss-as-jms-client-bom</artifactId>
+            <version>7.1.1.Local</version>
+            <scope>system</scope>
+            <systemPath>C:/Software/jboss7.1/jboss-as-7.1.1.Final/bin/client/jboss-client.jar</systemPath>
+        </dependency>
+        -->
+    </dependencies>
+
+
+    <build>
+
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>1.2.1</version>
+
+                <configuration>
+                    <mainClass>pl.eurekin.mdb.client.ClientApplication</mainClass>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+
+</project>

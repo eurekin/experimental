@@ -4,6 +4,7 @@
     <entry_points version="2.0" />
   </component>
   <component name="FrameworkDetectionExcludesConfiguration">
+    <file type="web" url="file://$PROJECT_DIR$/openshift-helloworld-mdb" />
     <file type="web" url="file://$PROJECT_DIR$/web-jnlp" />
     <file type="web" url="file://$PROJECT_DIR$/xml-ref-test" />
   </component>
@@ -17,6 +18,8 @@
         <option value="$PROJECT_DIR$/jpa-basics-2/pom.xml" />
         <option value="$PROJECT_DIR$/module-run/pom.xml" />
         <option value="$PROJECT_DIR$/web-jnlp/pom.xml" />
+        <option value="$PROJECT_DIR$/openshift-helloworld-mdb/pom.xml" />
+        <option value="$PROJECT_DIR$/openshift-helloworld-mdb-client/pom.xml" />
       </list>
     </option>
   </component>

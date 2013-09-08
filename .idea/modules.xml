@@ -5,6 +5,8 @@
       <module fileurl="file://$PROJECT_DIR$/annotation-processor-experiment/annotation-processor-experiment.iml" filepath="$PROJECT_DIR$/annotation-processor-experiment/annotation-processor-experiment.iml" />
       <module fileurl="file://$PROJECT_DIR$/jpa-basics-2/jpa-basics-2.iml" filepath="$PROJECT_DIR$/jpa-basics-2/jpa-basics-2.iml" />
       <module fileurl="file://$PROJECT_DIR$/module-run/module-run.iml" filepath="$PROJECT_DIR$/module-run/module-run.iml" />
+      <module fileurl="file://$PROJECT_DIR$/openshift-helloworld-mdb/openshift-helloworld-mdb.iml" filepath="$PROJECT_DIR$/openshift-helloworld-mdb/openshift-helloworld-mdb.iml" />
+      <module fileurl="file://$PROJECT_DIR$/openshift-helloworld-mdb-client/openshift-helloworld-mdb-client.iml" filepath="$PROJECT_DIR$/openshift-helloworld-mdb-client/openshift-helloworld-mdb-client.iml" />
       <module fileurl="file://$PROJECT_DIR$/web-jnlp/web-jnlp.iml" filepath="$PROJECT_DIR$/web-jnlp/web-jnlp.iml" />
       <module fileurl="file://$PROJECT_DIR$/xml-ref-test/xml-ref-test.iml" filepath="$PROJECT_DIR$/xml-ref-test/xml-ref-test.iml" />
     </modules>

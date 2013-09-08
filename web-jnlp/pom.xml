@@ -32,11 +32,17 @@
             <version>1.0-6.0.02_ea_b02.2</version>
         </dependency>
 
-        <dependency>
-            <groupId>pl.eurekin.xml.fun</groupId>
-            <artifactId>xml-ref-test</artifactId>
-            <version>1.0-SNAPSHOT</version>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>pl.eurekin.xml.fun</groupId>-->
+            <!--<artifactId>xml-ref-test</artifactId>-->
+            <!--<version>1.0-SNAPSHOT</version>-->
+            <!--&lt;!&ndash;-->
+                <!--Here, instead of a full rebuild, we can reuse the already built artifact.-->
+                <!--We get the benefit of the "adapted" webstart build, which adds the-->
+                <!--manifest and codebase attributes to each jar.-->
+             <!--&ndash;&gt;-->
+            <!--<type>zip</type>-->
+        <!--</dependency>-->
 
 
     </dependencies>
@@ -47,6 +53,10 @@
             <build>
                 <plugins>
 
+
+                    <!--
+                    UPLOAD to OpenShift - as ROOT.war
+                    -->
                     <plugin>
                         <groupId>org.codehaus.mojo</groupId>
                         <artifactId>wagon-maven-plugin</artifactId>
@@ -87,6 +97,59 @@
                 <artifactId>jetty-maven-plugin</artifactId>
                 <version>8.0.1.v20110908</version>
             </plugin>
+
+            <!--
+
+            It is fairly common practice to make JNLP applications available to users by deploying them
+            in web applications, with possibly many JNLP apps in a single WAR. This example shows how t
+            o include the output of two JNLP projects in a packaged web application that is defined in
+            a separate project.
+
+            Create the sample-webapp project as per any standard Maven web application project. Once
+            created, add the following plugin configuration, which uses the Maven Dependency Plugin to
+            retrieve the JNLP bundles and unpack them into the web application project. This example
+            will result in the JNLP applications being placed in the /webstart directory of your web
+            application.
+
+            - - -
+            Source: http://mojo.codehaus.org/webstart/webstart-maven-plugin/examples/war_bundle_1.html
+            -->
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>dependency-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <!--
+                          Copy the webstart bundle in as a resource
+                          before packaging starts.
+                        -->
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <artifactItems>
+                        <artifactItem>
+                            <groupId>pl.eurekin.xml.fun</groupId>
+                            <artifactId>xml-ref-test</artifactId>
+                            <version>1.0-SNAPSHOT</version>
+                            <type>zip</type>
+                        </artifactItem>
+                    </artifactItems>
+                    <outputDirectory>${project.build.directory}/${project.build.finalName}/webstart
+                    </outputDirectory>
+                </configuration>
+            </plugin>
+
+            <!--
+            Not needed, if the JNLP is built elsewhere and here imported (the case above).
+
+            PHASE binding commented out
+            -->
+
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>webstart-maven-plugin</artifactId>
@@ -96,7 +159,7 @@
                         <goals>
                             <goal>jnlp-download-servlet</goal>
                         </goals>
-                        <phase>package</phase>
+                        <!--<phase>package</phase>-->
                     </execution>
                 </executions>
                 <configuration>
@@ -211,6 +274,9 @@
                     <unsignAlreadySignedJars>true</unsignAlreadySignedJars>
                 </configuration>
             </plugin>
+
+
+
         </plugins>
 
         <extensions>

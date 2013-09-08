@@ -10,7 +10,6 @@ import pl.eurekin.editor.LineDefinitionEditorView;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-import javax.swing.text.JTextComponent;
 import java.awt.*;
 import java.io.IOException;
 
@@ -196,6 +195,11 @@ public class ShowOffApplication {
 
         somePanel.add(scrollPane);
         tabbedPane.addTab("Console", somePanel);
+
+
+        JPanel chatTab = new ChatPanel().constructChatPanel();
+
+        tabbedPane.addTab("Chat", chatTab);
     }
 
     private void showMainFrame() {
