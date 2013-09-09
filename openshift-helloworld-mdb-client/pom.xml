@@ -20,7 +20,12 @@
             <version>${version.org.jboss.as}</version>
             <type>pom</type>
         </dependency>
-
+        <dependency>
+        <groupId>com.jcraft</groupId>
+        <artifactId>jsch</artifactId>
+        <version>0.1.49</version>
+        <scope>compile</scope>
+    </dependency>
         <!-- local version, used to be sure it's compatible with the installed server -->
         <!--
         <dependency>

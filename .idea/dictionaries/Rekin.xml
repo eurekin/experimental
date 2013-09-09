@@ -5,12 +5,17 @@
       <w>changelog</w>
       <w>changeset</w>
       <w>databasename</w>
+      <w>dups</w>
+      <w>hashtable</w>
+      <w>helloworld</w>
       <w>hgap</w>
+      <w>hornetq</w>
       <w>hsize</w>
       <w>jboss</w>
       <w>pacelibom</w>
       <w>postgresql</w>
       <w>proxied</w>
+      <w>remoting</w>
       <w>rhat</w>
       <w>rhcloud</w>
       <w>scrollpane</w>

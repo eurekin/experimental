@@ -86,6 +86,7 @@
     <orderEntry type="library" name="Maven: org.jboss.spec.javax.jms:jboss-jms-api_1.1_spec:1.0.0.Final" level="project" />
     <orderEntry type="library" name="Maven: org.jboss.xnio:xnio-nio:3.0.3.GA" level="project" />
     <orderEntry type="library" name="Maven: org.jboss.as:jboss-as-build-config:7.1.1.Final" level="project" />
+    <orderEntry type="library" name="Maven: com.jcraft:jsch:0.1.49" level="project" />
   </component>
 </module>
 

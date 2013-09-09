@@ -1,6 +1,8 @@
 package experimental;
 
 import pl.eurekin.mdb.client.ClientApplication;
+import pl.eurekin.mdb.client.ClientApplicationHornetOnly;
+import pl.eurekin.mdb.client.PortForwarder;
 
 import javax.swing.*;
 import java.awt.*;
@@ -14,13 +16,21 @@ public class ChatPanel {
 
     private JButton goButton;
     private JTextField argumentField;
+    private JButton pfButton;
 
     public JPanel constructChatPanel() {
         final JPanel chatTab = new JPanel(new BorderLayout());
         final JPanel chatPanel = new JPanel(new BorderLayout());
         argumentField = new JTextField(ClientApplication.DEFAULT_PROVIDER_URL);
         goButton = new JButton("Connect");
+        pfButton = new JButton("forward");
 
+        pfButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                onForward();
+            }
+        });
         goButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -29,8 +39,13 @@ public class ChatPanel {
         });
         chatPanel.add(argumentField, BorderLayout.CENTER);
         chatPanel.add(goButton, BorderLayout.EAST);
+        chatPanel.add(pfButton, BorderLayout.WEST);
         chatTab.add(chatPanel, BorderLayout.NORTH);
         return chatTab;
+    }
+
+    private void onForward() {
+        new PortForwarder();
     }
 
     private void onConnect() {
@@ -54,7 +69,7 @@ public class ChatPanel {
 
     private void connect() {
         try {
-            ClientApplication.main(new String[]{argumentField.getText()});
+            ClientApplicationHornetOnly.main(new String[]{argumentField.getText()});
         } catch (Exception e1) {
             e1.printStackTrace();
         }
