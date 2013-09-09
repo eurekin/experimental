@@ -9,6 +9,8 @@ import org.hornetq.jms.client.HornetQConnectionFactory;
 import javax.jms.*;
 import javax.naming.Context;
 import javax.naming.InitialContext;
+import javax.naming.NamingException;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -16,24 +18,66 @@ import java.util.logging.LogManager;
 
 /**
  * @author greg.matoga@gmail.com
- *
- *  java   -Djava.util.logging.manager=java.util.logging.LogManager    -Djava.util.logging.config.file=/home/userone/logging.properties  TestEjbClient
-
+ *         <p/>
+ *         java   -Djava.util.logging.manager=java.util.logging.LogManager    -Djava.util.logging.config.file=/home/userone/logging.properties  TestEjbClient
  */
 public class ClientApplicationHornetOnly {
 
     public static final String DEFAULT_PROVIDER_URL = "remote://localhost:4447";
     public static final String USER_NAME = "remote";
     public static final String USER_PASSWORD = "remoteJMS";
+    private MessageProducer producer;
+    private Session session;
+    private Connection connection;
+    private Destination destination;
+    private MessageConsumer receiver;
 
     public static void main(String[] args) throws Exception {
+        new ClientApplicationHornetOnly().connect(args);
+    }
+
+    public static void noop() {
+        // another option to use hornet directly:
+        Destination destination = HornetQJMSClient.createQueue("testQueue");  //this is NOT the JNDI name, it is the HornetQ name
+        HashMap<String, Object> connectionParams = new HashMap<String, Object>();
+        connectionParams.put(TransportConstants.HOST_PROP_NAME, "localhost");
+        TransportConfiguration transportConfiguration = new TransportConfiguration("org.hornetq.core.remoting.impl.netty.NettyConnectorFactory", connectionParams);
+        ConnectionFactory connectionFactory = (ConnectionFactory) HornetQJMSClient.createConnectionFactoryWithoutHA(JMSFactoryType.CF, transportConfiguration);
+
+    }
+
+    private static String getProviderURL(String[] args) {
+        if (args.length > 0 && args[0] != null && !args[0].trim().isEmpty()) {
+            System.out.println("Using first argument as the Provider URL: " + args[0]);
+            return args[0];
+        } else {
+            System.out.println("Using default value as the Provider URL: " + DEFAULT_PROVIDER_URL);
+            return DEFAULT_PROVIDER_URL;
+        }
+    }
+
+    private void connect(String[] args) throws IOException, JMSException, NamingException {
+        String providerURL = getProviderURL(args);
+
         LogManager.getLogManager().readConfiguration(ClientApplicationHornetOnly.class.getResourceAsStream("/logging.properties"));
 
+        initialize(providerURL);
+
+        send("Test message sent from the openshift-helloworld-mdb-client project.");
+
+        // Finally, the expected error:
+        // Exception in thread "main" javax.jms.JMSSecurityException: User: remote doesn't have permission='SEND' on address jms.queue.HELLOWORLDMDBQueue
+        // a good guide: http://middlewaremagic.com/jboss/?p=1616
+        //
+        connection.close();
+        System.out.println("SUCCESS: Message sent!");
+    }
+
+    public void initialize(String providerURL) throws JMSException, NamingException {
         final Properties env = new Properties();
         env.put(Context.INITIAL_CONTEXT_FACTORY, "org.jboss.naming.remote.client.InitialContextFactory");
 
 
-        String providerURL = getProviderURL(args);
         env.put(Context.PROVIDER_URL, providerURL);
 
         // maybe the guide could help in getting rid of the credentials:
@@ -54,7 +98,7 @@ public class ClientApplicationHornetOnly {
 
         HornetQConnectionFactory connectionFactory2 = HornetQJMSClient.createConnectionFactoryWithoutHA(JMSFactoryType.CF, transportConfiguration);
 
-        Connection connection = connectionFactory2.createConnection();
+        connection = connectionFactory2.createConnection(USER_NAME, USER_PASSWORD);
 
         // found answer in: https://community.jboss.org/message/721362#721362
         //
@@ -129,9 +173,9 @@ public class ClientApplicationHornetOnly {
         // not really a solution yet. Still looking.
 
         // off-topic, trying if anything work at all
-        Destination destination = (Destination) context.lookup("jms/queue/HELLOWORLDMDBQueue"); // only necessary if you don't want to use createQueue or createTopic
+        destination = (Destination) context.lookup("jms/queue/HELLOWORLDMDBTopic");
 
-        Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+        session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
 
         Message myMessage = session.createTextMessage();
         myMessage.setStringProperty("myStrVar", "myStrVar's Value");
@@ -147,38 +191,26 @@ public class ClientApplicationHornetOnly {
         //  java:jboss/exported/ namespace prefix if supplied. But let's not go into that here."
         //                                 -- finally, someone sane
 
-        MessageProducer producer = session.createProducer(destination);
-        TextMessage message = session.createTextMessage("Test message sent from the openshift-helloworld-mdb-client project.");
-        producer.send(message);
-
-        // Finally, the expected error:
-        // Exception in thread "main" javax.jms.JMSSecurityException: User: remote doesn't have permission='SEND' on address jms.queue.HELLOWORLDMDBQueue
-        // a good guide: http://middlewaremagic.com/jboss/?p=1616
-        //
-        connection.close();
-        System.out.println("SUCCESS: Message sent!");
-
-
-
+        producer = session.createProducer(destination);
+        connection.start();
     }
 
-    public static void noop() {
-        // another option to use hornet directly:
-        Destination destination = HornetQJMSClient.createQueue("testQueue");  //this is NOT the JNDI name, it is the HornetQ name
-        HashMap<String, Object> connectionParams = new HashMap<String, Object>();
-        connectionParams.put(TransportConstants.HOST_PROP_NAME, "localhost");
-        TransportConfiguration transportConfiguration = new TransportConfiguration("org.hornetq.core.remoting.impl.netty.NettyConnectorFactory", connectionParams);
-        ConnectionFactory connectionFactory = (ConnectionFactory) HornetQJMSClient.createConnectionFactoryWithoutHA(JMSFactoryType.CF, transportConfiguration);
-
+    public void send(String messageText) {
+        TextMessage message = null;
+        try {
+            message = session.createTextMessage(messageText);
+            producer.send(message);
+        } catch (JMSException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
     }
 
-    private static String getProviderURL(String[] args) {
-        if(args.length > 0 && args[0] !=null && !args[0].trim().isEmpty()) {
-            System.out.println("Using first argument as the Provider URL: " + args[0]);
-            return args[0];
-        } else {
-            System.out.println("Using default value as the Provider URL: " + DEFAULT_PROVIDER_URL);
-            return DEFAULT_PROVIDER_URL;
+    public void addListener(MessageListener listener) {
+        try {
+            receiver = session.createConsumer(destination);
+            receiver.setMessageListener(listener);
+        } catch (JMSException e) {
+            e.printStackTrace();
         }
     }
 

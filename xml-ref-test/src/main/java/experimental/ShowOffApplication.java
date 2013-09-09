@@ -176,9 +176,17 @@ public class ShowOffApplication {
         }
         tabbedPane.addTab("Chess", icon, outerPanel);
 
-        final JPanel panel = new InfoPanel().getPanel();
-        tabbedPane.addTab("About", panel);
 
+
+        Icon iconChat = null;
+        try {
+            iconChat = new ImageIcon(ImageIO.read(this.getClass().getResourceAsStream("/Chat-icon.png")));
+        } catch (IOException e) {
+
+        }
+        JPanel chatTab = new ChatPanel().constructChatPanel();
+
+        tabbedPane.addTab("Chat",iconChat, chatTab);
 
         // Console tab
         JPanel somePanel = new JPanel(new BorderLayout());
@@ -196,10 +204,9 @@ public class ShowOffApplication {
         somePanel.add(scrollPane);
         tabbedPane.addTab("Console", somePanel);
 
+        final JPanel panel = new InfoPanel().getPanel();
+        tabbedPane.addTab("About", panel);
 
-        JPanel chatTab = new ChatPanel().constructChatPanel();
-
-        tabbedPane.addTab("Chat", chatTab);
     }
 
     private void showMainFrame() {

@@ -17,6 +17,7 @@
                 <entry name="java:jboss/exported/jms/queue/HELLOWORLDMDBQueue"/>
             </jms-queue>
             <jms-topic name="HELLOWORLDMDBTopic">
+                <entry name="java:jboss/exported/jms/queue/HELLOWORLDMDBTopic"/>
                 <entry name="topic/HELLOWORLDMDBTopic"/>
             </jms-topic>
         </jms-destinations>

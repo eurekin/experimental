@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="ShowOffApplication" type="Application" factoryName="Application" singleton="true">
+  <configuration default="false" name="ShowOffApplication" type="Application" factoryName="Application">
     <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea">
       <pattern>
         <option name="PATTERN" value="experimental.*" />
