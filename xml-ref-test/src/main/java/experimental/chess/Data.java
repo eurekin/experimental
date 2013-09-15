@@ -1,11 +1,5 @@
 package experimental.chess;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlType;
-import java.util.List;
-
 /**
  * @author greg.matoga@gmail.com
  */
@@ -13,7 +7,6 @@ import java.util.List;
 public class Data {
     private int id;
     private String color;
-    private List<Body> body;
 
     public String getColor() {
         return color;
@@ -29,14 +22,6 @@ public class Data {
 
     public void setId(int id) {
         this.id = id;
-    }
-
-    public List<Body> getBody() {
-        return body;
-    }
-
-    public void setBody(List<Body> body) {
-        this.body = body;
     }
 
     @Override

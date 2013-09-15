@@ -6,6 +6,7 @@
       <w>changeset</w>
       <w>databasename</w>
       <w>deserialize</w>
+      <w>deserializing</w>
       <w>dups</w>
       <w>googlecode</w>
       <w>hashtable</w>
@@ -13,6 +14,7 @@
       <w>hgap</w>
       <w>hornetq</w>
       <w>hsize</w>
+      <w>jaxb</w>
       <w>jboss</w>
       <w>mbox</w>
       <w>pacelibom</w>
