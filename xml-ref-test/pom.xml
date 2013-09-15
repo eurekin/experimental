@@ -59,6 +59,12 @@
 
     <dependencies>
         <dependency>
+            <groupId>org.java-websocket</groupId>
+            <artifactId>Java-WebSocket</artifactId>
+            <version>1.3.0</version>
+        </dependency>
+
+        <dependency>
             <groupId>swing.extras</groupId>
             <artifactId>xmleditorkit</artifactId>
             <version>1.0</version>
