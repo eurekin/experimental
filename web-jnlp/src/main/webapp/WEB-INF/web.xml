@@ -6,32 +6,32 @@
          version="3.0">
 
     <servlet>
-        <servlet-type>JnlpDownloadServlet</servlet-type>
+        <servlet-name>JnlpDownloadServlet</servlet-name>
         <servlet-class>jnlp.sample.servlet.JnlpDownloadServlet</servlet-class>
 
         <init-param>
-            <param-type>logLevel</param-type>
+            <param-name>logLevel</param-name>
             <param-value>DEBUG</param-value>
         </init-param>
 
         <init-param>
-            <param-type>logPath</param-type>
+            <param-name>logPath</param-name>
             <param-value>/logs/jnlpdownloadservlet.log</param-value>
         </init-param>
     </servlet>
 
     <servlet-mapping>
-        <servlet-type>JnlpDownloadServlet</servlet-type>
+        <servlet-name>JnlpDownloadServlet</servlet-name>
         <url-pattern>*.jnlp</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>
-        <servlet-type>JnlpDownloadServlet</servlet-type>
+        <servlet-name>JnlpDownloadServlet</servlet-name>
         <url-pattern>*.jar</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>
-        <servlet-type>JnlpDownloadServlet</servlet-type>
+        <servlet-name>JnlpDownloadServlet</servlet-name>
         <url-pattern>*.zip</url-pattern>
     </servlet-mapping>
 
