@@ -11,9 +11,9 @@
     <url>http://pacelibom-eurekin.rhcloud.com</url>
 
     <organization>
-        <type>Experimental</type>
+        <name>Experimental</name>
     </organization>
-    <type>Experimental</type>
+    <name>Experimental</name>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <mainClass>experimental.ShowOffApplication</mainClass>
@@ -30,17 +30,17 @@
     <repositories>
         <repository>
             <id>oss.sonatype.org</id>
-            <type>OSS Sonatype Staging</type>
+            <name>OSS Sonatype Staging</name>
             <url>https://oss.sonatype.org/content/groups/staging</url>
         </repository>
         <repository>
             <id>java.net-m2</id>
-            <type>java.net - Maven 2</type>
+            <name>java.net - Maven 2</name>
             <url>https://repository.jboss.org/nexus/content/repositories/java.net-m2</url>
         </repository>
         <repository>
             <id>java.net</id>
-            <type>java.net</type>
+            <name>java.net</name>
             <url>http://download.java.net/maven/2</url>
         </repository>
         <repository>
@@ -55,16 +55,9 @@
                 <checksumPolicy>ignore</checksumPolicy>
             </snapshots>
         </repository>
-
     </repositories>
 
     <dependencies>
-        <dependency>
-            <groupId>org.java-websocket</groupId>
-            <artifactId>Java-WebSocket</artifactId>
-            <version>1.3.0</version>
-        </dependency>
-
         <dependency>
             <groupId>swing.extras</groupId>
             <artifactId>xmleditorkit</artifactId>
@@ -239,7 +232,7 @@
                                     <target>
                                         <echo message="!TASK-1"/>
                                         <ant antfile="${basedir}/add-missing-properties.xml">
-                                            <target type="addPermissionAndCodebase"/>
+                                            <target name="addPermissionAndCodebase"/>
                                         </ant>
                                     </target>
                                 </configuration>

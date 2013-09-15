@@ -10,9 +10,9 @@
     <packaging>war</packaging>
 
     <organization>
-        <type>Experimental</type>
+        <name>Experimental</name>
     </organization>
-    <type>Experimental-jnlp</type>
+    <name>Experimental-jnlp</name>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

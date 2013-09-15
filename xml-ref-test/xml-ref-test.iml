@@ -47,7 +47,6 @@
       </library>
     </orderEntry>
     <orderEntry type="library" scope="PROVIDED" name="Jetty 8.1.8.v20121106" level="application_server_libraries" />
-    <orderEntry type="library" name="Maven: org.java-websocket:Java-WebSocket:1.3.0" level="project" />
     <orderEntry type="library" name="Maven: swing.extras:xmleditorkit:1.0" level="project" />
     <orderEntry type="library" name="Maven: org.oxbow:swing-bits:1.0.0-SNAPSHOT" level="project" />
     <orderEntry type="library" name="Maven: com.miglayout:miglayout:3.7.4" level="project" />

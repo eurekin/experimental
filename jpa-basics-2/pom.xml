@@ -10,7 +10,7 @@
     <repositories>
         <repository>
             <id>oss.sonatype.org</id>
-            <type>OSS Sonatype Staging</type>
+            <name>OSS Sonatype Staging</name>
             <url>https://oss.sonatype.org/content/groups/staging</url>
         </repository>
     </repositories>

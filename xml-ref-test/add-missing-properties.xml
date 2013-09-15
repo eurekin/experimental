@@ -1,10 +1,10 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 
 <!-- This is a wrapper for all the other build files. -->
-<project basedir="." type="project_name2">
+<project basedir="." name="project_name2">
 
 
-    <target type="remove-shas">
+    <target name="remove-shas">
         <copy tofile="file.txt.edit" file="file.txt">
             <filterchain>
                 <linecontains negate="true">
@@ -14,7 +14,7 @@
         </copy>
     </target>
 
-    <target type="unsignjar">
+    <target name="unsignjar">
         <sequential>
             <!-- Remove any existing signatures from a JAR file. -->
             <tempfile prefix="usignjar-" destdir="${java.io.tmpdir}" property="temp.file"/>
@@ -23,10 +23,10 @@
 
             <unjar src="${jar}" dest="${temp.file}">
                 <patternset>
-                    <include type="**"/>
-                    <exclude type="META-INF/*.SF"/>
-                    <exclude type="META-INF/*.DSA"/>
-                    <exclude type="META-INF/*.RSA"/>
+                    <include name="**"/>
+                    <exclude name="META-INF/*.SF"/>
+                    <exclude name="META-INF/*.DSA"/>
+                    <exclude name="META-INF/*.RSA"/>
                 </patternset>
             </unjar>
 
@@ -61,17 +61,17 @@
     </target>
 
 
-    <target type="addPermissionAndCodebaseProperty">
+    <target name="addPermissionAndCodebaseProperty">
         <jar file="${jarFile}" update="true">
             <manifest>
-                <attribute type="Permissions" value="all-permissions"/>
-                <attribute type="Codebase" value="*"/>
+                <attribute name="Permissions" value="all-permissions"/>
+                <attribute name="Codebase" value="*"/>
             </manifest>
         </jar>
     </target>
-    <target type="resign-jars">
+    <target name="resign-jars">
         <echo message="resign-jars was called"/>
-        <property type="rootdir" value="target/jnlp/lib" />
+        <property name="rootdir" value="target/jnlp/lib" />
         <sequential>
             <echo message="Repacking libs in ${rootdir}"/>
             <apply executable="pack200" parallel="false">
@@ -89,7 +89,7 @@
         </sequential>
     </target>
 
-    <target type="unsign-jars">
+    <target name="unsign-jars">
         <echo message="unsign-jars was called"/>
         <ac:foreach target="unsignjar" param="jar" xmlns:ac="antlib:net.sf.antcontrib">
             <path>
@@ -98,7 +98,7 @@
         </ac:foreach>
     </target>
 
-    <target type="addPermissionAndCodebase">
+    <target name="addPermissionAndCodebase">
         <echo message="addPermissionAndCodebase was called"/>
         <antcall target="unsign-jars"/>
         <ac:foreach target="addPermissionAndCodebaseProperty" param="jarFile" xmlns:ac="antlib:net.sf.antcontrib">
