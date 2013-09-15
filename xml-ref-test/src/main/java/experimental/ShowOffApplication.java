@@ -3,6 +3,7 @@ package experimental;
 import experimental.chess.Board;
 import experimental.console.MessageConsole;
 import experimental.info.InfoPanel;
+import experimental.snake.SnakeDemo;
 import experimental.sweeper.Sweeper;
 import org.jb2011.lnf.beautyeye.BeautyEyeLNFHelper;
 import pl.eurekin.editor.LineDefinitionEditorView;
@@ -11,6 +12,7 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
+import java.awt.event.ActionEvent;
 import java.io.IOException;
 
 import static javax.swing.WindowConstants.DISPOSE_ON_CLOSE;
@@ -188,12 +190,39 @@ public class ShowOffApplication {
 
         tabbedPane.addTab("Chat",iconChat, chatTab);
 
+        // Snake panel
+        JPanel snakePanel = new JPanel(new BorderLayout());
+        final SnakeDemo snakeDemo = new SnakeDemo();
+        JPanel topPanel = new JPanel(new GridBagLayout());
+        JButton runButton = new JButton();
+        runButton.setHorizontalAlignment(SwingConstants.RIGHT);
+        topPanel.add(runButton);
+        snakeDemo.initialize();
+        JComponent snakeDemoView = snakeDemo.getView();
+        JPanel snakeGamePanel = new JPanel(new GridBagLayout());
+        snakeGamePanel.add(snakeDemoView);
+        snakeGamePanel.setBorder(BorderFactory.createTitledBorder("Snake"));
+        snakePanel.add(snakeGamePanel, BorderLayout.CENTER);
+        snakePanel.add(topPanel, BorderLayout.NORTH);
+        Icon snakeIcon = null;
+        try {
+            snakeIcon = new ImageIcon(ImageIO.read(this.getClass().getResourceAsStream("/snake.png")));
+        } catch (IOException e) {
+        }
+        runButton.setAction(new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                snakeDemo.run();
+            }
+        });
+        runButton.setText("Run");
+        tabbedPane.addTab("Snake", snakeIcon, snakePanel);
+
         // Console tab
         JPanel somePanel = new JPanel(new BorderLayout());
         JTextPane textComponent = new JTextPane();
         textComponent.setBorder(null);
         textComponent.setFont(new Font("Courier New", Font.PLAIN, 11));
-
 
         mc.setMessageLines(2000);
         JScrollPane scrollPane = new JScrollPane( ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED );
@@ -204,6 +233,7 @@ public class ShowOffApplication {
         somePanel.add(scrollPane);
         tabbedPane.addTab("Console", somePanel);
 
+        // About
         final JPanel panel = new InfoPanel().getPanel();
         tabbedPane.addTab("About", panel);
 

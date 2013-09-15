@@ -9,7 +9,13 @@ import javax.xml.bind.annotation.XmlSeeAlso;
  * @author greg.matoga@gmail.com
  */
 @XmlDiscriminatorNode("@type")
-@XmlSeeAlso({UpdateMessage.class, JoinMessage.class, LeaveMessage.class})
+@XmlSeeAlso({
+        UpdateMessage.class,
+        JoinMessage.class,
+        LeaveMessage.class,
+        DeadMessage.class,
+        KillMessage.class
+})
 public abstract class AbstractMessage {
     public abstract void updateController(SnakeController snakeController);
 }
