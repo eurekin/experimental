@@ -5,13 +5,16 @@
       <w>changelog</w>
       <w>changeset</w>
       <w>databasename</w>
+      <w>deserialize</w>
       <w>dups</w>
+      <w>googlecode</w>
       <w>hashtable</w>
       <w>helloworld</w>
       <w>hgap</w>
       <w>hornetq</w>
       <w>hsize</w>
       <w>jboss</w>
+      <w>mbox</w>
       <w>pacelibom</w>
       <w>postgresql</w>
       <w>proxied</w>
@@ -21,6 +24,7 @@
       <w>scrollpane</w>
       <w>sonatype</w>
       <w>unmarshal</w>
+      <w>unmarshalled</w>
       <w>unmarshaller</w>
       <w>unregister</w>
       <w>unsign</w>
@@ -32,6 +36,7 @@
       <w>vspacer</w>
       <w>webstart</w>
       <w>xmlns</w>
+      <w>yyyy</w>
     </words>
   </dictionary>
 </component>

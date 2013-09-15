@@ -12,13 +12,13 @@
 <messaging-deployment xmlns="urn:jboss:messaging-deployment:1.0">
     <hornetq-server>
         <jms-destinations>
-            <jms-queue name="HELLOWORLDMDBQueue">
-                <!--<entry name="/queue/HELLOWORLDMDBQueue"/>-->
-                <entry name="java:jboss/exported/jms/queue/HELLOWORLDMDBQueue"/>
+            <jms-queue type="HELLOWORLDMDBQueue">
+                <!--<entry type="/queue/HELLOWORLDMDBQueue"/>-->
+                <entry type="java:jboss/exported/jms/queue/HELLOWORLDMDBQueue"/>
             </jms-queue>
-            <jms-topic name="HELLOWORLDMDBTopic">
-                <entry name="java:jboss/exported/jms/queue/HELLOWORLDMDBTopic"/>
-                <entry name="topic/HELLOWORLDMDBTopic"/>
+            <jms-topic type="HELLOWORLDMDBTopic">
+                <entry type="java:jboss/exported/jms/queue/HELLOWORLDMDBTopic"/>
+                <entry type="topic/HELLOWORLDMDBTopic"/>
             </jms-topic>
         </jms-destinations>
     </hornetq-server>

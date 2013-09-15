@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <persistence xmlns="http://java.sun.com/xml/ns/persistence" version="2.0">
 
-    <persistence-unit name="NewPersistenceUnit">
+    <persistence-unit type="NewPersistenceUnit">
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
         <class>pl.eurekin.ttt.entities.Match</class>
         <exclude-unlisted-classes>false</exclude-unlisted-classes>
         <properties>
-            <property name="javax.persistence.jdbc.url"      value="${jdbc.url}"/>
-            <property name="javax.persistence.jdbc.driver"   value="${db.driver}"/>
-            <property name="javax.persistence.jdbc.user"     value="${db.username}"/>
-            <property name="javax.persistence.jdbc.password" value="${db.password}"/>
+            <property type="javax.persistence.jdbc.url"      value="${jdbc.url}"/>
+            <property type="javax.persistence.jdbc.driver"   value="${db.driver}"/>
+            <property type="javax.persistence.jdbc.user"     value="${db.username}"/>
+            <property type="javax.persistence.jdbc.password" value="${db.password}"/>
 
-            <property name="eclipselink.ddl-generation"             value="create-or-extend-tables"/>
-            <property name="eclipselink.create-ddl-jdbc-file-name"  value="createDDL_ddlGeneration.jdbc"/>
-            <property name="eclipselink.drop-ddl-jdbc-file-name"    value="dropDDL_ddlGeneration.jdbc"/>
-            <property name="eclipselink.ddl-generation.output-mode" value="both"/>
+            <property type="eclipselink.ddl-generation"             value="create-or-extend-tables"/>
+            <property type="eclipselink.create-ddl-jdbc-file-type"  value="createDDL_ddlGeneration.jdbc"/>
+            <property type="eclipselink.drop-ddl-jdbc-file-type"    value="dropDDL_ddlGeneration.jdbc"/>
+            <property type="eclipselink.ddl-generation.output-mode" value="both"/>
         </properties>
     </persistence-unit>
 </persistence>

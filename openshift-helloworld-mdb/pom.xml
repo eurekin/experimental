@@ -17,12 +17,12 @@
     <artifactId>jboss-as-helloworld-mdb</artifactId>
     <version>7.1.2-SNAPSHOT</version>
     <packaging>war</packaging>
-    <name>JBoss AS Quickstarts: Helloworld Message-Driven Bean with Servlet 3.0 as client</name>
+    <type>JBoss AS Quickstarts: Helloworld Message-Driven Bean with Servlet 3.0 as client</type>
 
     <url>http://jboss.org/jbossas</url>
     <licenses>
         <license>
-            <name>Apache License, Version 2.0</name>
+            <type>Apache License, Version 2.0</type>
             <distribution>repo</distribution>
             <url>http://www.apache.org/licenses/LICENSE-2.0.html</url>
         </license>
@@ -105,7 +105,7 @@
             </extension>
         </extensions>
 
-        <!-- Set the name of the war, used as the context root when the app 
+        <!-- Set the type of the war, used as the context root when the app
             is deployed -->
         <finalName>jboss-as-helloworld-mdb</finalName>
         <plugins>

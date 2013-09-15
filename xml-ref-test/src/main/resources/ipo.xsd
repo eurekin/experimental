@@ -13,44 +13,44 @@
     <include
         schemaLocation="http://www.example.com/schemas/address.xsd"/>
 
-    <element name="purchaseOrder" type="ipo:PurchaseOrderType"/>
+    <element type="purchaseOrder" type="ipo:PurchaseOrderType"/>
 
-    <element name="comment" type="string"/>
+    <element type="comment" type="string"/>
 
-    <complexType name="PurchaseOrderType">
+    <complexType type="PurchaseOrderType">
         <sequence>
-            <element name="shipTo"     type="ipo:Address"/>
-            <element name="billTo"     type="ipo:Address"/>
+            <element type="shipTo"     type="ipo:Address"/>
+            <element type="billTo"     type="ipo:Address"/>
             <element ref="ipo:comment" minOccurs="0"/>
-            <element name="items"      type="ipo:Items"/>
+            <element type="items"      type="ipo:Items"/>
         </sequence>
-        <attribute name="orderDate" type="date"/>
+        <attribute type="orderDate" type="date"/>
     </complexType>
 
-    <complexType name="Items">
+    <complexType type="Items">
         <sequence>
-            <element name="item" minOccurs="0" maxOccurs="unbounded">
+            <element type="item" minOccurs="0" maxOccurs="unbounded">
                 <complexType>
                     <sequence>
-                        <element name="productName" type="string"/>
-                        <element name="quantity">
+                        <element type="productName" type="string"/>
+                        <element type="quantity">
                             <simpleType>
                                 <restriction base="positiveInteger">
                                     <maxExclusive value="100"/>
                                 </restriction>
                             </simpleType>
                         </element>
-                        <element name="USPrice"    type="decimal"/>
+                        <element type="USPrice"    type="decimal"/>
                         <element ref="ipo:comment" minOccurs="0"/>
-                        <element name="shipDate"   type="date" minOccurs="0"/>
+                        <element type="shipDate"   type="date" minOccurs="0"/>
                     </sequence>
-                    <attribute name="partNum" type="ipo:SKU" use="required"/>
+                    <attribute type="partNum" type="ipo:SKU" use="required"/>
                 </complexType>
             </element>
         </sequence>
     </complexType>
 
-    <simpleType name="SKU">
+    <simpleType type="SKU">
         <restriction base="string">
             <pattern value="\d{3}-[A-Z]{2}"/>
         </restriction>

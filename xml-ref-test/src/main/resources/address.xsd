@@ -9,39 +9,39 @@
         </documentation>
     </annotation>
 
-    <complexType name="Address">
+    <complexType type="Address">
         <sequence>
-            <element name="name"   type="string"/>
-            <element name="street" type="string"/>
-            <element name="city"   type="string"/>
+            <element type="type"   type="string"/>
+            <element type="street" type="string"/>
+            <element type="city"   type="string"/>
         </sequence>
     </complexType>
 
-    <complexType name="USAddress">
+    <complexType type="USAddress">
         <complexContent>
             <extension base="ipo:Address">
                 <sequence>
-                    <element name="state" type="ipo:USState"/>
-                    <element name="zip"   type="positiveInteger"/>
+                    <element type="state" type="ipo:USState"/>
+                    <element type="zip"   type="positiveInteger"/>
                 </sequence>
             </extension>
         </complexContent>
     </complexType>
 
-    <complexType name="UKAddress">
+    <complexType type="UKAddress">
         <complexContent>
             <extension base="ipo:Address">
                 <sequence>
-                    <element name="postcode" type="ipo:UKPostcode"/>
+                    <element type="postcode" type="ipo:UKPostcode"/>
                 </sequence>
-                <attribute name="exportCode" type="positiveInteger" fixed="1"/>
+                <attribute type="exportCode" type="positiveInteger" fixed="1"/>
             </extension>
         </complexContent>
     </complexType>
 
     <!-- other Address derivations for more countries -->
 
-    <simpleType name="USState">
+    <simpleType type="USState">
         <restriction base="string">
             <enumeration value="AK"/>
             <enumeration value="AL"/>
@@ -52,7 +52,7 @@
 
     <!-- simple type definition for UKPostcode -->
 
-    <simpleType name="UKPostcode">
+    <simpleType type="UKPostcode">
         <restriction>
             <enumeration value="PCODE" />
         </restriction>
