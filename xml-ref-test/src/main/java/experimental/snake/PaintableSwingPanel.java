@@ -33,9 +33,6 @@ public class PaintableSwingPanel
             blocks = new ArrayList<PaintOp>(200);
             paintOps = new ArrayList<PaintOp>(200);
         }
-
-        new JPanelKeyboardController().
-                registerKeyStrokes(this);
     }
 
     @Override
@@ -45,10 +42,9 @@ public class PaintableSwingPanel
 
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-//        g.drawString("Use arrows to move!", 10, 20);
+
         for (PaintOp paintOp : getPaintOps())
             paintOp.drawOn(g);
-
     }
 
     @Override
