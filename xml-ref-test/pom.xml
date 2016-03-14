@@ -270,7 +270,7 @@
                     <plugin>
                         <groupId>org.codehaus.mojo</groupId>
                         <artifactId>webstart-maven-plugin</artifactId>
-                        <version>1.0-beta-3</version>
+                        <version>1.0-beta-6</version>
                         <executions>
                             <execution>
                                 <goals>
@@ -279,6 +279,19 @@
                                 <phase>package</phase>
                             </execution>
                         </executions>
+
+                        <dependencies>
+                            <dependency>
+                                <groupId>org.codehaus.mojo</groupId>
+                                <artifactId>webstart-pack200-impl</artifactId>
+                                <version>1.0-beta-6</version>
+                            </dependency>
+                            <dependency>
+                                <groupId>org.codehaus.mojo</groupId>
+                                <artifactId>keytool-api-1.7</artifactId>
+                                <version>1.4</version>
+                            </dependency>
+                        </dependencies>
                         <configuration>
                             <!--outputDirectory></outputDirectory--> <!-- not required?? -->
 

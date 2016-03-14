@@ -28,8 +28,8 @@ public class ShowOffApplication {
     private JTabbedPane tabbedPane;
     private final static MessageConsole mc = new MessageConsole();
     static {
-        mc.redirectOut();
-        mc.redirectErr(Color.RED, null);
+//        mc.redirectOut();
+//        mc.redirectErr(Color.RED, null);
     }
 
     public static void main(String... args) throws Exception {

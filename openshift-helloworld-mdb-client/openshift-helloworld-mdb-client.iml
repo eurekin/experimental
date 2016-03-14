@@ -5,8 +5,8 @@
     <output-test url="file://$MODULE_DIR$/target/test-classes" />
     <content url="file://$MODULE_DIR$">
       <sourceFolder url="file://$MODULE_DIR$/src/main/java" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/main/resources" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/test/java" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/main/resources" type="java-resource" />
       <excludeFolder url="file://$MODULE_DIR$/target" />
     </content>
     <orderEntry type="inheritedJdk" />
@@ -15,17 +15,20 @@
     <orderEntry type="library" name="Maven: org.hornetq:hornetq-jms-client:2.2.13.Final" level="project" />
     <orderEntry type="library" name="Maven: org.jboss:jboss-remote-naming:1.0.2.Final" level="project" />
     <orderEntry type="library" name="Maven: org.jboss:jboss-ejb-client:1.0.0.Final" level="project" />
-    <orderEntry type="library" name="Maven: org.jboss.marshalling:jboss-marshalling:1.3.11.GA" level="project" />
-    <orderEntry type="library" name="Maven: org.jboss.xnio:xnio-api:3.0.3.GA" level="project" />
-    <orderEntry type="library" name="Maven: org.jboss.remoting3:jboss-remoting:3.2.3.GA" level="project" />
     <orderEntry type="library" name="Maven: org.jboss.logging:jboss-logging:3.1.0.GA" level="project" />
+    <orderEntry type="library" name="Maven: org.jboss.marshalling:jboss-marshalling:1.3.11.GA" level="project" />
     <orderEntry type="library" name="Maven: org.jboss.marshalling:jboss-marshalling-river:1.3.11.GA" level="project" />
     <orderEntry type="library" name="Maven: org.jboss.netty:netty:3.2.6.Final" level="project" />
+    <orderEntry type="library" name="Maven: org.jboss.remoting3:jboss-remoting:3.2.3.GA" level="project" />
     <orderEntry type="library" name="Maven: org.jboss.sasl:jboss-sasl:1.0.0.Final" level="project" />
     <orderEntry type="library" name="Maven: org.jboss.spec.javax.jms:jboss-jms-api_1.1_spec:1.0.0.Final" level="project" />
+    <orderEntry type="library" name="Maven: org.jboss.xnio:xnio-api:3.0.3.GA" level="project" />
     <orderEntry type="library" name="Maven: org.jboss.xnio:xnio-nio:3.0.3.GA" level="project" />
     <orderEntry type="library" name="Maven: org.jboss.as:jboss-as-build-config:7.1.1.Final" level="project" />
     <orderEntry type="library" name="Maven: com.jcraft:jsch:0.1.49" level="project" />
   </component>
+  <component name="sonarModuleSettings">
+    <option name="localAnalysisScripName" value="&lt;PROJECT&gt;" />
+    <option name="serverName" value="&lt;PROJECT&gt;" />
+  </component>
 </module>
-

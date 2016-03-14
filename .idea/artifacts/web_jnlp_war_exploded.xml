@@ -2,7 +2,6 @@
   <artifact type="exploded-war" name="web-jnlp:war exploded">
     <output-path>$PROJECT_DIR$/web-jnlp/target/web-jnlp-1.0-SNAPSHOT</output-path>
     <root id="root">
-      <element id="javaee-facet-resources" facet="web-jnlp/web/Web" />
       <element id="directory" name="WEB-INF">
         <element id="directory" name="classes">
           <element id="module-output" name="web-jnlp" />
@@ -11,6 +10,10 @@
           <element id="library" level="project" name="Maven: org.codehaus.mojo.webstart:webstart-jnlp-servlet:1.0-6.0.02_ea_b02.2" />
         </element>
       </element>
+      <element id="directory" name="META-INF">
+        <element id="file-copy" path="$PROJECT_DIR$/web-jnlp/target/web-jnlp-1.0-SNAPSHOT/META-INF/MANIFEST.MF" />
+      </element>
+      <element id="javaee-facet-resources" facet="web-jnlp/web/Web" />
     </root>
   </artifact>
 </component>
