@@ -75,7 +75,7 @@
                             <fromFile>${project.build.directory}/${project.build.finalName}.war</fromFile>
                             <toFile>ROOT.war</toFile>
                             <url>
-                                scp://pacelibom-eurekin.rhcloud.com/var/lib/openshift/56e6d1b87628e14745000213/jbossas/standalone/deployments
+                                scp://pacelibom-eurekin.rhcloud.com/var/lib/openshift/56e6d1b87628e14745000213/jbossews/standalone/deployments
                             </url>
                         </configuration>
                     </plugin>
