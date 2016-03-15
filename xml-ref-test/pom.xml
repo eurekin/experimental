@@ -548,22 +548,23 @@
             </plugin>
 
 
-            <plugin>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>2.5.1</version>
-                <configuration>
-                    <compilerId>jdt</compilerId>
-                    <source>1.6</source>
-                    <target>1.6</target>
-                </configuration>
-                <dependencies>
-                    <dependency>
-                        <groupId>org.eclipse.tycho</groupId>
-                        <artifactId>tycho-compiler-jdt</artifactId>
-                        <version>0.18.0</version>
-                    </dependency>
-                </dependencies>
-            </plugin>
+            <!-- Disabling, otherwise the JNLP Hack won't compile -->
+            <!--<plugin>-->
+                <!--<artifactId>maven-compiler-plugin</artifactId>-->
+                <!--<version>3.3</version>-->
+                <!--<configuration>-->
+                    <!--<compilerId>jdt</compilerId>-->
+                    <!--<source>1.8</source>-->
+                    <!--<target>1.8</target>-->
+                <!--</configuration>-->
+                <!--<dependencies>-->
+                    <!--<dependency>-->
+                        <!--<groupId>org.eclipse.tycho</groupId>-->
+                        <!--<artifactId>tycho-compiler-jdt</artifactId>-->
+                        <!--<version>0.24.0</version>-->
+                    <!--</dependency>-->
+                <!--</dependencies>-->
+            <!--</plugin>-->
 
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>

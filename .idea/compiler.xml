@@ -23,12 +23,6 @@
         <outputRelativeToContentRoot value="true" />
         <processorPath useClasspath="true" />
         <module name="web-jnlp" />
-      </profile>
-      <profile default="false" name="Annotation profile for xml-ref-test" enabled="true">
-        <sourceOutputDir name="target/generated-sources/annotations" />
-        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
-        <outputRelativeToContentRoot value="true" />
-        <processorPath useClasspath="true" />
         <module name="xml-ref-test" />
       </profile>
       <profile default="false" name="Annotation profile for openshift-helloworld-mdb-client" enabled="true">
@@ -53,7 +47,7 @@
       <module name="openshift-helloworld-mdb" target="1.6" />
       <module name="openshift-helloworld-mdb-client" target="1.6" />
       <module name="web-jnlp" target="1.5" />
-      <module name="xml-ref-test" target="1.6" />
+      <module name="xml-ref-test" target="1.5" />
     </bytecodeTargetLevel>
   </component>
 </project>
