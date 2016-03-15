@@ -25,7 +25,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @SupportedAnnotationTypes("pl.eurekin.experimental.GenerateJavaBeanInterface")
-@SupportedSourceVersion(SourceVersion.RELEASE_6)
+@SupportedSourceVersion(SourceVersion.RELEASE_8)
 public class InterfaceGenerationAP extends AbstractProcessor {
 
 
