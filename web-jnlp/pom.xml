@@ -74,9 +74,8 @@
                             <serverId>rhcloud-as-jnlp-host</serverId>
                             <fromFile>${project.build.directory}/${project.build.finalName}.war</fromFile>
                             <toFile>ROOT.war</toFile>
-                            <url>
-                                scp://pacelibom-eurekin.rhcloud.com/var/lib/openshift/56e6d1b87628e14745000213/jbossews/standalone/deployments
-                            </url>
+                                <!-- old value scp://pacelibom-eurekin.rhcloud.com/var/lib/openshift/56e6d1b87628e14745000213/jbossews/standalone/deployments -->
+                            <url>scp://pacelibom-eurekin.rhcloud.com/var/lib/openshift/56e6d1b87628e14745000213/app-root/runtime/dependencies/jbossews/webapps</url>
                         </configuration>
                     </plugin>
                 </plugins>
